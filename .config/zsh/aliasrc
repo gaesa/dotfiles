@@ -1,0 +1,48 @@
+# My alias
+alias sudo='sudo '
+alias ls='ls -F --color=auto'
+alias la='ls -F -A --color=auto'
+alias ll='ls -lhF --color=auto --group-directories-first'
+alias ip='ip --color=auto'
+
+alias s="kitty +kitten ssh"
+alias icat="kitty +kitten icat"
+alias d="kitty +kitten diff"
+alias vp="nvimpager"
+alias yd="yt-dlp"
+alias ra="ranger"
+alias mod="stat -c %a"
+alias ar="aria2c"
+alias pf="pkgfile"
+alias startsway="env __GL_GSYNC_ALLOWED=0 __GL_VRR_ALLOWED=0 WLR_DRM_NO_ATOMIC=1 XDG_CURRENT_DESKTOP=sway WLR_NO_HARDWARE_CURSORS=1 MOZ_ENABLE_WAYLAND=1 sway --unsupported-gpu"
+
+alias g="git"
+alias cg="cd $HOME/dev/git"
+alias cf='git --git-dir=$HOME/.config/dotfiles/ --work-tree=$HOME'
+alias cfz="vim $HOME/.config/zsh/.zshrc"
+alias cfzp="vim $HOME/.config/zsh/.zprofile"
+alias cfa="vim $HOME/.config/zsh/aliasrc"
+alias cfe="vim $HOME/.config/zsh/.zshenv"
+alias cfv="vim $HOME/.config/nvim/init.vim"
+alias cfl="vim $HOME/.config/lf/lfrc"
+alias cfk="vim $HOME/.config/kitty/kitty.conf"
+alias cfi="vim $HOME/.config/i3/config"
+alias cfs="vim $HOME/.config/sway/config"
+alias cfm="vim $HOME/.config/mpv"
+
+alias cwd="cd $HOME/Public/windows"
+alias wd="ra $HOME/Public/windows"
+alias vd="ra $HOME/vd"
+alias ani="ra $HOME/vd/anime"
+alias cpt="cd $HOME/pt"
+alias dl="ra $HOME/dl"
+alias cdm="cd $HOME/dm"
+alias dm="ra $HOME/dm"
+alias dt="ra $HOME/dt"
+alias ms="ra $HOME/ms"
+alias ctl="cd $HOME/dl/Telegram\ Desktop"
+alias tl="ra $HOME/dl/Telegram\ Desktop"
+
+alias rcow="fortune -c | cowthink -f $(find /usr/share/cows -type f | shuf -n 1)"
+alias rpony="fortune -c | ponythink -f $(find /usr/share/ponysay/ponies -type f | shuf -n 1)"
+
