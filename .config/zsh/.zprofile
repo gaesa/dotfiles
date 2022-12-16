@@ -23,10 +23,10 @@ if [[ ":$PATH:" != *":$HOME/.local/bin:"* ]]; then
 fi
 
 # Terminal
-EDITOR=nvim
-BROWSER=librewolf
-PAGER=nvimpager
-SYSTEMD_LESS="FRXMK"
+export EDITOR=nvim
+export BROWSER=librewolf
+export PAGER=nvimpager
+export SYSTEMD_LESS="FRXMK"
 
 # Start ssh-agent with systemd user
 export SSH_AUTH_SOCK="$XDG_RUNTIME_DIR/ssh-agent.socket"
@@ -44,13 +44,13 @@ export GLFW_IM_MODULE=ibus
 export FCITX_SOCKET=/tmp
 
 # Wayland
-CLUTTER_BACKEND=wayland
-GDK_BACKEND=wayland,x11
-QT_QPA_PLATFORM="wayland;xcb"
-MOZ_ENABLE_WAYLAND=1
+export CLUTTER_BACKEND=wayland
+export GDK_BACKEND=wayland,x11
+export QT_QPA_PLATFORM="wayland;xcb"
+export MOZ_ENABLE_WAYLAND=1
 
-GTK_USE_PORTAL=1
-QT_WAYLAND_FORCE_DPI=120
+export GTK_USE_PORTAL=1
+export QT_WAYLAND_FORCE_DPI=120
 
 # Nvidia on wayland
 # many compositors (including Mutter and KWin) started using GBM by default for NVIDIA ≥ 495
