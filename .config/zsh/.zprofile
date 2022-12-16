@@ -57,6 +57,9 @@ export QT_WAYLAND_FORCE_DPI=120
 # GBM_BACKEND=nvidia-drm
 # __GLX_VENDOR_LIBRARY_NAME=nvidia
 
+# Make the user instance of systemd and dbus daemon inherit above environment variables
+dbus-update-activation-environment --systemd --all
+
 # Start KDE from TTY
 if [ -z $DISPLAY ] && [ "$(tty)" = "/dev/tty1" ]; then
   startplasma-wayland
