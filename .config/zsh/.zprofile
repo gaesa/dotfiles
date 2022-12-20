@@ -16,6 +16,7 @@ export RUSTUP_HOME="$XDG_DATA_HOME"/rustup
 export GNUPGHOME="$XDG_DATA_HOME"/gnupg
 export GTK2_RC_FILES="$XDG_CONFIG_HOME"/gtk-2.0/gtkrc
 export ncmpcpp_directory="$XDG_CONFIG_HOME"/ncmpcpp
+export LYNX_CFG_PATH="$XDG_CONFIG_HOME"/lynx.cfg
 
 # Add scripts path
 if [[ ":$PATH:" != *":$HOME/.local/bin:"* ]]; then
