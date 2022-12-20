@@ -32,6 +32,10 @@ set timeoutlen=1000
 set ttimeoutlen=50
 
 " remap
+nnoremap j gj
+nnoremap gj j
+nnoremap k gk
+nnoremap gk k
 
 " plugin manager
 lua require('plugins')
