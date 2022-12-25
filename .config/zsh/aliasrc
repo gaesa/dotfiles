@@ -22,6 +22,7 @@ alias cf='git --git-dir=$HOME/.config/dotfiles/ --work-tree=$HOME'
 alias cfz="vim $HOME/.config/zsh/.zshrc"
 alias cfzp="vim $HOME/.config/zsh/.zprofile"
 alias cfa="vim $HOME/.config/zsh/aliasrc"
+alias cff="vim $HOME/.config/zsh/functionrc"
 alias cfe="vim $HOME/.config/zsh/.zshenv"
 alias cfv="vim $HOME/.config/nvim/init.vim"
 alias cfl="vim $HOME/.config/lf/lfrc"
