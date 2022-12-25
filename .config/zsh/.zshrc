@@ -107,15 +107,15 @@ bindkey '^D' exit_zsh
 source /usr/share/fzf/key-bindings.zsh 
 source /usr/share/fzf/completion.zsh
 export FZF_DEFAULT_OPTS='--height 40% --reverse --multi'
-export FZF_DEFAULT_COMMAND='fd --type f --strip-cwd-prefix --exclude .git --exclude sound-windows --exclude .snapshots --exclude bak'
+export FZF_DEFAULT_COMMAND='fd --type f -H --strip-cwd-prefix --exclude .git --exclude tim-sounds --exclude .snapshots'
 export FZF_CTRL_T_COMMAND="$FZF_DEFAULT_COMMAND"
 
 _fzf_compgen_dir() {
-  fd --type d --exclude ".git" --exclude "sound-windows" . "$1"
+  fd --type d -H --exclude ".git" --exclude "tim-sounds" . "$1"
 }
 
 _fzf_compgen_path() {
-  fd --exclude ".git" --exclude "sound-windows" . "$1"
+  fd -H --exclude ".git" --exclude "tim-sounds" . "$1"
 }
 
 
