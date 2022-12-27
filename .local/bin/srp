@@ -1,0 +1,50 @@
+#!/usr/bin/bash
+
+# ls function
+bool1=false
+if [[ "$1" == "ls" ]]; then 
+	ls -F --color=auto ~/.local/bin/
+else
+	bool1=true
+fi
+
+# cat function
+bool2=false
+if [[ "$1" == "cat" ]]; then
+	cat ~/.local/bin/"$2"
+else
+	bool2=true
+fi
+
+# fd function
+bool3=false
+if [[ "$1" == "fd" ]]; then
+	fd --type f "$2" .local/bin/ -X printf '%s\n' {/}
+else
+	bool3=true
+fi
+
+# rm function
+bool4=false
+if [[ "$1" == "rm" ]]; then
+	for i in "${@:2}"; do
+		trash ~/.local/bin/"$i"
+	done
+else
+	bool4=true
+fi
+
+# edit function
+if [ "$bool1" = true ] && [ "$bool2" = true ] && [ "$bool3" = true ] && [ "$bool4" = true ]; then
+	vim ~/.local/bin/"$@"
+	wait
+	for arg in "$@"; do
+		if [ -f ~/.local/bin/"$arg" ]; then
+			# if the file exists, then check its permission
+			if [ $(stat -c %a ~/.local/bin/"$arg") != '744' ]; then 
+				chmod u+x ~/.local/bin/"$arg"
+			fi
+		fi
+	done
+fi
+
