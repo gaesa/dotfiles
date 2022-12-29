@@ -1,5 +1,4 @@
-# autostart X at login and hide messages
-# [[ $(fgconsole 2>/dev/null) == 1 ]] && exec startx -- vt1 -keeptty &> /dev/null
+umask 077
 
 # Clean up my home
 export XDG_CONFIG_HOME=$HOME/.config
@@ -8,7 +7,6 @@ export XDG_DATA_HOME=$HOME/.local/share
 export XDG_STATE_HOME=$HOME/.local/state
 export XDG_RUNTIME_DIR=/run/user/$UID
 
-export XAUTHORITY="$XDG_RUNTIME_DIR"/Xauthority
 export TERMINFO="$XDG_DATA_HOME"/terminfo
 export TERMINFO_DIRS="$XDG_DATA_HOME"/terminfo:/usr/share/terminfo
 export GOPATH="$XDG_DATA_HOME"/go
