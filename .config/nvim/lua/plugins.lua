@@ -14,7 +14,7 @@ return require('packer').startup(function(use)
   -- You add plugins here  
   use 'h-hg/fcitx.nvim'
   use {
-	"windwp/nvim-autopairs",
+	'windwp/nvim-autopairs',
     config = function() require("nvim-autopairs").setup {} end
   }
 end)
