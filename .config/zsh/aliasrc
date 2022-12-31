@@ -7,7 +7,7 @@ alias ip='ip --color=auto'
 
 alias s="kitty +kitten ssh"
 alias icat="kitty +kitten icat"
-alias d="kitty +kitten diff"
+alias kdiff="kitty +kitten diff"
 alias vp="nvimpager"
 alias yd="yt-dlp"
 alias ra="ranger"
