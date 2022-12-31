@@ -3,8 +3,15 @@ set nocompatible	" avoid some problems on some platforms
 set nomodeline		" security tweak
 set nu! rnu!	" show absolute and relative number at the same time
 " set nu!
+
 syntax on
-"set termguicolors
+set termguicolors
+set background=dark
+" let g:gruvbox_material_foreground = 'mix'
+let g:gruvbox_material_background = 'hard'
+let g:gruvbox_material_better_performance = 1
+let g:gruvbox_material_enable_bold = 1
+colorscheme gruvbox-material
 
 " search
 set incsearch	" do incremental searching, search as you type
