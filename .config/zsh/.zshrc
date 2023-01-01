@@ -44,6 +44,8 @@ zmodload zsh/complist
 _comp_options+=(globdots)		# Include hidden files.
 # use shift-tab to access previous completion entries
 bindkey -M menuselect '^[[Z' reverse-menu-complete
+# use Esc to cancel completion
+bindkey -M menuselect '^[' undo
 
 # Disabling suggestion for large buffers
 export ZSH_AUTOSUGGEST_BUFFER_MAX_SIZE=20
