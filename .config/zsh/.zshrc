@@ -38,6 +38,8 @@ setopt complete_aliases # enable completion for aliases e.g. the path completion
 zstyle ':completion:*' menu select
 zstyle ':completion:*' matcher-list 'm:{a-z}={A-Za-z}'
 zstyle ':completion:*' cache-path $XDG_CACHE_HOME/zsh/zcompcache
+# smarter cd: zoxide
+eval "$(zoxide init zsh)"
 zmodload zsh/complist
 _comp_options+=(globdots)		# Include hidden files.
 # use shift-tab to access previous completion entries
