@@ -79,7 +79,8 @@ bindkey -M menuselect 'l' vi-forward-char
 # bindkey -M menuselect 'k' vi-up-line-or-history
 bindkey -v '^?' backward-delete-char
 
-
+# default wordchars is bad as it contains slash
+WORDCHARS=$WORDCHARS:s:/:
 # bind ctrl+backspace to delete the previous word
 bindkey '^H' backward-kill-word
 
