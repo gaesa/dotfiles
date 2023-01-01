@@ -1,7 +1,17 @@
 # My functions
+
 # yt-dlp audio with search
 function yta() {
     mpv --profile=audio --ytdl-format=bestaudio ytdl://ytsearch:"$*"
+}
+
+# zsh reverse bindkey lookup 
+function reverse-bindkey-lookup() {
+    local code capname
+    print -v code -b "$1"
+    capname=${(k)terminfo[(Re)$code]} 
+    [[ -z $capname ]] && return 1
+    man terminfo | sed -nr "s/ {28}([^ ].*$capname)/\\1/;T; p"
 }
 
 # Use ranger to switch directories and bind it to ctrl-o
