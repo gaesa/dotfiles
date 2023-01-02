@@ -48,9 +48,6 @@ bindkey -M menuselect '^[[Z' reverse-menu-complete
 # use Esc to cancel completion
 bindkey -M menuselect '^[' undo
 
-# Disabling suggestion for large buffers
-export ZSH_AUTOSUGGEST_BUFFER_MAX_SIZE=20
-
 # On-demand rehash
 zshcache_time="$(date +%s%N)"
 autoload -Uz add-zsh-hook
@@ -143,7 +140,6 @@ source /usr/share/zsh-theme-powerlevel10k/powerlevel10k.zsh-theme
 
 # Should be at the end
 source /usr/share/zsh/plugins/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
-#source /usr/share/zsh/plugins/zsh-autosuggestions/zsh-autosuggestions.zsh
 
 # History substring search
 source /usr/share/zsh/plugins/zsh-history-substring-search/zsh-history-substring-search.zsh
