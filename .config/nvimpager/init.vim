@@ -30,4 +30,5 @@ nnoremap j gj
 nnoremap gj j
 nnoremap k gk
 nnoremap gk k
-
+nnoremap u <c-u>
+nnoremap d <c-d>
