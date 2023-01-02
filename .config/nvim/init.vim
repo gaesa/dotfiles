@@ -4,12 +4,15 @@ set nomodeline		" security tweak
 set nu! rnu!	" show absolute and relative number at the same time
 " set nu!
 
-syntax on
+" theme
 set termguicolors
-set background=dark
-let g:everforest_background = 'hard'
+if strftime("%H") >= 5 && strftime("%H") < 18
+	set background=light
+else
+	set background=dark
+	let g:everforest_transparent_background = 1
+endif
 let g:everforest_better_performance = 1
-let g:everforest_transparent_background = 1
 colorscheme everforest
 
 highlight CursorLine cterm=NONE ctermbg=NONE ctermfg=NONE guibg=NONE guifg=NONE
