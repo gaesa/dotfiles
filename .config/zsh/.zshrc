@@ -37,7 +37,8 @@ setopt menu_complete # not flexible but there is no need for clearing zsh comple
 setopt complete_aliases # enable completion for aliases e.g. the path completion in "g add PATH"
 zstyle ':completion:*' menu select
 zstyle ':completion:*' matcher-list 'm:{a-zA-Z}={A-Za-z}'
-zstyle ':completion:*' cache-path $XDG_CACHE_HOME/zsh/zcompcache
+zstyle ':completion:*' use-cache on
+zstyle ':completion:*' cache-path $XDG_CACHE_HOME/zsh
 # smarter cd: zoxide
 eval "$(zoxide init zsh)"
 zmodload zsh/complist
