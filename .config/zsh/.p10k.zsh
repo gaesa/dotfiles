@@ -28,6 +28,10 @@
   # Zsh >= 5.1 is required.
   [[ $ZSH_VERSION == (5.<1->*|<6->.*) ]] || return
 
+  # When set to true, powerlevel10k will use semantic markup with OSC 133.
+  # This enables features in terminals that recognize these marks (iTerm2 and kitty, and perhaps more)
+  typeset -g POWERLEVEL9K_TERM_SHELL_INTEGRATION=true
+
   # The list of segments shown on the left. Fill it with the most important segments.
   typeset -g POWERLEVEL9K_LEFT_PROMPT_ELEMENTS=(
     # =========================[ Line #1 ]=========================
