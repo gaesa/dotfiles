@@ -121,7 +121,8 @@ source /usr/share/fzf/completion.zsh
 export FZF_DEFAULT_OPTS='--height 40% --reverse --multi'
 export FZF_DEFAULT_COMMAND='fd --type f -H --strip-cwd-prefix --exclude .git --exclude .snapshots --exclude tim-sounds'
 export FZF_CTRL_T_COMMAND="$FZF_DEFAULT_COMMAND"
-
+export FZF_ALT_C_COMMAND='fd --type d -H --exclude ".git" --exclude ".snapshots" --exclude "tim-sounds"'
+export FZF_ALT_C_OPTS='--preview "tree -C {} | head -200"'
 _fzf_compgen_dir() {
   fd --type d -H --exclude ".git" --exclude ".snapshots" --exclude "tim-sounds" . "$1"
 }
