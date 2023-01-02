@@ -14,6 +14,9 @@ colorscheme everforest
 
 highlight CursorLine cterm=NONE ctermbg=NONE ctermfg=NONE guibg=NONE guifg=NONE
 set cursorline!
+if &diff
+	set cursorline!
+endif
 
 " search
 set incsearch	" do incremental searching, search as you type
