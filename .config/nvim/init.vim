@@ -7,11 +7,11 @@ set nu! rnu!	" show absolute and relative number at the same time
 syntax on
 set termguicolors
 set background=dark
-" let g:gruvbox_material_foreground = 'mix'
-let g:gruvbox_material_background = 'hard'
-let g:gruvbox_material_better_performance = 1
-let g:gruvbox_material_enable_bold = 1
-colorscheme gruvbox-material
+let g:everforest_background = 'hard'
+let g:everforest_better_performance = 1
+let g:everforest_transparent_background = 1
+colorscheme everforest
+
 highlight CursorLine cterm=NONE ctermbg=NONE ctermfg=NONE guibg=NONE guifg=NONE
 set cursorline!
 

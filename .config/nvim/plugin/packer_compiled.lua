@@ -74,6 +74,11 @@ end
 time([[try_loadstring definition]], false)
 time([[Defining packer_plugins]], true)
 _G.packer_plugins = {
+  everforest = {
+    loaded = true,
+    path = "/home/david/.local/share/nvim/site/pack/packer/start/everforest",
+    url = "https://github.com/sainnhe/everforest"
+  },
   ["fcitx.nvim"] = {
     loaded = true,
     path = "/home/david/.local/share/nvim/site/pack/packer/start/fcitx.nvim",
