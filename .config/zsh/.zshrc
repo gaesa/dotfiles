@@ -115,7 +115,8 @@ zle -N exit_zsh
 bindkey '^D' exit_zsh
 
 # Search with fzf
-source /usr/share/fzf/key-bindings.zsh 
+# The default key binding ctrl-r is bad because it is occupied by redo in zsh's vi mode
+source $ZDOTDIR/plugins/fzf/key-bindings.zsh
 source /usr/share/fzf/completion.zsh
 export FZF_DEFAULT_OPTS='--height 40% --reverse --multi'
 export FZF_DEFAULT_COMMAND='fd --type f -H --strip-cwd-prefix --exclude .git --exclude .snapshots --exclude tim-sounds'
