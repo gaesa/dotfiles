@@ -6,17 +6,20 @@ set nu! rnu!	" show absolute and relative number at the same time
 
 " theme
 set termguicolors
+let g:everforest_better_performance = 1
+
 if strftime("%H") >= 5 && strftime("%H") < 18
 	set background=light
+	colorscheme everforest
+	set cursorline!
 else
 	set background=dark
 	let g:everforest_transparent_background = 1
+	colorscheme everforest
+	highlight CursorLine cterm=NONE ctermbg=NONE ctermfg=NONE guibg=NONE guifg=NONE
+	set cursorline!
 endif
-let g:everforest_better_performance = 1
-colorscheme everforest
 
-highlight CursorLine cterm=NONE ctermbg=NONE ctermfg=NONE guibg=NONE guifg=NONE
-set cursorline!
 if &diff
 	set cursorline!
 endif
