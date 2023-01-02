@@ -5,6 +5,10 @@ alias la='ls -F -A --color=auto'
 alias ll='ls -lhF --color=auto --group-directories-first'
 alias ip='ip --color=auto'
 
+unalias run-help
+autoload -U run-help
+alias help='run-help'
+
 alias s="kitty +kitten ssh"
 alias icat="kitty +kitten icat"
 alias kdiff="kitty +kitten diff"
