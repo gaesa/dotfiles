@@ -5,7 +5,7 @@ set nu! rnu!	" show absolute and relative number at the same time
 set termguicolors
 let g:everforest_better_performance = 1
 
-if strftime("%H:%M") >= "05:30" && strftime("%H:%M") < "18:00"
+if strftime("%H:%M") > "05:30" && strftime("%H:%M") < "18:00"
 	set background=light
 	colorscheme everforest
 	set cursorline!
