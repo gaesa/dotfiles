@@ -1,8 +1,5 @@
-" basic
-set nocompatible	" avoid some problems on some platforms
-set nomodeline		" security tweak
+" line number
 set nu! rnu!	" show absolute and relative number at the same time
-" set nu!
 
 " theme
 set termguicolors
