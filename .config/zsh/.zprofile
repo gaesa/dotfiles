@@ -28,7 +28,7 @@ fi
 # Terminal
 export EDITOR=nvim
 export BROWSER=librewolf
-export PAGER=nvimpager
+export PAGER=less
 export SYSTEMD_LESS="FRXMK"
 
 # Start ssh-agent with systemd user
