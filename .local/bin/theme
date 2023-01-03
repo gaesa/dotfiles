@@ -1,0 +1,9 @@
+#/usr/bin/bash
+
+if [[ "$1" == "light" ]]; then 
+	cp ~/.config/kitty/'Everforest Light Soft.conf' ~/.config/kitty/tmp
+	mv ~/.config/kitty/tmp ~/.config/kitty/current-theme.conf
+elif [[ "$1" == "dark" ]]; then	
+	cp ~/.config/kitty/'Everforest Dark Soft.conf' ~/.config/kitty/tmp
+	mv ~/.config/kitty/tmp ~/.config/kitty/current-theme.conf
+fi

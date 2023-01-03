@@ -122,10 +122,12 @@ if [[ "$(date +%H:%M)" > "05:30" ]] && [[ "$(date +%H:%M)" < "18:00" ]]; then
 	export FZF_DEFAULT_OPTS='--color=light --height 40% --reverse --multi'
 	export FZF_CTRL_R_OPTS='--color=light'
 	export FZF_ALT_C_OPTS='--color=light --preview "tree -C {} | head -200"'
+	theme light
 else
 	export FZF_DEFAULT_OPTS='--color=dark --height 40% --reverse --multi'
 	export FZF_CTRL_R_OPTS='--color=dark'
 	export FZF_ALT_C_OPTS='--color=dark --preview "tree -C {} | head -200"'
+	theme dark
 fi
 export FZF_DEFAULT_COMMAND='fd --type f -H --strip-cwd-prefix --exclude .git --exclude .snapshots --exclude tim-sounds'
 export FZF_CTRL_T_COMMAND="$FZF_DEFAULT_COMMAND"
