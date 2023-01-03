@@ -118,11 +118,18 @@ bindkey '^D' exit_zsh
 # The default key binding ctrl-r is bad because it is occupied by redo in zsh's vi mode
 source $ZDOTDIR/plugins/fzf/key-bindings.zsh
 source /usr/share/fzf/completion.zsh
-export FZF_DEFAULT_OPTS='--height 40% --reverse --multi'
+if [[ "$(date +%H:%M)" > "05:30" ]] && [[ "$(date +%H:%M)" < "18:00" ]]; then
+	export FZF_DEFAULT_OPTS='--color=light --height 40% --reverse --multi'
+	export FZF_CTRL_R_OPTS='--color=light'
+	export FZF_ALT_C_OPTS='--color=light --preview "tree -C {} | head -200"'
+else
+	export FZF_DEFAULT_OPTS='--color=dark --height 40% --reverse --multi'
+	export FZF_CTRL_R_OPTS='--color=dark'
+	export FZF_ALT_C_OPTS='--color=dark --preview "tree -C {} | head -200"'
+fi
 export FZF_DEFAULT_COMMAND='fd --type f -H --strip-cwd-prefix --exclude .git --exclude .snapshots --exclude tim-sounds'
 export FZF_CTRL_T_COMMAND="$FZF_DEFAULT_COMMAND"
 export FZF_ALT_C_COMMAND='fd --type d -H --exclude ".git" --exclude ".snapshots" --exclude "tim-sounds"'
-export FZF_ALT_C_OPTS='--preview "tree -C {} | head -200"'
 _fzf_compgen_dir() {
   fd --type d -H --exclude ".git" --exclude ".snapshots" --exclude "tim-sounds" . "$1"
 }
