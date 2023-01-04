@@ -129,15 +129,15 @@ else
 	export FZF_ALT_C_OPTS='--color=dark --preview "tree -C {} | head -200"'
 	theme dark
 fi
-export FZF_DEFAULT_COMMAND='fd --type f -H --strip-cwd-prefix --exclude .git --exclude .snapshots --exclude tim-sounds'
+export FZF_DEFAULT_COMMAND='fd --type f -H --strip-cwd-prefix --exclude ".git" --exclude ".snapshots" --exclude ".stversions" --exclude ".stfolder" --exclude "tim-sounds"'
 export FZF_CTRL_T_COMMAND="$FZF_DEFAULT_COMMAND"
-export FZF_ALT_C_COMMAND='fd --type d -H --exclude ".git" --exclude ".snapshots" --exclude "tim-sounds"'
+export FZF_ALT_C_COMMAND='fd --type d -H --exclude ".git" --exclude ".snapshots" --exclude ".stversions" --exclude ".stfolder" --exclude "tim-sounds"'
 _fzf_compgen_dir() {
-  fd --type d -H --exclude ".git" --exclude ".snapshots" --exclude "tim-sounds" . "$1"
+  fd --type d -H --exclude ".git" --exclude ".snapshots" --exclude ".stversions" --exclude ".stfolder" --exclude "tim-sounds" . "$1"
 }
 
 _fzf_compgen_path() {
-  fd -H --exclude ".git" --exclude ".snapshots" --exclude "tim-sounds" . "$1"
+  fd -H --exclude ".git" --exclude ".snapshots" --exclude ".stversions" --exclude ".stfolder" --exclude "tim-sounds" . "$1"
 }
 
 
