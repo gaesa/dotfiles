@@ -42,7 +42,7 @@ zstyle ':completion:*' cache-path "$XDG_CACHE_HOME"/zsh
 # smarter cd: zoxide
 eval "$(zoxide init zsh)"
 zmodload zsh/complist
-_comp_options+=(globdots)		# Include hidden files.
+setopt globdots # Include hidden files.
 # use shift-tab to access previous completion entries
 bindkey -M menuselect '^[[Z' reverse-menu-complete
 # use Esc to cancel completion
