@@ -23,6 +23,7 @@ setopt HIST_REDUCE_BLANKS
 setopt HIST_VERIFY 
 # Share history in multiple shells
 setopt share_history
+setopt correct
 export HISTFILE="$XDG_STATE_HOME"/zsh/history
 export HISTSIZE=5000
 export SAVEHIST="$HISTSIZE"
