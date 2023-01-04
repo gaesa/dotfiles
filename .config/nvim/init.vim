@@ -24,6 +24,7 @@ else
 	if &diff
 		colorscheme default
 	endif
+	let g:loaded_airline = 1
 endif
 
 " search
