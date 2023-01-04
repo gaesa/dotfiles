@@ -5,6 +5,16 @@ function yta() {
     mpv --profile=audio --ytdl-format=bestaudio ytdl://ytsearch:"$*"
 }
 
+# fuzzy search with xdg-open
+function fuzzy-xdg-open() {
+	local output
+	output=$(fzf </dev/tty)
+	xdg-open ${(q-)output} &>/dev/null
+	zle reset-prompt
+}
+zle -N fuzzy-xdg-open
+bindkey '^o' fuzzy-xdg-open
+
 # zsh reverse bindkey lookup 
 function reverse-bindkey-lookup() {
     local code capname
@@ -35,4 +45,4 @@ rangercd () {
         [ -d "$dir" ] && [ "$dir" != "$(pwd)" ] && cd "$dir"                                               
     fi
 }
-bindkey -s '^o' 'rangercd\n'
+#bindkey -s '^o' 'rangercd\n'
