@@ -1,11 +1,16 @@
 #/usr/bin/bash
+function reload_kitty() {
+	if pgrep --exact kitty >/dev/null; then
+		killall -USR1 kitty
+	fi
+}
 
 if [[ "$1" == "light" ]]; then 
 	cp ~/.config/kitty/'Everforest Light Soft.conf' ~/.config/kitty/tmp
 	mv ~/.config/kitty/tmp ~/.config/kitty/current-theme.conf
-	killall -USR1 kitty
+	reload_kitty
 elif [[ "$1" == "dark" ]]; then	
 	cp ~/.config/kitty/'Everforest Dark Soft.conf' ~/.config/kitty/tmp
 	mv ~/.config/kitty/tmp ~/.config/kitty/current-theme.conf
-	killall -USR1 kitty
+	reload_kitty
 fi
