@@ -8,9 +8,9 @@ function reload_kitty() {
 if [[ "$1" == "light" ]]; then 
 	cp ~/.config/kitty/'Everforest Light Soft.conf' ~/.config/kitty/tmp
 	mv ~/.config/kitty/tmp ~/.config/kitty/current-theme.conf
-	reload_kitty
+	#reload_kitty
 elif [[ "$1" == "dark" ]]; then	
 	cp ~/.config/kitty/'Everforest Dark Soft.conf' ~/.config/kitty/tmp
 	mv ~/.config/kitty/tmp ~/.config/kitty/current-theme.conf
-	reload_kitty
+	#reload_kitty
 fi
