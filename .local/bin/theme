@@ -1,4 +1,5 @@
-#/usr/bin/bash
+#!/usr/bin/bash
+
 function reload_kitty() {
 	if pgrep --exact kitty >/dev/null; then
 		killall -USR1 kitty
