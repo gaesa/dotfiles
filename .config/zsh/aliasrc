@@ -9,6 +9,8 @@ unalias run-help
 autoload -U run-help
 alias help='run-help'
 
+alias df="duf"
+alias du="dust"
 alias s="kitty +kitten ssh"
 alias icat="kitty +kitten icat"
 alias kdiff="kitty +kitten diff"
