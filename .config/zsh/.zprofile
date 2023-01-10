@@ -25,6 +25,11 @@ if [[ ":$PATH:" != *":$HOME/.local/bin:"* ]]; then
 	path+=("$HOME/.local/bin")
 fi
 
+# Add add-on application software packages path
+if [[ ":$PATH:" != *":/opt/bin:"* ]]; then
+	path+=("/opt/bin")
+fi
+
 # Terminal
 export EDITOR=nvim
 export BROWSER=librewolf
