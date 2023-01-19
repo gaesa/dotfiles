@@ -19,7 +19,7 @@ fi
 # fd function
 bool3=false
 if [[ "$1" == "fd" ]]; then
-	fd --type f "$2" .local/bin/ -X printf '%s\n' {/}
+	fd --type f "$2" ~/.local/bin/ -X printf '%s\n' {/}
 else
 	bool3=true
 fi
@@ -34,8 +34,16 @@ else
 	bool4=true
 fi
 
+# mv function
+bool5=false
+if [[ "$1" == "mv" ]]; then
+	mv -i ~/.local/bin/"$2" ~/.local/bin/"$3"
+else
+	bool5=true
+fi
+
 # edit function
-if [ "$bool1" = true ] && [ "$bool2" = true ] && [ "$bool3" = true ] && [ "$bool4" = true ]; then
+if [ "$bool1" = true ] && [ "$bool2" = true ] && [ "$bool3" = true ] && [ "$bool4" = true ] && [ "$bool5" = true ]; then
 	vim ~/.local/bin/"$@"
 	wait
 	for arg in "$@"; do
