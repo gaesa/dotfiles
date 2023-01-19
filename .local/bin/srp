@@ -1,49 +1,53 @@
 #!/usr/bin/bash
 
 # ls function
-bool1=false
+notls=false
 if [[ "$1" == "ls" ]]; then 
-	ls -F --color=auto ~/.local/bin/
+	if [ -z "$2" ]; then
+		ls -F --color=auto ~/.local/bin
+	else
+		ls -F --color=auto ~/.local/bin/"${@:2}"
+	fi
 else
-	bool1=true
+	notls=true
 fi
 
 # cat function
-bool2=false
+notcat=false
 if [[ "$1" == "cat" ]]; then
 	cat ~/.local/bin/"$2"
 else
-	bool2=true
+	notcat=true
 fi
 
 # fd function
-bool3=false
+notfd=false
 if [[ "$1" == "fd" ]]; then
 	fd --type f "$2" ~/.local/bin/ -X printf '%s\n' {/}
 else
-	bool3=true
+	notfd=true
 fi
 
 # rm function
-bool4=false
+notrm=false
 if [[ "$1" == "rm" ]]; then
 	for i in "${@:2}"; do
 		trash ~/.local/bin/"$i"
 	done
 else
-	bool4=true
+	notrm=true
 fi
 
 # mv function
-bool5=false
+notmv=false
 if [[ "$1" == "mv" ]]; then
 	mv -i ~/.local/bin/"$2" ~/.local/bin/"$3"
 else
-	bool5=true
+	notmv=true
 fi
 
 # edit function
-if [ "$bool1" = true ] && [ "$bool2" = true ] && [ "$bool3" = true ] && [ "$bool4" = true ] && [ "$bool5" = true ]; then
+if [ "$notls" = true ] && [ "$notcat" = true ] && [ "$notfd" = true ] && [ "$notrm" = true ] && [ "$notmv" = true ]; then
 	vim ~/.local/bin/"$@"
 	wait
 	for arg in "$@"; do
@@ -55,4 +59,3 @@ if [ "$bool1" = true ] && [ "$bool2" = true ] && [ "$bool3" = true ] && [ "$bool
 		fi
 	done
 fi
-
