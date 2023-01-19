@@ -6,7 +6,9 @@ if [[ "$1" == "ls" ]]; then
 	if [ -z "$2" ]; then
 		ls -F --color=auto ~/.local/bin
 	else
-		ls -F --color=auto ~/.local/bin/"${@:2}"
+		for arg in "${@:2}"; do
+			ls -F --color=auto ~/.local/bin/"$arg"
+		done
 	fi
 else
 	notls=true
@@ -15,7 +17,16 @@ fi
 # cat function
 notcat=false
 if [[ "$1" == "cat" ]]; then
-	cat ~/.local/bin/"$2"
+	for arg in "${@:2}"; do
+		cat ~/.local/bin/"$arg"
+		# produce dividing line if it is not the last parameter
+		if [[ "$arg" != "${@: -1}" ]]; then
+			for (( i=0; i<50; i++ )); do
+				printf "%c" "-"
+			done
+			printf "\n"
+		fi
+	done
 else
 	notcat=true
 fi
@@ -31,7 +42,7 @@ fi
 # rm function
 notrm=false
 if [[ "$1" == "rm" ]]; then
-	for i in "${@:2}"; do
+	for arg in "${@:2}"; do
 		trash ~/.local/bin/"$i"
 	done
 else
@@ -46,8 +57,18 @@ else
 	notmv=true
 fi
 
+# line count function
+notlc=false
+if [[ "$1" == "lc" ]]; then
+	for arg in "${@:2}"; do
+		wc -l ~/.local/bin/"$arg"
+	done
+else
+	notlc=true
+fi
+
 # edit function
-if [ "$notls" = true ] && [ "$notcat" = true ] && [ "$notfd" = true ] && [ "$notrm" = true ] && [ "$notmv" = true ]; then
+if [ "$notls" = true ] && [ "$notcat" = true ] && [ "$notfd" = true ] && [ "$notrm" = true ] && [ "$notmv" = true ] && [ "$notlc" = true ]; then
 	vim ~/.local/bin/"$@"
 	wait
 	for arg in "$@"; do
