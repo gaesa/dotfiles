@@ -7,9 +7,9 @@ function yta() {
 
 # fuzzy search with xdg-open
 function fuzzy-xdg-open() {
-	local output
-	output=$(fzf </dev/tty)
-	xdg-open ${(q-)output} &>/dev/null
+	local output="$(fzf </dev/tty)"
+	[ -f "$output" ] &&
+	xdg-open "${output}" &>/dev/null
 	zle reset-prompt
 }
 zle -N fuzzy-xdg-open
