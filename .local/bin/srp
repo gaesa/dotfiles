@@ -43,7 +43,7 @@ fi
 notrm=false
 if [[ "$1" == "rm" ]]; then
 	for arg in "${@:2}"; do
-		trash ~/.local/bin/"$i"
+		trash ~/.local/bin/"$arg"
 	done
 else
 	notrm=true
