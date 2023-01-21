@@ -75,7 +75,7 @@ if [ "$notls" = true ] && [ "$notcat" = true ] && [ "$notfd" = true ] && [ "$not
 		if [ -f ~/.local/bin/"$arg" ]; then
 			# if the file exists, then check its permission
 			if [ $(stat -c %a ~/.local/bin/"$arg") != '744' ]; then 
-				chmod u+x ~/.local/bin/"$arg"
+				chmod 744 ~/.local/bin/"$arg"
 			fi
 		fi
 	done
