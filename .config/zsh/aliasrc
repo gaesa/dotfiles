@@ -56,4 +56,3 @@ alias cstm="cd $HOME/.var/app/com.valvesoftware.Steam/.local/share/Steam"
 
 alias rcow="fortune -c | cowthink -f $(find /usr/share/cows -type f | shuf -n 1)"
 alias rpony="fortune -c | ponythink -f $(find /usr/share/ponysay/ponies -type f | shuf -n 1)"
-
