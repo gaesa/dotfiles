@@ -121,15 +121,16 @@ bindkey '^D' exit_zsh
 
 # Search with fzf
 # The default key binding ctrl-r is bad because it is occupied by redo in zsh's vi mode
-source $ZDOTDIR/plugins/fzf/key-bindings.zsh
+source "$ZDOTDIR"/plugins/fzf/key-bindings.zsh
 source /usr/share/fzf/completion.zsh
+export FZF_DEFAULT_OPTS=''
 if [[ "$(date +%H:%M)" > "05:30" ]] && [[ "$(date +%H:%M)" < "18:00" ]]; then
-	export FZF_DEFAULT_OPTS='--color=light --height 40% --reverse --multi'
+	export FZF_DEFAULT_OPTS='--bind=alt-j:down,alt-k:up --color=light --height 40% --reverse --multi'
 	export FZF_CTRL_R_OPTS='--color=light'
 	export FZF_ALT_C_OPTS='--color=light --preview "tree -C {} | head -200"'
 	theme light
 else
-	export FZF_DEFAULT_OPTS='--color=dark --height 40% --reverse --multi'
+	export FZF_DEFAULT_OPTS='--bind=alt-j:down,alt-k:up --color=dark --height 40% --reverse --multi'
 	export FZF_CTRL_R_OPTS='--color=dark'
 	export FZF_ALT_C_OPTS='--color=dark --preview "tree -C {} | head -200"'
 	theme dark
