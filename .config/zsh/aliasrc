@@ -25,7 +25,7 @@ alias startsway="env __GL_GSYNC_ALLOWED=0 __GL_VRR_ALLOWED=0 WLR_DRM_NO_ATOMIC=1
 
 alias g="git"
 alias cg="cd $HOME/dev/git"
-alias cf='git --git-dir=$HOME/.config/dotfiles/ --work-tree=$HOME'
+alias cf="git --git-dir=$HOME/.config/dotfiles/ --work-tree=$HOME"
 compdef cf=git
 alias cfz="vim $HOME/.config/zsh/.zshrc"
 alias cfzp="vim $HOME/.config/zsh/.zprofile"
