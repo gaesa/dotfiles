@@ -57,7 +57,12 @@ nnoremap j gj
 nnoremap gj j
 nnoremap k gk
 nnoremap gk k
+" clear last search highlighting
+nnoremap <silent> <CR> :nohlsearch<CR><CR>
+noremap <C-S> <ESC>:xa<CR>
+inoremap <C-S> <ESC>:xa<CR>
+noremap <C-Q> <ESC>:qa!<CR>
+inoremap <C-Q> <ESC>:qa!<CR>
 
 " plugin manager
 lua require('plugins')
-
