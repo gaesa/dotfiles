@@ -93,7 +93,7 @@ bindkey -M emacs '\ec' fzf-cd-widget
 bindkey -M vicmd '\ec' fzf-cd-widget
 bindkey -M viins '\ec' fzf-cd-widget
 
-# CTRL-K - Paste the selected command from history into the command line
+# CTRL-R - Paste the selected command from history into the command line
 fzf-history-widget() {
   local selected num
   setopt localoptions noglobsubst noposixbuiltins pipefail no_aliases 2> /dev/null
@@ -110,9 +110,10 @@ fzf-history-widget() {
   return $ret
 }
 zle     -N            fzf-history-widget
-bindkey -M emacs '^K' fzf-history-widget
-bindkey -M vicmd '^K' fzf-history-widget
-bindkey -M viins '^K' fzf-history-widget
+bindkey -M emacs '^R' fzf-history-widget
+bindkey -M vicmd '/' fzf-history-widget
+bindkey -M viins '^R' fzf-history-widget
+bindkey -M viins '^[/' fzf-history-widget
 
 } always {
   eval $__fzf_key_bindings_options
