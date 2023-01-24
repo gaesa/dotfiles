@@ -151,10 +151,29 @@ _fzf_compgen_path() {
 [ -f "$HOME/.config/zsh/privaterc" ] && source "$HOME/.config/zsh/privaterc"
 
 source /usr/share/doc/pkgfile/command-not-found.zsh
-source /usr/share/zsh-theme-powerlevel10k/powerlevel10k.zsh-theme
 
+source /usr/share/zsh/plugins/zsh-autosuggestions/zsh-autosuggestions.zsh
+export ZSH_AUTOSUGGEST_STRATEGY=(history completion)
+export ZSH_AUTOSUGGEST_BUFFER_MAX_SIZE=20
+#if [[ "$(date +%H:%M)" < "05:30" ]] || [[ "$(date +%H:%M)" > "18:00" ]]; then
+	export ZSH_AUTOSUGGEST_HIGHLIGHT_STYLE="fg=#7A8478"
+#fi
+
+source /usr/share/zsh-theme-powerlevel10k/powerlevel10k.zsh-theme
 # To customize prompt, run `p10k configure` or edit ~/.config/zsh/.p10k.zsh.
 [[ ! -f ~/.config/zsh/.p10k.zsh ]] || source ~/.config/zsh/.p10k.zsh
 
-# Should be at the end
+# It must be sourced after all custom widgets have been created
+# (i.e., after all zle -N calls and after running compinit)
+# in order to be able to wrap all of them.
+# It must be sourced (and register its hook) after anything else
+# that adds hooks that modify the command-line buffer.
 source /usr/share/zsh/plugins/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
+
+# See why this plugin is placed after zsh-syntax-highlighting:
+# https://github.com/zsh-users/zsh-history-substring-search
+source /usr/share/zsh/plugins/zsh-history-substring-search/zsh-history-substring-search.zsh
+bindkey '^[[A' history-substring-search-up
+bindkey '^[[B' history-substring-search-down
+bindkey -M vicmd 'k' history-substring-search-up
+bindkey -M vicmd 'j' history-substring-search-down
