@@ -86,8 +86,6 @@ bindkey -v '^?' backward-delete-char
 
 # default wordchars is bad as it contains slash
 WORDCHARS=$WORDCHARS:s:/:
-# bind ctrl+backspace to delete the previous word
-bindkey '^H' backward-kill-word
 
 # Change cursor shape for different vi modes.
 function zle-keymap-select () {
