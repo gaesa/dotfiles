@@ -83,9 +83,12 @@ bindkey -M menuselect 'j' vi-down-line-or-history
 bindkey -M menuselect 'k' vi-up-line-or-history
 # default vi mode causes backspace in zsh stuck
 bindkey -v '^?' backward-delete-char
+# default '^W' (vi-backward-delete-char) is stuck after accepting suggestions
+bindkey -v '^H' backward-delete-char
 
 # default wordchars is bad as it contains slash
-WORDCHARS=$WORDCHARS:s:/:
+# WORDCHARS=$WORDCHARS:s:/:
+WORDCHARS='*?_-.[]~=&;!#$%^(){}<>'
 
 # Change cursor shape for different vi modes.
 function zle-keymap-select () {
@@ -106,9 +109,9 @@ preexec() { echo -ne '\e[6 q' ;} # Use beam shape cursor for each new prompt.
 # Edit line in vim with ctrl-e:
 autoload edit-command-line; zle -N edit-command-line
 bindkey '^e' edit-command-line
-bindkey -M vicmd '^[[P' vi-delete-char
 bindkey -M vicmd '^e' edit-command-line
-bindkey -M visual '^[[P' vi-delete
+# Default '^W' is stuck after accepting suggestions
+bindkey -M viins '^W' backward-kill-word
 
 # Shortcut to exit shell on partial command line
 exit_zsh() { exit }
