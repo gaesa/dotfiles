@@ -42,6 +42,10 @@ compinit -d "$XDG_CACHE_HOME"/zsh/zcompdump-"$ZSH_VERSION"
 setopt menu_complete # not flexible but there is no need for clearing zsh completion after typing a character
 setopt complete_aliases # enable completion for aliases e.g. the path completion in "g add PATH"
 zstyle ':completion:*' menu select
+zstyle ':completion:*' group-name ''
+zstyle ':completion:*:descriptions' format '%K{#939F91} %d %k'
+zstyle ':completion:*' list-dirs-first true
+zstyle ':completion:*' group-order local-directories
 zstyle ':completion:*' matcher-list 'm:{a-zA-Z}={A-Za-z}'
 zstyle ':completion:*:processes' command 'ps -U $(whoami)|sed "/ps/d"'
 zstyle ':completion:*:processes' insert-ids menu yes select
