@@ -37,7 +37,8 @@ export SAVEHIST="$HISTSIZE"
 setopt autocd		# Automatically cd into typed directory.
 setopt interactive_comments
 autoload -Uz compinit
-compinit -d "$XDG_CACHE_HOME"/zsh/zcompdump-"$ZSH_VERSION"
+compinit -d "$XDG_CACHE_HOME"/zsh/zcompdump
+#setopt list_packed
 #setopt glob_complete
 setopt menu_complete # not flexible but there is no need for clearing zsh completion after typing a character
 setopt complete_aliases # enable completion for aliases e.g. the path completion in "g add PATH"
@@ -52,7 +53,7 @@ zstyle ':completion:*:processes' insert-ids menu yes select
 zstyle ':completion:*:processes-names' command 'ps xho command|sed "s/://g"'
 zstyle ':completion:*:processes' sort false
 zstyle ':completion:*' use-cache on
-zstyle ':completion:*' cache-path "$XDG_CACHE_HOME"/zsh
+zstyle ':completion:*' cache-path "$XDG_CACHE_HOME"/zsh/zcompcache
 # smarter cd: zoxide
 eval "$(zoxide init zsh)"
 zmodload zsh/complist
