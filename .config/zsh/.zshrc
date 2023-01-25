@@ -91,7 +91,7 @@ bindkey -M menuselect 'j' vi-down-line-or-history
 bindkey -M menuselect 'k' vi-up-line-or-history
 # default vi mode causes backspace in zsh stuck
 bindkey -v '^?' backward-delete-char
-# default '^W' (vi-backward-delete-char) is stuck after accepting suggestions
+# default '^H' (vi-backward-delete-char) is stuck after accepting suggestions
 bindkey -v '^H' backward-delete-char
 
 # default wordchars is bad as it contains slash
