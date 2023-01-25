@@ -43,6 +43,10 @@ setopt menu_complete # not flexible but there is no need for clearing zsh comple
 setopt complete_aliases # enable completion for aliases e.g. the path completion in "g add PATH"
 zstyle ':completion:*' menu select
 zstyle ':completion:*' matcher-list 'm:{a-zA-Z}={A-Za-z}'
+zstyle ':completion:*:processes' command 'ps -U $(whoami)|sed "/ps/d"'
+zstyle ':completion:*:processes' insert-ids menu yes select
+zstyle ':completion:*:processes-names' command 'ps xho command|sed "s/://g"'
+zstyle ':completion:*:processes' sort false
 zstyle ':completion:*' use-cache on
 zstyle ':completion:*' cache-path "$XDG_CACHE_HOME"/zsh
 # smarter cd: zoxide
