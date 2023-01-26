@@ -10,7 +10,7 @@ function load_theme() {
 	## kitty theme
 	# --reload-all doesn't work
 	# in Bash, use ${1^}
-	function kitty-gen() {kitty +kitten themes --dump-theme "Everforest ${(C)1} Soft"}
+	function kitty-gen() { kitty +kitten themes --dump-theme "Everforest ${(C)1} Soft" }
 	if diff <(kitty-gen "$1") "$HOME"/.config/kitty/current-theme.conf >/dev/null; then
 		return 0
 	else
