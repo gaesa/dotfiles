@@ -199,6 +199,8 @@ _fzf_compgen_path() {
 # }}}
 
 # Load aliases and functions if existent.
+# The functionrc can't be placed before fzf
+# I can't figure out it
 [ -f "$HOME/.config/zsh/aliasrc" ] && source "$HOME/.config/zsh/aliasrc"
 [ -f "$HOME/.config/zsh/functionrc" ] && source "$HOME/.config/zsh/functionrc"
 [ -f "$HOME/.config/zsh/privaterc" ] && source "$HOME/.config/zsh/privaterc"
