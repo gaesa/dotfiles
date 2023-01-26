@@ -123,6 +123,10 @@ bindkey -M vicmd '^e' edit-command-line
 bindkey -M viins '^W' backward-kill-word
 
 # Shortcut to exit shell on partial command line
+# See https://github.com/kovidgoyal/kitty/issues/378
+# https://github.com/romkatv/powerlevel10k/issues/274
+# Chage the option 'close_on_child_death no' in kitty.conf to mitigate
+# but shell would hangs if ssh connection running in shell is closed
 exit_zsh() { exit }
 zle -N exit_zsh
 bindkey '^D' exit_zsh
@@ -133,16 +137,11 @@ bindkey '^D' exit_zsh
 source "$ZDOTDIR"/plugins/fzf/key-bindings.zsh
 source /usr/share/fzf/completion.zsh
 export FZF_DEFAULT_OPTS=''
+## ~/.local/bin/theme
 if [[ "$(date +%H:%M)" > "05:30" ]] && [[ "$(date +%H:%M)" < "18:00" ]]; then
-	export FZF_DEFAULT_OPTS='--bind=alt-j:down,alt-k:up --color=light --height 40% --reverse --multi'
-	export FZF_CTRL_R_OPTS='--color=light'
-	export FZF_ALT_C_OPTS='--color=light --preview "tree -C {} | head -200"'
-	theme light
+	source "$HOME"/.local/bin/theme light
 else
-	export FZF_DEFAULT_OPTS='--bind=alt-j:down,alt-k:up --color=dark --height 40% --reverse --multi'
-	export FZF_CTRL_R_OPTS='--color=dark'
-	export FZF_ALT_C_OPTS='--color=dark --preview "tree -C {} | head -200"'
-	theme dark
+	source "$HOME"/.local/bin/theme dark
 fi
 # See https://github.com/sharkdp/fd/issues/288
 export FZF_DEFAULT_COMMAND='fd --type f -H --strip-cwd-prefix --exclude "/proc" --exclude "/mnt" --exclude ".git" --exclude ".snapshots" --exclude ".stversions" --exclude ".stfolder" --exclude "tim-sounds"'
@@ -166,9 +165,7 @@ source /usr/share/doc/pkgfile/command-not-found.zsh
 source /usr/share/zsh/plugins/zsh-autosuggestions/zsh-autosuggestions.zsh
 export ZSH_AUTOSUGGEST_STRATEGY=(history completion)
 export ZSH_AUTOSUGGEST_BUFFER_MAX_SIZE=20
-#if [[ "$(date +%H:%M)" < "05:30" ]] || [[ "$(date +%H:%M)" > "18:00" ]]; then
-	export ZSH_AUTOSUGGEST_HIGHLIGHT_STYLE="fg=#7A8478"
-#fi
+export ZSH_AUTOSUGGEST_HIGHLIGHT_STYLE="fg=#7A8478"
 
 source /usr/share/zsh-theme-powerlevel10k/powerlevel10k.zsh-theme
 # To customize prompt, run `p10k configure` or edit ~/.config/zsh/.p10k.zsh.

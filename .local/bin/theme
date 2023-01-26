@@ -1,17 +1,23 @@
-#!/usr/bin/bash
+#!/usr/bin/zsh
 
-function reload_kitty() {
-	if pgrep --exact kitty >/dev/null; then
-		killall -USR1 kitty
+# Set theme for fzf and kitty
+function load_theme() {
+	## fzf theme
+	export FZF_DEFAULT_OPTS="--bind=alt-j:down,alt-k:up --color=$1 --height 40% --reverse --multi"
+	export FZF_CTRL_R_OPTS="--color=$1"
+	export FZF_ALT_C_OPTS="--color=$1 --preview 'tree -C {} | head -200'"
+	
+	## kitty theme
+	# --reload-all doesn't work
+	# in Bash, use ${1^}
+	function kitty-gen() {kitty +kitten themes --dump-theme "Everforest ${(C)1} Soft"}
+	if diff <(kitty-gen "$1") "$HOME"/.config/kitty/current-theme.conf >/dev/null; then
+		return 0
+	else
+		kitty-gen "$1" >"$HOME"/.config/kitty/current-theme.conf
+		# The process 'kitty +kitten ssh' shouldn't be sent USRSIG1
+		pkill -USR1 -f /usr/bin/kitty
 	fi
 }
 
-if [[ "$1" == "light" ]]; then 
-	cp ~/.config/kitty/'Everforest Light Soft.conf' ~/.config/kitty/tmp
-	mv ~/.config/kitty/tmp ~/.config/kitty/current-theme.conf
-	#reload_kitty
-elif [[ "$1" == "dark" ]]; then	
-	cp ~/.config/kitty/'Everforest Dark Soft.conf' ~/.config/kitty/tmp
-	mv ~/.config/kitty/tmp ~/.config/kitty/current-theme.conf
-	#reload_kitty
-fi
+load_theme "$1"
