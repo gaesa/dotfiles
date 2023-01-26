@@ -138,12 +138,14 @@ source "$ZDOTDIR"/plugins/fzf/key-bindings.zsh
 source /usr/share/fzf/completion.zsh
 export FZF_DEFAULT_OPTS=''
 ## ~/.local/bin/theme
+# change theme depending time
 if [[ "$(date +%H:%M)" > "05:30" ]] && [[ "$(date +%H:%M)" < "18:00" ]]; then
 	source "$HOME"/.local/bin/theme light
 else
 	source "$HOME"/.local/bin/theme dark
 fi
-# See https://github.com/sharkdp/fd/issues/288
+# See why '/proc' need to be excluded: 
+# https://github.com/sharkdp/fd/issues/288
 export FZF_DEFAULT_COMMAND='fd --type f -H --strip-cwd-prefix --exclude "/proc" --exclude "/mnt" --exclude ".git" --exclude ".snapshots" --exclude ".stversions" --exclude ".stfolder" --exclude "tim-sounds"'
 export FZF_CTRL_T_COMMAND="$FZF_DEFAULT_COMMAND"
 export FZF_ALT_C_COMMAND='fd --type d -H --exclude ".git" --exclude ".snapshots" --exclude ".stversions" --exclude ".stfolder" --exclude "tim-sounds"'
