@@ -5,25 +5,6 @@ function yta() {
     mpv --profile=audio --ytdl-format=bestaudio ytdl://ytsearch:"$*"
 }
 
-# fuzzy search with xdg-open
-function fuzzy-xdg-open() {
-	local output="$(fzf </dev/tty)"
-	[ -f "$output" ] &&
-	xdg-open "${output}" &>/dev/null
-	zle reset-prompt
-}
-zle -N fuzzy-xdg-open
-bindkey '^o' fuzzy-xdg-open
-
-# zsh reverse bindkey lookup 
-function reverse-bindkey-lookup() {
-    local code capname
-    print -v code -b "$1"
-    capname=${(k)terminfo[(Re)$code]}
-    [[ -z $capname ]] && return 1
-    man terminfo | sed -nr "s/ {28}([^ ].*$capname)/\\1/;T; p"
-}
-
 # replace diff with git diff
 function diff() {
 	git diff --no-index "$1" "$2"
