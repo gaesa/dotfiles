@@ -4,7 +4,7 @@
 function load_theme() {
 	if [[ "$TERM" != "linux" ]]; then
 		## fzf theme
-		export FZF_DEFAULT_OPTS="--bind='alt-j:down,alt-k:up,ctrl-o:execute-silent(xdg-open {} >/dev/null)+close' --color=$1 --height 40% --reverse --multi"
+		export FZF_DEFAULT_OPTS="--bind='alt-j:down,alt-k:up,ctrl-o:execute-silent(xdg-open {} >/dev/null)+close+close' --color=$1 --height 40% --reverse --multi"
 		export FZF_CTRL_R_OPTS="--color=$1"
 		export FZF_ALT_C_OPTS="--color=$1 --preview 'tree -C {} | head -200'"
 		## kitty theme

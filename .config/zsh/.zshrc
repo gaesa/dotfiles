@@ -171,6 +171,8 @@ if [[ "$(date +%H:%M)" > "05:30" ]] && [[ "$(date +%H:%M)" < "18:00" ]]; then
 else
 	source "$HOME"/.local/bin/theme dark
 fi
+export FZF_CTRL_T_OPTS="--preview '(highlight -O ansi -l {} 2> /dev/null || cat {} || tree -C {}) 2> /dev/null | head -200'"
+export FZF_CTRL_R_OPTS="--preview 'echo {}' --preview-window down:3:hidden:wrap --bind '?:toggle-preview'"
 # See why '/proc' need to be excluded: 
 # https://github.com/sharkdp/fd/issues/288
 export FZF_DEFAULT_COMMAND="fd --type f -H --strip-cwd-prefix --exclude "/proc" --exclude "/mnt" --exclude ".git" --exclude ".snapshots" --exclude ".stversions" --exclude ".stfolder" --exclude "tim-sounds""
