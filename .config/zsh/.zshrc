@@ -150,19 +150,12 @@ exit_zsh() { exit }
 zle -N exit_zsh
 bindkey '^D' exit_zsh
 
-# "command not found" handler
-source /usr/share/doc/pkgfile/command-not-found.zsh
-
 # }}}
 
 # Plugins {{{
 
 # Fzf {{{
 
-# The default key binding ctrl-r is bad because it is occupied by redo in zsh's vi mode
-# source /usr/share/fzf/key-bindings.zsh
-source "$ZDOTDIR"/plugins/fzf/key-bindings.zsh
-source /usr/share/fzf/completion.zsh
 export FZF_DEFAULT_OPTS=''
 ## ~/.local/bin/theme
 # Change theme depending on time
@@ -171,8 +164,6 @@ if [[ "$(date +%H:%M)" > "05:30" ]] && [[ "$(date +%H:%M)" < "18:00" ]]; then
 else
     source "$HOME"/.local/bin/theme dark
 fi
-export FZF_CTRL_T_OPTS="--preview '(highlight -O ansi -l {} 2> /dev/null || cat {} || tree -C {}) 2> /dev/null | head -200'"
-export FZF_CTRL_R_OPTS="--preview 'echo {}' --preview-window down:3:hidden:wrap --bind '?:toggle-preview'"
 # See why '/proc' need to be excluded:
 # https://github.com/sharkdp/fd/issues/288
 export FZF_DEFAULT_COMMAND="fd --type f -H --strip-cwd-prefix --exclude "/proc" --exclude "/mnt" --exclude ".git" --exclude ".snapshots" --exclude ".stversions" --exclude ".stfolder" --exclude "tim-sounds""
@@ -196,34 +187,18 @@ _fzf_compgen_path() {
 #zle -N fuzzy-xdg-open
 #bindkey '^o' fuzzy-xdg-open
 
-# }}}
-
-# User files {{{
-
-# Load aliases and functions if existent.
-[ -f "${XDG_CONFIG_HOME:-$HOME/.config}/zsh/aliasrc" ] && source "${XDG_CONFIG_HOME:-$HOME/.config}/zsh/aliasrc"
-[ -f "${XDG_CONFIG_HOME:-$HOME/.config}/zsh/functionrc" ] && source "${XDG_CONFIG_HOME:-$HOME/.config}/zsh/functionrc"
-[ -f "${XDG_CONFIG_HOME:-$HOME/.config}/zsh/privaterc" ] && source "${XDG_CONFIG_HOME:-$HOME/.config}/zsh/privaterc"
+# The default key binding ctrl-r is bad because it is occupied by redo in zsh's vi mode
+# source /usr/share/fzf/key-bindings.zsh
+source "$ZDOTDIR"/plugins/fzf/key-bindings.zsh
+source /usr/share/fzf/completion.zsh
 
 # }}}
+
+# "command not found" handler
+source /usr/share/doc/pkgfile/command-not-found.zsh
 
 # zoxide
 eval "$(zoxide init zsh)"
-
-# zsh-autosuggestions
-source /usr/share/zsh/plugins/zsh-autosuggestions/zsh-autosuggestions.zsh
-export ZSH_AUTOSUGGEST_STRATEGY=(history completion)
-export ZSH_AUTOSUGGEST_BUFFER_MAX_SIZE=20
-export ZSH_AUTOSUGGEST_HIGHLIGHT_STYLE="fg=#7A8478"
-
-# zsh-theme-powerlevel10k
-source /usr/share/zsh-theme-powerlevel10k/powerlevel10k.zsh-theme
-# To customize prompt, run `p10k configure` or edit ~/.config/zsh/.p10k.zsh.
-if [[ "$TERM" != "linux" ]]; then
-    [[ ! -f ~/.config/zsh/p10k.zsh ]] || source ~/.config/zsh/p10k.zsh
-else
-    [[ ! -f ~/.config/zsh/p10k_tty.zsh ]] || source ~/.config/zsh/p10k_tty.zsh
-fi
 
 # zsh-syntax-highlighting
 # It must be sourced after all custom widgets have been created
@@ -241,5 +216,30 @@ bindkey '^[[A' history-substring-search-up
 bindkey '^[[B' history-substring-search-down
 bindkey -M vicmd 'k' history-substring-search-up
 bindkey -M vicmd 'j' history-substring-search-down
+
+# zsh-autosuggestions
+export ZSH_AUTOSUGGEST_MANUAL_REBIND=1
+export ZSH_AUTOSUGGEST_STRATEGY=(history completion)
+export ZSH_AUTOSUGGEST_BUFFER_MAX_SIZE=20
+export ZSH_AUTOSUGGEST_HIGHLIGHT_STYLE="fg=#7A8478"
+source /usr/share/zsh/plugins/zsh-autosuggestions/zsh-autosuggestions.zsh
+
+# zsh-theme-powerlevel10k
+source /usr/share/zsh-theme-powerlevel10k/powerlevel10k.zsh-theme
+# To customize prompt, run `p10k configure` or edit ~/.config/zsh/.p10k.zsh.
+if [[ "$TERM" != "linux" ]]; then
+    [[ ! -f ~/.config/zsh/p10k.zsh ]] || source ~/.config/zsh/p10k.zsh
+else
+    [[ ! -f ~/.config/zsh/p10k_tty.zsh ]] || source ~/.config/zsh/p10k_tty.zsh
+fi
+
+# }}}
+
+# User files {{{
+
+# Load aliases and functions if existent.
+[ -f "${XDG_CONFIG_HOME:-$HOME/.config}/zsh/aliasrc" ] && source "${XDG_CONFIG_HOME:-$HOME/.config}/zsh/aliasrc"
+[ -f "${XDG_CONFIG_HOME:-$HOME/.config}/zsh/functionrc" ] && source "${XDG_CONFIG_HOME:-$HOME/.config}/zsh/functionrc"
+[ -f "${XDG_CONFIG_HOME:-$HOME/.config}/zsh/privaterc" ] && source "${XDG_CONFIG_HOME:-$HOME/.config}/zsh/privaterc"
 
 # }}}
