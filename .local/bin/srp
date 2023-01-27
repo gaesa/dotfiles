@@ -3,80 +3,80 @@
 # ls function
 notls=false
 if [[ "$1" == "ls" ]]; then 
-	if [ -z "$2" ]; then
-		ls -F --color=auto ~/.local/bin
-	else
-		for arg in "${@:2}"; do
-			ls -F --color=auto ~/.local/bin/"$arg"
-		done
-	fi
+    if [ -z "$2" ]; then
+        ls -F --color=auto ~/.local/bin
+    else
+        for arg in "${@:2}"; do
+            ls -F --color=auto ~/.local/bin/"$arg"
+        done
+    fi
 else
-	notls=true
+    notls=true
 fi
 
 # cat function
 notcat=false
 if [[ "$1" == "cat" ]]; then
-	for arg in "${@:2}"; do
-		cat ~/.local/bin/"$arg"
-		# produce dividing line if it is not the last parameter
-		if [[ "$arg" != "${@: -1}" ]]; then
-			for (( i=0; i<50; i++ )); do
-				printf "%c" "-"
-			done
-			printf "\n"
-		fi
-	done
+    for arg in "${@:2}"; do
+        cat ~/.local/bin/"$arg"
+        # produce dividing line if it is not the last parameter
+        if [[ "$arg" != "${@: -1}" ]]; then
+            for (( i=0; i<50; i++ )); do
+                printf "%c" "-"
+            done
+            printf "\n"
+        fi
+    done
 else
-	notcat=true
+    notcat=true
 fi
 
 # fd function
 notfd=false
 if [[ "$1" == "fd" ]]; then
-	fd --type f "$2" ~/.local/bin/ -X printf '%s\n' {/}
+    fd --type f "$2" ~/.local/bin/ -X printf '%s\n' {/}
 else
-	notfd=true
+    notfd=true
 fi
 
 # rm function
 notrm=false
 if [[ "$1" == "rm" ]]; then
-	for arg in "${@:2}"; do
-		trash ~/.local/bin/"$arg"
-	done
+    for arg in "${@:2}"; do
+        trash ~/.local/bin/"$arg"
+    done
 else
-	notrm=true
+    notrm=true
 fi
 
 # mv function
 notmv=false
 if [[ "$1" == "mv" ]]; then
-	mv -i ~/.local/bin/"$2" ~/.local/bin/"$3"
+    mv -i ~/.local/bin/"$2" ~/.local/bin/"$3"
 else
-	notmv=true
+    notmv=true
 fi
 
 # line count function
 notlc=false
 if [[ "$1" == "lc" ]]; then
-	for arg in "${@:2}"; do
-		wc -l ~/.local/bin/"$arg"
-	done
+    for arg in "${@:2}"; do
+        wc -l ~/.local/bin/"$arg"
+    done
 else
-	notlc=true
+    notlc=true
 fi
 
 # edit function
 if [ "$notls" = true ] && [ "$notcat" = true ] && [ "$notfd" = true ] && [ "$notrm" = true ] && [ "$notmv" = true ] && [ "$notlc" = true ]; then
-	vim ~/.local/bin/"$@"
-	wait
-	for arg in "$@"; do
-		if [ -f ~/.local/bin/"$arg" ]; then
-			# if the file exists, then check its permission
-			if [ $(stat -c %a ~/.local/bin/"$arg") != '744' ]; then 
-				chmod 744 ~/.local/bin/"$arg"
-			fi
-		fi
-	done
+    vim ~/.local/bin/"$@"
+    wait
+    for arg in "$@"; do
+        if [ -f ~/.local/bin/"$arg" ]; then
+            # if the file exists, then check its permission
+            if [ $(stat -c %a ~/.local/bin/"$arg") != '744' ]; then 
+                chmod 744 ~/.local/bin/"$arg"
+            fi
+        fi
+    done
 fi

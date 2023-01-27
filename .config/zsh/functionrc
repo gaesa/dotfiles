@@ -2,13 +2,13 @@
 
 # yt-dlp audio with search
 function yta() {
-	mpv --profile=audio --ytdl-format=bestaudio ytdl://ytsearch:"$*"
+    mpv --profile=audio --ytdl-format=bestaudio ytdl://ytsearch:"$*"
 }
 
 # replace diff with git diff
 function diff() {
-	git diff --no-index "$1" "$2"
-	return 0
+    git diff --no-index "$1" "$2"
+    return 0
 }
 
 # Use ranger to switch directories and bind it to ctrl-o
@@ -24,12 +24,12 @@ function diff() {
 #bindkey -s '^N' '^ulfcd\n'
 
 function rangercd() {
-	local tmp="$(mktemp)"
-	ranger --choosedir="$tmp" "$@"
-	if [ -f "$tmp" ]; then
-		local dir="$(cat "$tmp")"
-		rm -f "$tmp"
-		[ -d "$dir" ] && [ "$dir" != "$(pwd)" ] && cd "$dir"
-	fi
+    local tmp="$(mktemp)"
+    ranger --choosedir="$tmp" "$@"
+    if [ -f "$tmp" ]; then
+        local dir="$(cat "$tmp")"
+        rm -f "$tmp"
+        [ -d "$dir" ] && [ "$dir" != "$(pwd)" ] && cd "$dir"
+    fi
 }
 bindkey -s '^N' 'rangercd\n'

@@ -31,15 +31,15 @@ else
 endif
 
 " Search
-set incsearch   " do incremental searching, search as you type
-set hlsearch    " highlight searches
-set ignorecase  " ignore case when searching
-set smartcase   " no ignorecase if Uppercase char present
+set incsearch   " Do incremental searching, search as you type
+set hlsearch    " Highlight searches
+set ignorecase  " Ignore case when searching
+set smartcase   " No ignorecase if uppercase char present
 
 " TAB/Indent
-set tabstop=4 " The width of a TAB is set to 4
-set shiftwidth=4 " Indents will have a width of 4
-set expandtab " Expand TABs to spaces
+set tabstop=4   " The width of a TAB is set to 4
+set shiftwidth=4    " Indents will have a width of 4
+set expandtab   " Expand TABs to spaces
 
 " System clipboard
 set clipboard+=unnamedplus

@@ -2,28 +2,28 @@
 
 # Set theme for fzf and kitty
 function load_theme() {
-	if [[ "$TERM" != "linux" ]]; then
-		## fzf theme
-		export FZF_DEFAULT_OPTS="--bind='alt-j:down,alt-k:up,ctrl-o:execute-silent(xdg-open {} >/dev/null)+close+close' --color=$1 --height 40% --reverse --multi"
-		export FZF_CTRL_R_OPTS="--color=$1"
-		export FZF_ALT_C_OPTS="--color=$1 --preview 'tree -C {} | head -200'"
-		## kitty theme
-		# --reload-all doesn't work
-		# in Bash, use ${1^}
-		function kitty-gen() { kitty +kitten themes --dump-theme "Everforest ${(C)1} Soft" }
-		if diff <(kitty-gen "$1") "$HOME"/.config/kitty/current-theme.conf >/dev/null; then
-			return 0
-		else
-			kitty-gen "$1" >"$HOME"/.config/kitty/current-theme.conf
-			# The process 'kitty +kitten ssh' shouldn't be sent USRSIG1
-			pkill -USR1 -f /usr/bin/kitty
-		fi
-	else
-		## fzf theme
-		export FZF_DEFAULT_OPTS="--bind='alt-j:down,alt-k:up,ctrl-o:execute-silent(xdg-open {} >/dev/null)+close' --color=16 --height 40% --reverse --multi"
-		export FZF_CTRL_R_OPTS="--color=16"
-		export FZF_ALT_C_OPTS="--color=16 --preview 'tree -C {} | head -200'"
-	fi
+    if [[ "$TERM" != "linux" ]]; then
+        ## fzf theme
+        export FZF_DEFAULT_OPTS="--bind='alt-j:down,alt-k:up,ctrl-o:execute-silent(xdg-open {} >/dev/null)+close+close' --color=$1 --height 40% --reverse --multi"
+        export FZF_CTRL_R_OPTS="--color=$1"
+        export FZF_ALT_C_OPTS="--color=$1 --preview 'tree -C {} | head -200'"
+        ## kitty theme
+        # --reload-all doesn't work
+        # in Bash, use ${1^}
+        function kitty-gen() { kitty +kitten themes --dump-theme "Everforest ${(C)1} Soft" }
+        if diff <(kitty-gen "$1") "$HOME"/.config/kitty/current-theme.conf >/dev/null; then
+            return 0
+        else
+            kitty-gen "$1" >"$HOME"/.config/kitty/current-theme.conf
+            # The process 'kitty +kitten ssh' shouldn't be sent USRSIG1
+            pkill -USR1 -f /usr/bin/kitty
+        fi
+    else
+        ## fzf theme
+        export FZF_DEFAULT_OPTS="--bind='alt-j:down,alt-k:up,ctrl-o:execute-silent(xdg-open {} >/dev/null)+close' --color=16 --height 40% --reverse --multi"
+        export FZF_CTRL_R_OPTS="--color=16"
+        export FZF_ALT_C_OPTS="--color=16 --preview 'tree -C {} | head -200'"
+    fi
 }
 
 load_theme "$1"
