@@ -1,68 +1,73 @@
-" line number
-set nu! rnu!	" show absolute and relative number at the same time
+" Spell check
+set spelllang=en,cjk
 
-" theme
+" Line number
+set nu! rnu!    " show absolute and relative number at the same time
+
+" Theme
 if $TERM != "linux"
-	let g:everforest_better_performance = 1
-	set termguicolors
-	if strftime("%H:%M") > "05:30" && strftime("%H:%M") < "18:00"
-		set background=light
-		colorscheme everforest
-		set cursorline!
-	else
-		set background=dark
-		let g:everforest_transparent_background = 1
-		colorscheme everforest
-		highlight CursorLine cterm=NONE ctermbg=NONE ctermfg=NONE guibg=NONE guifg=NONE
-		set cursorline!
-	endif
-	if &diff
-		set cursorline!
-	endif
+    let g:everforest_better_performance = 1
+    set termguicolors
+    if strftime("%H:%M") > "05:30" && strftime("%H:%M") < "18:00"
+        set background=light
+        colorscheme everforest
+        set cursorline!
+    else
+        set background=dark
+        let g:everforest_transparent_background = 1
+        colorscheme everforest
+        highlight CursorLine cterm=NONE ctermbg=NONE ctermfg=NONE guibg=NONE guifg=NONE
+        set cursorline!
+    endif
+    if &diff
+        set cursorline!
+    endif
 else
-	colorscheme habamax
-	if &diff
-		colorscheme default
-	endif
-	let g:loaded_airline = 1
+    colorscheme habamax
+    if &diff
+        colorscheme default
+    endif
+    let g:loaded_airline = 1
 endif
 
-" search
-set incsearch	" do incremental searching, search as you type
-set hlsearch	" highlight searches
-set ignorecase	" ignore case when searching
-set smartcase	" no ignorecase if Uppercase char present
+" Search
+set incsearch   " do incremental searching, search as you type
+set hlsearch    " highlight searches
+set ignorecase  " ignore case when searching
+set smartcase   " no ignorecase if Uppercase char present
 
-" indent
-set autoindent smartindent shiftround
-set tabstop=4
-set shiftwidth=4
-set softtabstop=4	" insert mode tab and backspace use 4 spaces
+" TAB/Indent
+set tabstop=4 " The width of a TAB is set to 4
+set shiftwidth=4 " Indents will have a width of 4
+set expandtab " Expand TABs to spaces
 
-" use system clipboard
+" System clipboard
 set clipboard+=unnamedplus
 
-" return to last edit position when opening files
+" Return to last edit position when opening files
 autocmd BufReadPost *
-	\ if line("'\"") > 0 && line("'\"") <= line("$") |
-	\   exe "normal! g`\"" |
-	\ endif
+    \ if line("'\"") > 0 && line("'\"") <= line("$") |
+    \   exe "normal! g`\"" |
+    \ endif
 
-" reduce keycode delay
+" Reduce keycode delay
 set timeoutlen=1000
 set ttimeoutlen=50
 
-" remap
+" Remap
 nnoremap j gj
 nnoremap gj j
 nnoremap k gk
 nnoremap gk k
-" clear last search highlighting
+" Clear last search highlighting
 nnoremap <silent> <CR> :nohlsearch<CR><CR>
 noremap <C-S> <ESC>:xa<CR>
 inoremap <C-S> <ESC>:xa<CR>
 noremap <C-Q> <ESC>:qa!<CR>
 inoremap <C-Q> <ESC>:qa!<CR>
+" Toggle spell checking
+nnoremap <silent> <F11> :set spell!<cr>
+inoremap <silent> <F11> <ESC>:set spell!<cr>a
 
-" plugin manager
+" Plugin manager
 lua require('plugins')
