@@ -30,7 +30,7 @@ endif
 " search
 set incsearch	" do incremental searching, search as you type
 set hlsearch	" highlight searches
-set ignorecase	" ignore case when searching	
+set ignorecase	" ignore case when searching
 set smartcase	" no ignorecase if Uppercase char present
 
 " indent
@@ -44,9 +44,9 @@ set clipboard+=unnamedplus
 
 " return to last edit position when opening files
 autocmd BufReadPost *
-    \ if line("'\"") > 0 && line("'\"") <= line("$") |
-    \   exe "normal! g`\"" |
-    \ endif
+	\ if line("'\"") > 0 && line("'\"") <= line("$") |
+	\   exe "normal! g`\"" |
+	\ endif
 
 " reduce keycode delay
 set timeoutlen=1000

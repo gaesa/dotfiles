@@ -6,14 +6,14 @@ umask 077
 
 # Disable Ctrl-S in interactive shells
 if [[ -t 0 && $- = *i* ]]; then
-    stty -ixon
+	stty -ixon
 fi
 
 # Enable Powerlevel10k instant prompt. Should stay close to the top of ~/.zshrc.
 # Initialization code that may require console input (password prompts, [y/n]
 # confirmations, etc.) must go above this block; everything else may go below.
 if [[ -r "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh" ]]; then
-  source "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh"
+	source "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh"
 fi
 
 # Create directories if necessary
@@ -31,7 +31,7 @@ setopt HIST_FIND_NO_DUPS
 setopt HIST_IGNORE_ALL_DUPS
 setopt HIST_IGNORE_SPACE
 setopt HIST_REDUCE_BLANKS
-setopt HIST_VERIFY 
+setopt HIST_VERIFY
 # Share history in multiple shells
 setopt share_history
 setopt correct
@@ -75,13 +75,13 @@ bindkey -M menuselect '^[' undo
 zshcache_time="$(date +%s%N)"
 autoload -Uz add-zsh-hook
 rehash_precmd() {
-  if [[ -a /var/cache/zsh/pacman ]]; then
-    local paccache_time="$(date -r /var/cache/zsh/pacman +%s%N)"
-    if (( zshcache_time < paccache_time )); then
-      rehash
-      zshcache_time="$paccache_time"
-    fi
-  fi
+	if [[ -a /var/cache/zsh/pacman ]]; then
+	local paccache_time="$(date -r /var/cache/zsh/pacman +%s%N)"
+		if (( zshcache_time < paccache_time )); then
+			rehash
+			zshcache_time="$paccache_time"
+		fi
+	fi
 }
 add-zsh-hook -Uz precmd rehash_precmd
 
@@ -107,19 +107,19 @@ bindkey -v '^H' backward-delete-char
 
 # Change cursor shape for different vi modes.
 function zle-keymap-select() {
-    case $KEYMAP in
-        vicmd) echo -ne '\e[2 q';;      # block
-        viins|main) echo -ne '\e[6 q';; # beam
-    esac
+	case $KEYMAP in
+		vicmd) echo -ne '\e[1 q';;      # block
+		viins|main) echo -ne '\e[5 q';; # beam
+	esac
 }
 zle -N zle-keymap-select
 zle-line-init() {
-    zle -K viins # initiate `vi insert` as keymap (can be removed if `bindkey -V` has been set elsewhere)
-    echo -ne "\e[6 q"
+	zle -K viins # initiate `vi insert` as keymap (can be removed if `bindkey -V` has been set elsewhere)
+	echo -ne "\e[5 q"
 }
 zle -N zle-line-init
-echo -ne '\e[6 q' # Use beam shape cursor on startup.
-preexec() { echo -ne '\e[6 q' ;} # Use beam shape cursor for each new prompt.
+echo -ne '\e[5 q' # Use beam shape cursor on startup.
+preexec() { echo -ne '\e[5 q' ;} # Use beam shape cursor for each new prompt.
 
 # Edit line in vim with ctrl-e:
 autoload edit-command-line; zle -N edit-command-line
@@ -134,11 +134,11 @@ WORDCHARS='*?_-.[]~=&;!#$%^(){}<>'
 
 # Zsh reverse bindkey lookup
 function reverse-bindkey-lookup() {
-    local code capname
-    print -v code -b "$1"
-    capname=${(k)terminfo[(Re)$code]}
-    [[ -z $capname ]] && return 1
-    man terminfo | sed -nr "s/ {28}([^ ].*$capname)/\\1/;T; p"
+	local code capname
+	print -v code -b "$1"
+	capname=${(k)terminfo[(Re)$code]}
+	[[ -z $capname ]] && return 1
+	man terminfo | sed -nr "s/ {28}([^ ].*$capname)/\\1/;T; p"
 }
 
 # Shortcut to exit shell on partial command line
@@ -182,17 +182,17 @@ else
 fi
 export FZF_CTRL_T_OPTS="--preview '(highlight -O ansi -l {} 2> /dev/null || cat {} || tree -C {}) 2> /dev/null | head -200'"
 export FZF_CTRL_R_OPTS="--preview 'echo {}' --preview-window down:3:hidden:wrap --bind '?:toggle-preview'"
-# See why '/proc' need to be excluded: 
+# See why '/proc' need to be excluded:
 # https://github.com/sharkdp/fd/issues/288
 export FZF_DEFAULT_COMMAND="fd --type f -H --strip-cwd-prefix --exclude "/proc" --exclude "/mnt" --exclude ".git" --exclude ".snapshots" --exclude ".stversions" --exclude ".stfolder" --exclude "tim-sounds""
 export FZF_CTRL_T_COMMAND="$FZF_DEFAULT_COMMAND"
 export FZF_ALT_C_COMMAND="fd --type d -H --exclude ".git" --exclude ".snapshots" --exclude ".stversions" --exclude ".stfolder" --exclude "tim-sounds""
 
 _fzf_compgen_dir() {
-  fd --type d -H --exclude ".git" --exclude ".snapshots" --exclude ".stversions" --exclude ".stfolder" --exclude "tim-sounds" . "$1"
+	fd --type d -H --exclude ".git" --exclude ".snapshots" --exclude ".stversions" --exclude ".stfolder" --exclude "tim-sounds" . "$1"
 }
 _fzf_compgen_path() {
-  fd -H --exclude ".git" --exclude ".snapshots" --exclude ".stversions" --exclude ".stfolder" --exclude "tim-sounds" . "$1"
+	fd -H --exclude ".git" --exclude ".snapshots" --exclude ".stversions" --exclude ".stfolder" --exclude "tim-sounds" . "$1"
 }
 
 # Fuzzy search with xdg-open

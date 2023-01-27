@@ -2,7 +2,7 @@
 
 # yt-dlp audio with search
 function yta() {
-    mpv --profile=audio --ytdl-format=bestaudio ytdl://ytsearch:"$*"
+	mpv --profile=audio --ytdl-format=bestaudio ytdl://ytsearch:"$*"
 }
 
 # replace diff with git diff
@@ -24,12 +24,12 @@ function diff() {
 #bindkey -s '^N' '^ulfcd\n'
 
 function rangercd() {
-    local tmp="$(mktemp)"
-    ranger --choosedir="$tmp" "$@"
-    if [ -f "$tmp" ]; then
-        local dir="$(cat "$tmp")"
-        rm -f "$tmp"
-        [ -d "$dir" ] && [ "$dir" != "$(pwd)" ] && cd "$dir"                                               
-    fi
+	local tmp="$(mktemp)"
+	ranger --choosedir="$tmp" "$@"
+	if [ -f "$tmp" ]; then
+		local dir="$(cat "$tmp")"
+		rm -f "$tmp"
+		[ -d "$dir" ] && [ "$dir" != "$(pwd)" ] && cd "$dir"
+	fi
 }
 bindkey -s '^N' 'rangercd\n'
