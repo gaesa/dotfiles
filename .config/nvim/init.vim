@@ -1,5 +1,6 @@
 " Spell check
 set spelllang=en,cjk
+autocmd FileType markdown,gitcommit set spell
 
 " Line number
 set nu! rnu!    " show absolute and relative number at the same time
