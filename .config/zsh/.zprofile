@@ -23,12 +23,12 @@ export PYENV_ROOT="$XDG_DATA_HOME"/pyenv
 
 # Add scripts path
 if [[ ":$PATH:" != *":$HOME/.local/bin:"* ]]; then
-	path+=("$HOME/.local/bin")
+    path+=("$HOME/.local/bin")
 fi
 
 # Add add-on application software packages path
 if [[ ":$PATH:" != *":/opt/bin:"* ]]; then
-	path+=("/opt/bin")
+    path+=("/opt/bin")
 fi
 
 # Terminal
@@ -71,5 +71,5 @@ dbus-update-activation-environment --systemd --all
 
 # Start KDE from TTY
 if [ -z "$DISPLAY" ] && [ "$(tty)" = "/dev/tty1" ]; then
-  startplasma-wayland
+    exec dbus-run-session startplasma-wayland
 fi
