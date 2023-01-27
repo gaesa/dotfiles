@@ -219,7 +219,11 @@ export ZSH_AUTOSUGGEST_HIGHLIGHT_STYLE="fg=#7A8478"
 # zsh-theme-powerlevel10k
 source /usr/share/zsh-theme-powerlevel10k/powerlevel10k.zsh-theme
 # To customize prompt, run `p10k configure` or edit ~/.config/zsh/.p10k.zsh.
-[[ ! -f ~/.config/zsh/.p10k.zsh ]] || source ~/.config/zsh/.p10k.zsh
+if [[ "$TERM" != "linux" ]]; then
+	[[ ! -f ~/.config/zsh/p10k.zsh ]] || source ~/.config/zsh/p10k.zsh
+else
+	[[ ! -f ~/.config/zsh/p10k_tty.zsh ]] || source ~/.config/zsh/p10k_tty.zsh
+fi
 
 # zsh-syntax-highlighting
 # It must be sourced after all custom widgets have been created
