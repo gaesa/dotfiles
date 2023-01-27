@@ -1,4 +1,4 @@
-# My alias
+#!/usr/bin/zsh
 alias sudo='sudo '
 alias ls='ls -F --color=auto --group-directories-first'
 alias la='ls -F -A --color=auto --group-directories-first'
@@ -7,9 +7,12 @@ alias lla='ls -lhF -A --color=auto --group-directories-first'
 alias ip='ip --color=auto'
 alias e='nvim'
 
-unalias run-help
-autoload -U run-help
+autoload -Uz run-help
+(( ${+aliases[run-help]} )) && unalias run-help
 alias help='run-help'
+autoload -Uz run-help-git run-help-ip \
+run-help-openssl run-help-p4 run-help-sudo \
+run-help-svk run-help-svn run-help-btrfs
 
 alias df="duf"
 alias du="dust"

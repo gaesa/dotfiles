@@ -1,4 +1,4 @@
-# My functions
+#!/usr/bin/zsh
 
 # yt-dlp audio with search
 function yta() {
