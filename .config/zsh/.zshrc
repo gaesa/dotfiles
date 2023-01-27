@@ -155,15 +155,6 @@ source /usr/share/doc/pkgfile/command-not-found.zsh
 
 # }}}
 
-# User files {{{
-
-# Load aliases and functions if existent.
-[ -f "${XDG_CONFIG_HOME:-$HOME/.config}/zsh/aliasrc" ] && source "${XDG_CONFIG_HOME:-$HOME/.config}/zsh/aliasrc"
-[ -f "${XDG_CONFIG_HOME:-$HOME/.config}/zsh/functionrc" ] && source "${XDG_CONFIG_HOME:-$HOME/.config}/zsh/functionrc"
-[ -f "${XDG_CONFIG_HOME:-$HOME/.config}/zsh/privaterc" ] && source "${XDG_CONFIG_HOME:-$HOME/.config}/zsh/privaterc"
-
-# }}}
-
 # Plugins {{{
 
 # Fzf {{{
@@ -204,6 +195,15 @@ _fzf_compgen_path() {
 #}
 #zle -N fuzzy-xdg-open
 #bindkey '^o' fuzzy-xdg-open
+
+# }}}
+
+# User files {{{
+
+# Load aliases and functions if existent.
+[ -f "${XDG_CONFIG_HOME:-$HOME/.config}/zsh/aliasrc" ] && source "${XDG_CONFIG_HOME:-$HOME/.config}/zsh/aliasrc"
+[ -f "${XDG_CONFIG_HOME:-$HOME/.config}/zsh/functionrc" ] && source "${XDG_CONFIG_HOME:-$HOME/.config}/zsh/functionrc"
+[ -f "${XDG_CONFIG_HOME:-$HOME/.config}/zsh/privaterc" ] && source "${XDG_CONFIG_HOME:-$HOME/.config}/zsh/privaterc"
 
 # }}}
 

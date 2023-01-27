@@ -5,13 +5,12 @@ function yta() {
     mpv --profile=audio --ytdl-format=bestaudio ytdl://ytsearch:"$*"
 }
 
-# replace diff with git diff
+# Replace diff with git diff
 function diff() {
     git diff --no-index "$1" "$2"
     return 0
 }
 
-# Use ranger to switch directories and bind it to ctrl-o
 #function lfcd() {
 #    local tmp="$(mktemp -uq)"
 #    trap 'rm -f $tmp >/dev/null 2>&1 && trap - HUP INT QUIT TERM PWR EXIT' HUP INT QUIT TERM PWR EXIT
