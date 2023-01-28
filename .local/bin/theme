@@ -1,6 +1,7 @@
 #!/usr/bin/zsh
 
 # Set theme for fzf and kitty
+# Todo: the script 'theme' increases first command lag significantly
 function load_theme() {
     if [[ "$TERM" != "linux" ]]; then
         ## fzf theme
