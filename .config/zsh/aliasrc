@@ -27,10 +27,9 @@ alias ar="aria2c"
 alias pf="pkgfile"
 alias startsway="env __GL_GSYNC_ALLOWED=0 __GL_VRR_ALLOWED=0 WLR_DRM_NO_ATOMIC=1 XDG_CURRENT_DESKTOP=sway WLR_NO_HARDWARE_CURSORS=1 MOZ_ENABLE_WAYLAND=1 sway --unsupported-gpu"
 
-alias g="git" && compdef g=git
+alias g="git"
 alias zg="z $HOME/dev/git"
-alias cf="git --git-dir=$HOME/.config/dotfiles/ --work-tree=$HOME" #&& compdef cf=git
-compdef _files _directories cf
+alias cf="git --git-dir=$HOME/.config/dotfiles/ --work-tree=$HOME"
 alias cfz="e $HOME/.config/zsh/.zshrc"
 alias cfzp="e $HOME/.config/zsh/.zprofile"
 alias cfa="e $HOME/.config/zsh/aliasrc"

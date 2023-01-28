@@ -5,9 +5,10 @@
 umask 077
 
 # Disable Ctrl-S in interactive shells
-if [[ -t 0 && $- = *i* ]]; then
+#if [[ -t 0 && $- = *i* ]]; then
+    setopt noflowcontrol
     stty -ixon
-fi
+#fi
 
 # Enable Powerlevel10k instant prompt. Should stay close to the top of ~/.zshrc.
 # Initialization code that may require console input (password prompts, [y/n]
@@ -22,7 +23,6 @@ fi
 [[ ! -d "$XDG_CONFIG_HOME/zsh" ]] && mkdir -p "$XDG_CONFIG_HOME/zsh"
 
 # }}}
-
 
 # History {{{
 
@@ -46,10 +46,13 @@ setopt autocd       # Automatically cd into typed directory.
 setopt interactive_comments
 autoload -Uz compinit
 compinit -d "$XDG_CACHE_HOME"/zsh/zcompdump
-#setopt list_packed
+# Allow different columns of completion menu to have different widths
+setopt list_packed
 #setopt glob_complete
 setopt menu_complete # Not flexible but there is no need for clearing zsh completion after typing a character
-setopt complete_aliases # Enable completion for aliases e.g. the path completion in "g add PATH"
+# setopt complete_aliases
+# Prevents aliases on the command line from being internally substituted before completion is attempted
+# See also: https://unix.stackexchange.com/questions/250314/whats-the-intended-use-case-for-complete-aliases-in-zsh
 zstyle ':completion:*' menu select
 zstyle ':completion:*' group-name ''
 zstyle ':completion:*:descriptions' format '%K{#939F91} %d %k'
@@ -64,7 +67,7 @@ zstyle ':completion:*:processes' sort false
 zstyle ':completion:*' use-cache on
 zstyle ':completion:*' cache-path "$XDG_CACHE_HOME"/zsh/zcompcache
 zmodload zsh/complist
-setopt globdots # Include hidden files.
+setopt globdots # Include hidden files
 # Use Shift-Tab to access previous completion entries
 bindkey -M menuselect '^[[Z' reverse-menu-complete
 # Use Esc to cancel completion
