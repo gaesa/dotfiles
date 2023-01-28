@@ -6,6 +6,7 @@ alias ll='ls -lhF --color=auto --group-directories-first'
 alias lla='ls -lhF -A --color=auto --group-directories-first'
 alias ip='ip --color=auto'
 alias e='nvim'
+alias se='sudoedit'
 
 autoload -Uz run-help
 (( ${+aliases[run-help]} )) && unalias run-help
