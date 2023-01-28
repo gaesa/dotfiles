@@ -35,9 +35,9 @@ setopt HIST_VERIFY
 # Share history in multiple shells
 setopt share_history
 setopt correct
-export HISTFILE="$XDG_STATE_HOME"/zsh/history
-export HISTSIZE=5000
-export SAVEHIST=$HISTSIZE
+HISTFILE="$XDG_STATE_HOME"/zsh/history
+HISTSIZE=5000
+SAVEHIST=$HISTSIZE
 
 # }}}
 
@@ -92,7 +92,7 @@ add-zsh-hook -Uz precmd rehash_precmd
 bindkey -v
 
 # 10 ms for key sequences
-export KEYTIMEOUT=1
+KEYTIMEOUT=1
 
 # Use vim keys in tab complete menu:
 bindkey -M menuselect 'h' vi-backward-char
@@ -218,10 +218,10 @@ bindkey -M vicmd 'k' history-substring-search-up
 bindkey -M vicmd 'j' history-substring-search-down
 
 # zsh-autosuggestions
-export ZSH_AUTOSUGGEST_MANUAL_REBIND=1
-export ZSH_AUTOSUGGEST_STRATEGY=(history completion)
-export ZSH_AUTOSUGGEST_BUFFER_MAX_SIZE=20
-export ZSH_AUTOSUGGEST_HIGHLIGHT_STYLE="fg=#7A8478"
+ZSH_AUTOSUGGEST_MANUAL_REBIND=1
+ZSH_AUTOSUGGEST_STRATEGY=(history completion)
+ZSH_AUTOSUGGEST_BUFFER_MAX_SIZE=20
+ZSH_AUTOSUGGEST_HIGHLIGHT_STYLE="fg=#7A8478"
 source /usr/share/zsh/plugins/zsh-autosuggestions/zsh-autosuggestions.zsh
 
 # zsh-theme-powerlevel10k
