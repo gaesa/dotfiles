@@ -69,7 +69,7 @@ fi
 
 # edit function
 if [ "$notls" = true ] && [ "$notcat" = true ] && [ "$notfd" = true ] && [ "$notrm" = true ] && [ "$notmv" = true ] && [ "$notlc" = true ]; then
-    vim ~/.local/bin/"$@"
+    nvim ~/.local/bin/"$@"
     wait
     for arg in "$@"; do
         if [ -f ~/.local/bin/"$arg" ]; then
