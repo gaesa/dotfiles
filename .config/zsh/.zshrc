@@ -104,6 +104,9 @@ bindkey -v '^?' backward-delete-char
 # Default '^H' (vi-backward-delete-char) is stuck
 # after accepting suggestions
 bindkey -v '^H' backward-delete-char
+# Default '^W' is stuck after accepting suggestions
+bindkey -v '^W' backward-kill-word
+bindkey -v '^U' backward-kill-line
 
 # Change cursor shape for different vi modes.
 function zle-keymap-select() {
@@ -125,8 +128,6 @@ preexec() { echo -ne '\e[6 q'; } # Use beam shape cursor for each new prompt.
 autoload edit-command-line; zle -N edit-command-line
 bindkey '^e' edit-command-line
 bindkey -M vicmd '^e' edit-command-line
-# Default '^W' is stuck after accepting suggestions
-bindkey -M viins '^W' backward-kill-word
 
 # Default wordchars is bad as it contains slash
 # WORDCHARS=$WORDCHARS:s:/:
