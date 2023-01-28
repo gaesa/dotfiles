@@ -71,5 +71,5 @@ dbus-update-activation-environment --systemd --all
 
 # Start KDE from TTY
 if [ -z "$DISPLAY" ] && [ "$(tty)" = "/dev/tty1" ]; then
-    exec dbus-run-session startplasma-wayland
+    exec startplasma-wayland
 fi
