@@ -149,7 +149,6 @@ function reverse-bindkey-lookup() {
 # See https://github.com/kovidgoyal/kitty/issues/378
 # https://github.com/romkatv/powerlevel10k/issues/274
 # Chage the option 'close_on_child_death no' in kitty.conf to mitigate
-# but shell would hangs if ssh connection running in shell is closed
 exit_zsh() { exit }
 zle -N exit_zsh
 bindkey '^D' exit_zsh
