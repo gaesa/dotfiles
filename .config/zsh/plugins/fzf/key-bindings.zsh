@@ -109,11 +109,17 @@ fzf-history-widget() {
   zle reset-prompt
   return $ret
 }
-zle     -N            fzf-history-widget
-bindkey -M emacs '^R' fzf-history-widget
-bindkey -M vicmd '/' fzf-history-widget
-bindkey -M viins '^R' fzf-history-widget
-bindkey -M viins '^[/' fzf-history-widget
+zle     -N              fzf-history-widget
+bindkey -M emacs '^R'   fzf-history-widget
+bindkey -M vicmd '/'    fzf-history-widget
+bindkey -M viins '^R'   fzf-history-widget
+
+vi-search-fix() {
+    zle vi-cmd-mode
+    zle fzf-history-widget
+}
+zle     -N              vi-search-fix
+bindkey -M viins '^[/'  vi-search-fix
 
 } always {
   eval $__fzf_key_bindings_options
