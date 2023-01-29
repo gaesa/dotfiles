@@ -88,6 +88,9 @@ rehash_precmd() {
 }
 add-zsh-hook -Uz precmd rehash_precmd
 
+# Fix completion for some programs
+compdef _files _directories trash
+
 # }}}
 
 # Input {{{
