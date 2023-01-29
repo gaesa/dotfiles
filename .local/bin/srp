@@ -20,11 +20,11 @@ if [[ "$1" == "cat" ]]; then
     for arg in "${@:2}"; do
         cat ~/.local/bin/"$arg"
         # produce dividing line if it is not the last parameter
-        if [[ "$arg" != "${@: -1}" ]]; then
+        if [[ "$arg" != "${*: -1}" ]]; then
             for (( i=0; i<50; i++ )); do
                 printf "%c" "-"
             done
-            printf "\n"
+            printf "\n\n"
         fi
     done
 else
@@ -34,7 +34,7 @@ fi
 # fd function
 notfd=false
 if [[ "$1" == "fd" ]]; then
-    fd --type f "$2" ~/.local/bin/ -X printf '%s\n' {/}
+    fd --type f "$2" ~/.local/bin/ -X printf '%s\n' '{/}'
 else
     notfd=true
 fi
@@ -68,13 +68,14 @@ else
 fi
 
 # edit function
-if [ "$notls" = true ] && [ "$notcat" = true ] && [ "$notfd" = true ] && [ "$notrm" = true ] && [ "$notmv" = true ] && [ "$notlc" = true ]; then
-    nvim ~/.local/bin/"$@"
+if [ "$notls" = true ] && [ "$notcat" = true ] && [ "$notfd" = true ] && \
+    [ "$notrm" = true ] && [ "$notmv" = true ] && [ "$notlc" = true ]; then
+    nvim ~/.local/bin/"$*"
     wait
     for arg in "$@"; do
         if [ -f ~/.local/bin/"$arg" ]; then
             # if the file exists, then check its permission
-            if [ $(stat -c %a ~/.local/bin/"$arg") != '744' ]; then 
+            if [ "$(stat -c %a ~/.local/bin/"$arg")" != '744' ]; then 
                 chmod 744 ~/.local/bin/"$arg"
             fi
         fi
