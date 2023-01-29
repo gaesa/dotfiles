@@ -1,0 +1,24 @@
+[credential]
+    helper = /usr/lib/git-core/git-credential-libsecret
+[user]
+    name = gaesa
+    email = 71256557+gaesa@users.noreply.github.com
+[init]
+    defaultBranch = main
+[diff]
+    tool = nvimdiff
+[merge]
+    tool = nvimdiff2
+[alias]
+    st = status
+    d = difftool
+    cm = commit
+    rst = restore
+    a = add
+    co = checkout
+    cl = clone
+    sub = submodule
+[difftool]
+    prompt = false
+[include]
+    #path = ~/.config/git/config.d
