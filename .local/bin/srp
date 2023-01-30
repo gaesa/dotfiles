@@ -1,83 +1,116 @@
 #!/usr/bin/bash
+set -Eeuo pipefail
+# set -x
 
 # ls function
-notls=false
-if [[ "$1" == "ls" ]]; then 
-    if [ -z "$2" ]; then
-        ls -F --color=auto ~/.local/bin
+function fun_ls {
+    if (( "$#" == 1 )); then
+        ls -F --color=auto "${HOME}"/.local/bin
     else
         for arg in "${@:2}"; do
-            ls -F --color=auto ~/.local/bin/"$arg"
+            ls -F --color=auto "${HOME}"/.local/bin/"${arg}"
         done
     fi
-else
-    notls=true
-fi
+}
 
 # cat function
-notcat=false
-if [[ "$1" == "cat" ]]; then
+function fun_cat {
     for arg in "${@:2}"; do
-        cat ~/.local/bin/"$arg"
+        cat "${HOME}"/.local/bin/"${arg}"
         # produce dividing line if it is not the last parameter
-        if [[ "$arg" != "${*: -1}" ]]; then
+        if [[ "${arg}" != "${*: -1}" ]]; then
             for (( i=0; i<50; i++ )); do
                 printf "%c" "-"
             done
             printf "\n\n"
         fi
     done
-else
-    notcat=true
-fi
+}
 
 # fd function
-notfd=false
-if [[ "$1" == "fd" ]]; then
-    fd --type f "$2" ~/.local/bin/ -X printf '%s\n' '{/}'
-else
-    notfd=true
-fi
+function fun_fd {
+    fd --type f "$2" "${HOME}"/.local/bin/ -X printf '%s\n' '{/}'
+}
 
 # rm function
-notrm=false
-if [[ "$1" == "rm" ]]; then
+function fun_rm {
     for arg in "${@:2}"; do
-        trash ~/.local/bin/"$arg"
+        trash "${HOME}"/.local/bin/"${arg}"
     done
-else
-    notrm=true
-fi
+}
 
 # mv function
-notmv=false
-if [[ "$1" == "mv" ]]; then
-    mv -i ~/.local/bin/"$2" ~/.local/bin/"$3"
-else
-    notmv=true
-fi
+function fun_mv {
+    mv -i "${HOME}"/.local/bin/"$2" "${HOME}"/.local/bin/"$3"
+}
 
 # line count function
-notlc=false
-if [[ "$1" == "lc" ]]; then
+function fun_lc {
     for arg in "${@:2}"; do
-        wc -l ~/.local/bin/"$arg"
+        wc -l "${HOME}"/.local/bin/"${arg}"
     done
-else
-    notlc=true
-fi
+}
+
+# 'shellcheck' function
+function fun_shck {
+    for arg in "${@:2}"; do
+        shellcheck -x -o all "${HOME}"/.local/bin/"${arg}"
+    done
+}
 
 # edit function
-if [ "$notls" = true ] && [ "$notcat" = true ] && [ "$notfd" = true ] && \
-    [ "$notrm" = true ] && [ "$notmv" = true ] && [ "$notlc" = true ]; then
-    nvim ~/.local/bin/"$*"
-    wait
+function fun_edit {
+    array=("$@")
+    len=${#array[@]}
+    for (( i=0; i<len; i++ )); do
+        array[i]="${HOME}/.local/bin/${array[${i}]}"
+    done
+    #nvim -p ${array[@]}
+    nvim -O ${array[@]}
     for arg in "$@"; do
-        if [ -f ~/.local/bin/"$arg" ]; then
+        if [[  -f "${HOME}"/.local/bin/"${arg}" ]]; then
             # if the file exists, then check its permission
-            if [ "$(stat -c %a ~/.local/bin/"$arg")" != '744' ]; then 
-                chmod 744 ~/.local/bin/"$arg"
+            permission="$(stat -c %a "${HOME}"/.local/bin/"${arg}")"
+            if (( permission != 744 )); then
+                chmod 744 "${HOME}"/.local/bin/"${arg}"
             fi
         fi
     done
+}
+
+if (( "$#" < 1 )); then
+    printf "Missing argument for %s\n" "$0"
+    exit 1
 fi
+
+case "$1" in
+    ls)
+        fun_ls "$@";;
+    cat|fd|rm|lc|shck)
+        if (( "$#" < 2 )); then
+            printf "Missing argument for %s\n" "$1"
+            exit 1
+        fi;;&
+    cat)
+        fun_cat "$@";;
+    fd)
+        fun_fd "$@";;
+    rm)
+        fun_rm "$@";;
+    mv)
+        if (( "$#" < 3 )); then
+            printf "Missing argument for %s\n" "$1"
+            exit 1
+        fi
+        if (( "$#" > 3)); then
+            printf "To many arguments for %s\n" "$1"
+            exit 2
+        fi
+        fun_mv "$@";;
+    lc)
+        fun_lc "$@";;
+    shck)
+        fun_shck "$@";;
+    *)
+        fun_edit "$@";;
+esac
