@@ -1,116 +1,121 @@
-#!/usr/bin/bash
-set -Eeuo pipefail
-# set -x
+#!/usr/bin/env python
+# A stupid script that avoids repeatedly typing the script path
+# Depends On: fd, trash-cli, shellcheck, neovim
+
+import sys
+import subprocess
+import os.path
+
+input_list = sys.argv
+path = os.path.expanduser('~/.local/bin')
 
 # ls function
-function fun_ls {
-    if (( "$#" == 1 )); then
-        ls -F --color=auto "${HOME}"/.local/bin
-    else
-        for arg in "${@:2}"; do
-            ls -F --color=auto "${HOME}"/.local/bin/"${arg}"
-        done
-    fi
-}
+def fun_ls(input_list, path):
+    if len(input_list) == 2:
+        subprocess.run(['ls', '-F', '--color=auto',
+                        path])
+    else:
+        for item in input_list[2:]:
+            item = path + '/' + item
+            subprocess.run(['ls', '-F', '--color=auto',
+                            item])
 
 # cat function
-function fun_cat {
-    for arg in "${@:2}"; do
-        cat "${HOME}"/.local/bin/"${arg}"
-        # produce dividing line if it is not the last parameter
-        if [[ "${arg}" != "${*: -1}" ]]; then
-            for (( i=0; i<50; i++ )); do
-                printf "%c" "-"
-            done
-            printf "\n\n"
-        fi
-    done
-}
+def fun_cat(input_list, path):
+    for index, item in enumerate(input_list[2:]):
+        item = path + '/' + item
+        subprocess.run(['cat', item])
+        if index != len(input_list[2:]) - 1:
+            for i in range(0, 50, 1):
+                print('-', end='', sep='')
+            print('\n\n', end='')
 
 # fd function
-function fun_fd {
-    fd --type f "$2" "${HOME}"/.local/bin/ -X printf '%s\n' '{/}'
-}
+def fun_fd(input_list, path):
+    # one ' for 'r', one ' for list, one ' for shell
+    subprocess.run(['fd', '--type', 'f', input_list[2], path,
+            '-X', 'printf', r'''%s\n''', r'''{/}'''], check=True)
 
 # rm function
-function fun_rm {
-    for arg in "${@:2}"; do
-        trash "${HOME}"/.local/bin/"${arg}"
-    done
-}
+def fun_rm(input_list, path):
+    for item in input_list[2:]:
+        item = path + '/' + item
+        subprocess.run(['trash', item], check=True)
 
 # mv function
-function fun_mv {
-    mv -i "${HOME}"/.local/bin/"$2" "${HOME}"/.local/bin/"$3"
-}
+def fun_mv(input_list, path):
+    item1 = path + '/' + input_list[2]
+    item2 = path + '/' + input_list[3]
+    subprocess.run(['mv', '-i', item1, item2], check=True)
 
 # line count function
-function fun_lc {
-    for arg in "${@:2}"; do
-        wc -l "${HOME}"/.local/bin/"${arg}"
-    done
-}
+def fun_lc(input_list, path):
+    for item in input_list[2:]:
+        item = path + '/' + item
+        subprocess.run(['wc', '-l', item])
 
-# 'shellcheck' function
-function fun_shck {
-    for arg in "${@:2}"; do
-        shellcheck -x -o all "${HOME}"/.local/bin/"${arg}"
-    done
-}
+# shellcheck function
+def fun_shck(input_list, path):
+    for item in input_list[2:]:
+        item = path + '/' + item
+        subprocess.run(['shellcheck', '-x',
+                        '-o', 'all', item])
 
 # edit function
-function fun_edit {
-    array=("$@")
-    len=${#array[@]}
-    for (( i=0; i<len; i++ )); do
-        array[i]="${HOME}/.local/bin/${array[${i}]}"
-    done
-    #nvim -p ${array[@]}
-    nvim -O ${array[@]}
-    for arg in "$@"; do
-        if [[  -f "${HOME}"/.local/bin/"${arg}" ]]; then
-            # if the file exists, then check its permission
-            permission="$(stat -c %a "${HOME}"/.local/bin/"${arg}")"
-            if (( permission != 744 )); then
-                chmod 744 "${HOME}"/.local/bin/"${arg}"
-            fi
-        fi
-    done
-}
+# build an array then expand it to neovim
+# implementing this with '--remote' is very hard
+def fun_edit(input_list, path):
+    files = input_list
+    for i in range(1, len(files), 1):
+        files[i] = path + '/' + files[i]
+    # expand list elements as
+    # individual parameters to a function
+    subprocess.run(['nvim', '-O', *files[1:]],
+                   check=True) #capture_output=True
 
-if (( "$#" < 1 )); then
-    printf "Missing argument for %s\n" "$0"
-    exit 1
-fi
+    for item in files[1:]:
+        if os.path.isfile(item) == True:
+            result = subprocess.run(['stat', '-c', '%a' , item],
+                                    stdout=subprocess.PIPE)
+            permission = result.stdout.decode('utf-8').strip()
+            if permission != 744:
+                subprocess.run(['chmod', '744', item], check=True)
 
-case "$1" in
-    ls)
-        fun_ls "$@";;
-    cat|fd|rm|lc|shck)
-        if (( "$#" < 2 )); then
-            printf "Missing argument for %s\n" "$1"
-            exit 1
-        fi;;&
-    cat)
-        fun_cat "$@";;
-    fd)
-        fun_fd "$@";;
-    rm)
-        fun_rm "$@";;
-    mv)
-        if (( "$#" < 3 )); then
-            printf "Missing argument for %s\n" "$1"
-            exit 1
-        fi
-        if (( "$#" > 3)); then
-            printf "To many arguments for %s\n" "$1"
-            exit 2
-        fi
-        fun_mv "$@";;
-    lc)
-        fun_lc "$@";;
-    shck)
-        fun_shck "$@";;
-    *)
-        fun_edit "$@";;
-esac
+# check missing argument
+if len(input_list) == 1:
+    print('Missing argument for', os.path.basename(__file__))
+    sys.exit(1)
+
+def check_missing(input_list):
+    if len(input_list) < 3:
+        print("Missing argument for", input_list[1])
+        sys.exit(1)
+
+match input_list[1]:
+    case 'ls':
+        fun_ls(input_list, path)
+    case 'cat':
+        check_missing(input_list)
+        fun_cat(input_list, path)
+    case 'fd':
+        check_missing(input_list)
+        fun_fd(input_list, path)
+    case 'rm':
+        check_missing(input_list)
+        fun_rm(input_list, path)
+    case 'mv':
+        if len(input_list) < 4:
+            print("Missing argument for", input_list[1])
+            sys.exit(1)
+        if len(input_list) > 4:
+            print("Too many arguments for", input_list[1])
+            sys.exit(2)
+        fun_mv(input_list, path)
+    case 'lc':
+        check_missing(input_list)
+        fun_lc(input_list, path)
+    case 'shck':
+        check_missing(input_list)
+        fun_shck(input_list, path)
+    case _:
+        fun_edit(input_list, path)
