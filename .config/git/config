@@ -12,9 +12,9 @@
 [difftool]
     prompt = false
 [merge]
-	tool = nvimdiff
+    tool = nvimdiff
 [mergetool "nvimdiff"]
-	cmd = nvim -d \"$LOCAL\" \"$MERGED\" \"$BASE\" \"$REMOTE\" -c \"wincmd w\" -c \"wincmd J\"
+    cmd = nvim -d \"$LOCAL\" \"$MERGED\" \"$BASE\" \"$REMOTE\" -c \"wincmd w\" -c \"wincmd J\"
 [alias]
     st = status
     d = difftool
@@ -24,5 +24,8 @@
     co = checkout
     cl = clone
     sub = submodule
+    rb = rebase
+    mg = merge
+    mgt = mergetool
 [include]
     #path = ~/.config/git/config.d
