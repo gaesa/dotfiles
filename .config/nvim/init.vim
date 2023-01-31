@@ -12,16 +12,16 @@ if $TERM != "linux"
     if strftime("%H:%M") > "05:30" && strftime("%H:%M") < "18:00"
         set background=light
         colorscheme everforest
-        set cursorline!
+        set cursorline
     else
         set background=dark
         let g:everforest_transparent_background = 1
         colorscheme everforest
-        highlight CursorLine cterm=NONE ctermbg=NONE ctermfg=NONE guibg=NONE guifg=NONE
-        set cursorline!
+        set cursorlineopt=number
+        set cursorline
     endif
     if &diff
-        set cursorline!
+        set nocursorline
     endif
 else
     colorscheme habamax
@@ -64,8 +64,13 @@ nnoremap gk k
 nnoremap <silent> <CR> :nohlsearch<CR><CR>
 noremap <C-S> <ESC>:xa<CR>
 inoremap <C-S> <ESC>:xa<CR>
-noremap <C-Q> <ESC>:qa!<CR>
-inoremap <C-Q> <ESC>:qa!<CR>
+if &diff
+    noremap <C-Q> <ESC>:cq<CR>
+    inoremap <C-Q> <ESC>:cq<CR>
+else
+    noremap <C-Q> <ESC>:qa!<CR>
+    inoremap <C-Q> <ESC>:qa!<CR>
+endif
 " Toggle spell checking
 nnoremap <silent> <F11> :set spell!<cr>
 inoremap <silent> <F11> <ESC>:set spell!<cr>a

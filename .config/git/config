@@ -7,8 +7,14 @@
     defaultBranch = main
 [diff]
     tool = nvimdiff
+[difftool "nvimdiff"]
+    cmd = nvim -d \"$LOCAL\" \"$REMOTE\" -c \"wincmd w\" -c \"wincmd H\"
+[difftool]
+    prompt = false
 [merge]
-    tool = nvimdiff2
+	tool = nvimdiff
+[mergetool "nvimdiff"]
+	cmd = nvim -d \"$LOCAL\" \"$MERGED\" \"$BASE\" \"$REMOTE\" -c \"wincmd w\" -c \"wincmd J\"
 [alias]
     st = status
     d = difftool
@@ -18,7 +24,5 @@
     co = checkout
     cl = clone
     sub = submodule
-[difftool]
-    prompt = false
 [include]
     #path = ~/.config/git/config.d
