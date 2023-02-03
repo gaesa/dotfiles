@@ -16,7 +16,7 @@ function load_theme() {
         else
             cp "${HOME}"/.config/kitty/"$1"-theme.conf "${HOME}"/.config/kitty/current-theme.conf
             # The process 'kitty +kitten ssh' shouldn't be sent USRSIG1
-            pkill -USR1 -f /usr/bin/kitty
+            pkill -USR1 -xf /usr/bin/kitty
         fi
     else
         ## fzf theme
