@@ -17,6 +17,7 @@ autoload -Uz run-help-git run-help-ip \
 
 alias df="duf"
 alias du="dust"
+alias eik="edit-in-kitty"
 alias s="kitty +kitten ssh"
 alias icat="kitty +kitten icat"
 alias kdiff="kitty +kitten diff"
