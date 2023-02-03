@@ -1,5 +1,0 @@
---write-subs
---write-auto-subs
---sub-langs=en
--o "~/dl/%(title)s.%(ext)s"
--f "bestvideo[height<=?1080][vcodec^=av1]+bestaudio/bestvideo[height<=?1080][vcodec^=hev]+bestaudio/bestvideo[height<=?1080][vcodec^=vp9]+bestaudio/best"

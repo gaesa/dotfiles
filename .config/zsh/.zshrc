@@ -36,7 +36,7 @@ setopt HIST_VERIFY
 setopt share_history
 setopt correct
 HISTFILE="$XDG_STATE_HOME"/zsh/history
-HISTSIZE=5000
+HISTSIZE=2000
 SAVEHIST=$HISTSIZE
 
 # }}}
@@ -72,21 +72,6 @@ setopt globdots # Include hidden files
 bindkey -M menuselect '^[[Z' reverse-menu-complete
 # Use Esc to cancel completion
 bindkey -M menuselect '^[' undo
-
-# Make compinit automatically find new executables in the $PATH
-# On-demand rehash
-zshcache_time="$(date +%s%N)"
-autoload -Uz add-zsh-hook
-rehash_precmd() {
-    if [[ -a /var/cache/zsh/pacman ]]; then
-        local paccache_time="$(date -r /var/cache/zsh/pacman +%s%N)"
-        if (( zshcache_time < paccache_time )); then
-            rehash
-            zshcache_time="$paccache_time"
-        fi
-    fi
-}
-add-zsh-hook -Uz precmd rehash_precmd
 
 # Fix completion for some programs
 compdef _files _directories trash
@@ -138,15 +123,6 @@ bindkey -M vicmd '^e' edit-command-line
 # Default wordchars is bad as it contains slash
 # WORDCHARS=$WORDCHARS:s:/:
 WORDCHARS='*?_-.[]~=&;!#$%^(){}<>'
-
-# Zsh reverse bindkey lookup
-function reverse-bindkey-lookup() {
-    local code capname
-    print -v code -b "$1"
-    capname=${(k)terminfo[(Re)$code]}
-    [[ -z $capname ]] && return 1
-    man terminfo | sed -nr "s/ {28}([^ ].*$capname)/\\1/;T; p"
-}
 
 # Shortcut to exit shell on partial command line
 # See https://github.com/kovidgoyal/kitty/issues/378

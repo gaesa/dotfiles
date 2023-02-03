@@ -10,14 +10,6 @@ function load_theme() {
         #export FZF_CTRL_R_OPTS="--color=$1 --preview 'echo {}' --preview-window down:3:hidden:wrap --bind '?:toggle-preview'"
         export FZF_CTRL_R_OPTS="--color=$1"
         export FZF_ALT_C_OPTS="--color=$1 --preview 'tree -C {} | head -200'"
-        ## kitty theme
-        if cmp -s "${HOME}"/.config/kitty/"$1"-theme.conf "${HOME}"/.config/kitty/current-theme.conf; then
-            return 0
-        else
-            cp "${HOME}"/.config/kitty/"$1"-theme.conf "${HOME}"/.config/kitty/current-theme.conf
-            # The process 'kitty +kitten ssh' shouldn't be sent USRSIG1
-            pkill -USR1 -xf /usr/bin/kitty
-        fi
     else
         ## fzf theme
         export FZF_DEFAULT_OPTS="--bind='alt-j:down,alt-k:up,ctrl-o:execute-silent(xdg-open {} >/dev/null)+close' --color=16 --height 40% --reverse --multi"
