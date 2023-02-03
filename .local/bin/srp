@@ -7,59 +7,75 @@ import subprocess
 import os.path
 
 input_list = sys.argv
-path = os.path.expanduser('~/.local/bin')
+path = os.path.expanduser("~/.local/bin")
+
 
 # ls function
 def fun_ls(input_list, path):
     if len(input_list) == 2:
-        subprocess.run(['ls', '-F', '--color=auto',
-                        path])
+        subprocess.run(["ls", "-F", "--color=auto", path])
     else:
         for item in input_list[2:]:
-            item = path + '/' + item
-            subprocess.run(['ls', '-F', '--color=auto',
-                            item])
+            item = path + "/" + item
+            subprocess.run(["ls", "-F", "--color=auto", item])
+
 
 # cat function
 def fun_cat(input_list, path):
     for index, item in enumerate(input_list[2:]):
-        item = path + '/' + item
-        subprocess.run(['cat', item])
+        item = path + "/" + item
+        subprocess.run(["cat", item])
         if index != len(input_list[2:]) - 1:
-            for i in range(0, 50, 1):
-                print('-', end='', sep='')
-            print('\n\n', end='')
+            print("-" * 50, end="", sep="")
+            print("\n\n", end="")
+
 
 # fd function
 def fun_fd(input_list, path):
-    # one ' for 'r', one ' for list, one ' for shell
-    subprocess.run(['fd', '--type', 'f', input_list[2], path,
-            '-X', 'printf', r'''%s\n''', r'''{/}'''], check=True)
+    subprocess.run(
+        [
+            "fd",
+            "--type",
+            "f",
+            input_list[2],
+            path,
+            "-X",
+            "printf",
+            # one " for 'r', one " for list, one " for shell
+            r"""%s\n""",
+            r"""{/}""",
+        ],
+        check=True,
+    )
+
 
 # rm function
 def fun_rm(input_list, path):
     for item in input_list[2:]:
-        item = path + '/' + item
-        subprocess.run(['trash', item], check=True)
+        item = path + "/" + item
+        subprocess.run(["trash", item], check=True)
+
 
 # mv function
 def fun_mv(input_list, path):
-    item1 = path + '/' + input_list[2]
-    item2 = path + '/' + input_list[3]
-    subprocess.run(['mv', '-i', item1, item2], check=True)
+    item1 = path + "/" + input_list[2]
+    item2 = path + "/" + input_list[3]
+    subprocess.run(["mv", "-i", item1, item2], check=True)
+
 
 # line count function
 def fun_lc(input_list, path):
     for item in input_list[2:]:
-        item = path + '/' + item
-        subprocess.run(['wc', '-l', item])
+        item = path + "/" + item
+        subprocess.run(["wc", "-l", item])
+
 
 # shellcheck function
 def fun_shck(input_list, path):
     for item in input_list[2:]:
-        item = path + '/' + item
-        subprocess.run(['shellcheck', '-x',
-                        '-o', 'all', item])
+        item = path + "/" + item
+        subprocess.run(["shellcheck", "-x", "-o", "all", item])
+
 
 # edit function
 # build an array then expand it to neovim
@@ -67,43 +83,44 @@ def fun_shck(input_list, path):
 def fun_edit(input_list, path):
     files = input_list
     for i in range(1, len(files), 1):
-        files[i] = path + '/' + files[i]
+        files[i] = path + "/" + files[i]
     # expand list elements as
     # individual parameters to a function
-    subprocess.run(['nvim', '-O', *files[1:]],
-                   check=True) #capture_output=True
+    subprocess.run(["nvim", "-O", *files[1:]], check=True)  # capture_output=True
 
     for item in files[1:]:
         if os.path.isfile(item) == True:
-            result = subprocess.run(['stat', '-c', '%a' , item],
-                                    stdout=subprocess.PIPE)
-            permission = result.stdout.decode('utf-8').strip()
+            result = subprocess.run(["stat", "-c", "%a", item], stdout=subprocess.PIPE)
+            permission = result.stdout.decode("utf-8").strip()
             if permission != 744:
-                subprocess.run(['chmod', '744', item], check=True)
+                subprocess.run(["chmod", "744", item], check=True)
+
 
 # check missing argument
 if len(input_list) == 1:
-    print('Missing argument for', os.path.basename(__file__))
+    print("Missing argument for", os.path.basename(__file__))
     sys.exit(1)
+
 
 def check_missing(input_list):
     if len(input_list) < 3:
         print("Missing argument for", input_list[1])
         sys.exit(1)
 
+
 match input_list[1]:
-    case 'ls':
+    case "ls":
         fun_ls(input_list, path)
-    case 'cat':
+    case "cat":
         check_missing(input_list)
         fun_cat(input_list, path)
-    case 'fd':
+    case "fd":
         check_missing(input_list)
         fun_fd(input_list, path)
-    case 'rm':
+    case "rm":
         check_missing(input_list)
         fun_rm(input_list, path)
-    case 'mv':
+    case "mv":
         if len(input_list) < 4:
             print("Missing argument for", input_list[1])
             sys.exit(1)
@@ -111,10 +128,10 @@ match input_list[1]:
             print("Too many arguments for", input_list[1])
             sys.exit(2)
         fun_mv(input_list, path)
-    case 'lc':
+    case "lc":
         check_missing(input_list)
         fun_lc(input_list, path)
-    case 'shck':
+    case "shck":
         check_missing(input_list)
         fun_shck(input_list, path)
     case _:
