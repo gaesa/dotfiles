@@ -1,0 +1,62 @@
+#!/usr/bin/bash
+# Make sure some programs are installed and force a checkout
+
+if [[ $(grep -E '^NAME=' /etc/os-release | tr -d '"' | cut -c 6-) != 'Arch Linux' ]]; then
+    echo "This script currently doesn't support OS other than Arch Linux"
+    exit
+fi
+
+# Install paru if it doesn't exist
+if ! command -v paru &>/dev/null; then
+    read -r -p "paru will be installed next, continue? [y/N]" continue
+    case "${continue}" in
+    y/Y) ;;
+    n/N) exit ;;
+    esac
+    sudo pacman -S --needed base-devel
+    cd /tmp || exit
+    git clone https://aur.archlinux.org/paru.git
+    cd paru || exit
+    makepkg -si
+fi
+
+# Install programs that are required for all branches
+paru -Syu --needed zoxide fzf powerlevel10k zsh zsh-completions zsh-history-substring-search zsh-syntax-highlighting zsh-theme-powerlevel10k-git zsh-autosuggestions git fd trash-cli neovim duf dust pkgfile
+
+# Hide untracked files
+cd "${HOME}" || exit
+yadm --yadm-repo "${HOME}"/.config/dotfiles --work-tree "${HOME}" config status.showUntrackedFiles no
+
+# Switch to the desired branch
+yadm --yadm-repo "${HOME}"/.config/dotfiles --work-tree "${HOME}" branch -a
+read -r -p "Which branch do you want to use?" branch
+yadm --yadm-repo "${HOME}"/.config/dotfiles --work-tree "${HOME}" checkout "${branch}"
+case "${branch}" in
+main)
+    # Install different programs for different branches
+    sudo pacman -S ranger
+    ;;
+light) ;;
+*)
+    echo "Invalid parameter"
+    exit
+    ;;
+esac
+
+# Force a checkout
+yadm --yadm-repo "${HOME}"/.config/dotfiles --work-tree "${HOME}" status
+read -r -p "Do you want to force the checkout? [y/N]" checkout
+case "${checkout}" in
+y | Y)
+    yadm --yadm-repo "${HOME}"/.config/dotfiles --work-tree "${HOME}" checkout -f "${branch}" || exit
+    # Initialize submodules
+    yadm --yadm-repo "${HOME}"/.config/dotfiles --work-tree "${HOME}" submodule update --init --recursive --remote
+    ;;
+n | N)
+    exit
+    ;;
+*)
+    echo "Invalid parameter"
+    exit
+    ;;
+esac
