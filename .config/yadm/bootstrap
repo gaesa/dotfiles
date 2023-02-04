@@ -30,7 +30,6 @@ yadm --yadm-repo "${HOME}"/.config/dotfiles --work-tree "${HOME}" config status.
 # Switch to the desired branch
 yadm --yadm-repo "${HOME}"/.config/dotfiles --work-tree "${HOME}" branch -a
 read -r -p "Which branch do you want to use?" branch
-yadm --yadm-repo "${HOME}"/.config/dotfiles --work-tree "${HOME}" fetch origin "${branch}"
 yadm --yadm-repo "${HOME}"/.config/dotfiles --work-tree "${HOME}" checkout "${branch}"
 case "${branch}" in
 main)
