@@ -27,5 +27,6 @@
     rb = rebase
     mg = merge
     mgt = mergetool
+	cp = cherry-pick
 [include]
     #path = ~/.config/git/config.d
