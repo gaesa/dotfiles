@@ -219,8 +219,8 @@ fi
 # User files {{{
 
 # Load aliases and functions if existent.
+[ -f "${XDG_CONFIG_HOME:-$HOME/.config}/zsh/privaterc" ] && source "${XDG_CONFIG_HOME:-$HOME/.config}/zsh/privaterc"
 [ -f "${XDG_CONFIG_HOME:-$HOME/.config}/zsh/aliasrc" ] && source "${XDG_CONFIG_HOME:-$HOME/.config}/zsh/aliasrc"
 [ -f "${XDG_CONFIG_HOME:-$HOME/.config}/zsh/functionrc" ] && source "${XDG_CONFIG_HOME:-$HOME/.config}/zsh/functionrc"
-[ -f "${XDG_CONFIG_HOME:-$HOME/.config}/zsh/privaterc" ] && source "${XDG_CONFIG_HOME:-$HOME/.config}/zsh/privaterc"
 
 # }}}
