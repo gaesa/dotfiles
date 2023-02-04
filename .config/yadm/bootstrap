@@ -23,14 +23,33 @@ fi
 # Install programs that are required for all branches
 paru -Syu --needed zoxide fzf powerlevel10k zsh zsh-completions zsh-history-substring-search zsh-syntax-highlighting zsh-theme-powerlevel10k-git zsh-autosuggestions git fd trash-cli neovim duf dust pkgfile
 
-# Hide untracked files
+# An alias
+function cf {
+    yadm --yadm-repo "${HOME}"/.config/dotfiles --work-tree "${HOME}" "$@"
+}
+
+# Go back to work tree
 cd "${HOME}" || exit
-yadm --yadm-repo "${HOME}"/.config/dotfiles --work-tree "${HOME}" config status.showUntrackedFiles no
+
+# Hide untracked files
+cf config status.showUntrackedFiles no
 
 # Switch to the desired branch
-yadm --yadm-repo "${HOME}"/.config/dotfiles --work-tree "${HOME}" branch -a
+cf branch -a
 read -r -p "Which branch do you want to use?" branch
-yadm --yadm-repo "${HOME}"/.config/dotfiles --work-tree "${HOME}" checkout "${branch}"
+cf checkout "${branch}"
+
+# Set origin, 'git clone' has done it
+# cf remote add origin <url>
+#
+# Set default remote for 'git pull'
+cf config branch."${branch}".remote origin
+cf config branch."${branch}".merge refs/heads/"${branch}"
+#
+# Set default remote for 'git push'
+cf branch --set-upstream-to=origin/"${branch}" "${branch}"
+
+# Do different things for different branches
 case "${branch}" in
 main)
     # Install different programs for different branches
@@ -44,13 +63,13 @@ light) ;;
 esac
 
 # Force a checkout
-yadm --yadm-repo "${HOME}"/.config/dotfiles --work-tree "${HOME}" status
+cf status
 read -r -p "Do you want to force the checkout? [y/N]" checkout
 case "${checkout}" in
 y | Y)
-    yadm --yadm-repo "${HOME}"/.config/dotfiles --work-tree "${HOME}" checkout -f "${branch}" || exit
+    cf checkout -f "${branch}" || exit
     # Initialize submodules
-    yadm --yadm-repo "${HOME}"/.config/dotfiles --work-tree "${HOME}" submodule update --init --recursive --remote
+    cf submodule update --init --recursive --remote
     ;;
 n | N)
     exit
