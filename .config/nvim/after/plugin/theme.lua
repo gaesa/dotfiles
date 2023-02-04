@@ -31,5 +31,4 @@ else
     if vim.o.diff == true then
         vim.cmd([[colorscheme default]])
     end
-    vim.g.loaded_airline = 1
 end
