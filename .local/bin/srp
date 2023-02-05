@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 # A stupid script that avoids repeatedly typing the script path
-# Depends On: fd, trash-cli, shellcheck, neovim
+# Depends On: fd, ripgrep, trash-cli, shellcheck, neovim
 
 import sys
 import subprocess
@@ -36,10 +36,10 @@ def fun_fd(input_list, path):
         [
             "fd",
             "--type",
-            "f",
+            "file",
             input_list[2],
             path,
-            "-X",
+            "--exec-batch",
             "printf",
             # one " for 'r', one " for list, one " for shell
             r"""%s\n""",
@@ -49,7 +49,12 @@ def fun_fd(input_list, path):
     )
 
 
-# rm function
+# grep (rg) function
+def fun_rg(input_list, path):
+    subprocess.run(["rg", "--smart-case", input_list[2], path], check=True)
+
+
+# rm (trash) function
 def fun_rm(input_list, path):
     for item in input_list[2:]:
         item = path + "/" + item
@@ -117,6 +122,9 @@ match input_list[1]:
     case "fd":
         check_missing(input_list)
         fun_fd(input_list, path)
+    case "rg":
+        check_missing(input_list)
+        fun_rg(input_list, path)
     case "rm":
         check_missing(input_list)
         fun_rm(input_list, path)
