@@ -21,7 +21,7 @@ if ! command -v paru &>/dev/null; then
 fi
 
 # Install programs that are required for all branches
-paru -Syu --needed zoxide fzf powerlevel10k zsh zsh-completions zsh-history-substring-search zsh-syntax-highlighting zsh-theme-powerlevel10k-git zsh-autosuggestions git fd trash-cli neovim duf dust pkgfile
+paru -Syu --needed zoxide fzf powerlevel10k zsh zsh-completions zsh-history-substring-search zsh-syntax-highlighting zsh-theme-powerlevel10k-git zsh-autosuggestions git fd ripgrep trash-cli neovim duf dust pkgfile
 
 # An alias
 function cf {
