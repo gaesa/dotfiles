@@ -67,14 +67,13 @@ require("lualine").setup({
             "encoding",
             {
                 "fileformat",
-                icons_enabled = false,
-                -- symbols = {
-                --  unix = "LF",
-                --  dos = "CRLF",
-                --  mac = "CR",
-                -- },
-                "filetype",
+                symbols = {
+                    unix = "LF",
+                    dos = "CRLF",
+                    mac = "CR",
+                },
             },
+            "filetype",
         },
         lualine_y = {
             { trailing, color = "WarningMsg" },
