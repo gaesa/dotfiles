@@ -109,9 +109,13 @@ read -r -p "$(printf 'Do you want to force the checkout? [y/N]\n')" checkout
 checkout="${checkout:-n}"
 case "${checkout}" in
 y | Y)
-    cf checkout -f "${branch}" || exit
+    cf checkout -f "${branch}"
     # Initialize submodules
-    cf submodule update --init --recursive --remote
+    # Fix the problem: 'fatal: not a git repository'
+    if [[ "${branch}" == main ]]; then
+        cf submodule deinit -f ~/.config/ranger/plugins/ranger_devicons
+        cf submodule update --init --recursive --remote
+    fi
     ;;
 n | N)
     exit
