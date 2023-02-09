@@ -9,7 +9,7 @@ fi
 
 # Install paru if it doesn't exist
 if ! command -v paru &>/dev/null; then
-    read -r -p "Install paru? [y/N]\n" if_install
+    read -r -p "$(printf 'Install paru? [y/N]\n')" if_install
     if_install="${if_install:-n}"
     case "${if_install}" in
     y | Y)
@@ -28,7 +28,7 @@ if ! command -v paru &>/dev/null; then
 fi
 
 # Install programs that are required for all branches
-read -r -p "Install essential packages? [Y/n]\n" skip
+read -r -p "$(printf 'Install essential packages? [Y/n]\n')" skip
 skip="${skip:-y}"
 case "${skip}" in
 y | Y)
@@ -55,7 +55,7 @@ cf config status.showUntrackedFiles no
 # Fix the problem that 'requested upstream branch does not exist'
 if ! cf config --get remote.origin.fetch >/dev//null; then
     cf remote rm origin
-    read -r -p "Which remote do you want to use?\n1: https://github.com/gaesa/dotfiles.git\n2: git@github.com:gaesa/dotfiles.git\n" url
+    read -r -p "$(printf 'Which remote do you want to use?\n1: https://github.com/gaesa/dotfiles.git\n2: git@github.com:gaesa/dotfiles.git\n')" url
     case $url in
     1) cf remote add origin https://github.com/gaesa/dotfiles.git ;;
     2) cf remote add origin git@github.com:gaesa/dotfiles.git ;;
@@ -68,7 +68,7 @@ fi
 
 # Switch to the desired branch
 cf branch -a
-read -r -p "Which branch do you want to use?\n" branch
+read -r -p "$(printf 'Which branch do you want to use?\n')" branch
 cf checkout "${branch}"
 
 # Set origin, 'git clone' should have done it
@@ -85,7 +85,7 @@ cf branch --set-upstream-to=origin/"${branch}" "${branch}"
 case "${branch}" in
 main)
     # Install different programs for different branches
-    read -r -p "Install ranger? [Y/n]\n" if_install
+    read -r -p "$(printf 'Install ranger? [Y/n]\n')" if_install
     if_install="${if_install:-y}"
     case "${if_install}" in
     y | Y) sudo pacman -S ranger ;;
@@ -105,7 +105,7 @@ esac
 
 # Force a checkout
 cf status
-read -r -p "Do you want to force the checkout? [y/N]\n" checkout
+read -r -p "$(printf 'Do you want to force the checkout? [y/N]\n')" checkout
 checkout="${checkout:-n}"
 case "${checkout}" in
 y | Y)
