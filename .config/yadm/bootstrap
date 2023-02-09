@@ -105,15 +105,18 @@ esac
 
 # Force a checkout
 cf status
+printf "\n\n"
 read -r -p "$(printf 'Do you want to force the checkout? [y/N]\n')" checkout
 checkout="${checkout:-n}"
 case "${checkout}" in
 y | Y)
     cf checkout -f "${branch}"
+    printf "\n\n"
     # Initialize submodules
     # Fix the problem: 'fatal: not a git repository'
     if [[ "${branch}" == main ]]; then
         cf submodule deinit -f ~/.config/ranger/plugins/ranger_devicons
+        printf "\n\n"
         cf submodule update --init --recursive --remote
     fi
     ;;
