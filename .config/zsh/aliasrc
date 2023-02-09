@@ -32,7 +32,7 @@ alias startsway="env __GL_GSYNC_ALLOWED=0 __GL_VRR_ALLOWED=0 WLR_DRM_NO_ATOMIC=1
 alias g="git"
 alias zg="z $HOME/dev/git"
 #alias cf="g --git-dir=$HOME/.config/dotfiles/ --work-tree=$HOME"
-alias cf="yadm --yadm-repo $HOME/.config/dotfiles --work-tree=$HOME"
+alias cf="yadm"
 alias cfz="e $HOME/.config/zsh/.zshrc"
 alias cfzp="e $HOME/.config/zsh/.zprofile"
 alias cfa="e $HOME/.config/zsh/aliasrc"
