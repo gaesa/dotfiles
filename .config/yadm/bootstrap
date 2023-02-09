@@ -52,12 +52,26 @@ function cf {
 # Hide untracked files
 cf config status.showUntrackedFiles no
 
+# Fix the problem that 'requested upstream branch does not exist'
+if ! cf config --get remote.origin.fetch >/dev//null; then
+    cf remote rm origin
+    read -r -p "Which remote do you want to use?\n1: https://github.com/gaesa/dotfiles.git\n2: git@github.com:gaesa/dotfiles.git\n" url
+    case $url in
+    1) cf remote add origin https://github.com/gaesa/dotfiles.git ;;
+    2) cf remote add origin git@github.com:gaesa/dotfiles.git ;;
+    *)
+        echo "Invalid parameter"
+        exit
+        ;;
+    esac
+fi
+
 # Switch to the desired branch
 cf branch -a
 read -r -p "Which branch do you want to use?\n" branch
 cf checkout "${branch}"
 
-# Set origin, 'git clone' has done it
+# Set origin, 'git clone' should have done it
 # cf remote add origin <url>
 #
 # Set default remote for 'git pull'
