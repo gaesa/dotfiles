@@ -7,18 +7,18 @@ vim.g.netrw_winsize = 25
 -- Intuitively move cursor
 vim.keymap.set("v", "J", ":m '>+1<CR>gv=gv")
 vim.keymap.set("v", "K", ":m '<-2<CR>gv=gv")
+vim.keymap.set("n", "J", "mzJ`z") -- allow the cursor to remain in the same position
 vim.keymap.set("n", "j", "gjzz", { noremap = true })
 vim.keymap.set("n", "k", "gkzz", { noremap = true })
 vim.keymap.set("n", "gj", "j", { noremap = true })
 vim.keymap.set("n", "gk", "k", { noremap = true })
 
--- zz
--- alow cursor in the same place
-vim.keymap.set("n", "J", "mzJ`z")
+-- Automatically center screen on current line (zz)
 vim.keymap.set("n", "<C-d>", "<C-d>zz")
 vim.keymap.set("n", "<C-u>", "<C-u>zz")
 vim.keymap.set("n", "n", "nzzzv")
 vim.keymap.set("n", "N", "Nzzzv")
+vim.keymap.set("n", "G", "Gzz", { noremap = true })
 
 -- Clipboard
 vim.keymap.set("n", "<leader>p", [["+p]])
