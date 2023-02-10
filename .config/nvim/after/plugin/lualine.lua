@@ -31,6 +31,15 @@ local function mixindent()
     end
 end
 
+-- Override 'encoding': Only display when encoding isn't UTF-8
+local function encoding()
+    if vim.bo.fenc == "utf-8" then
+        return ""
+    else
+        return vim.bo.fenc
+    end
+end
+
 -- require("lualine").setup()
 require("lualine").setup({
     options = {
@@ -64,11 +73,11 @@ require("lualine").setup({
         },
         lualine_c = { { "filename", file_status = true, path = 1 } },
         lualine_x = {
-            "encoding",
+            encoding,
             {
                 "fileformat",
                 symbols = {
-                    unix = "LF",
+                    unix = "",
                     dos = "CRLF",
                     mac = "CR",
                 },
