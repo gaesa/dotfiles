@@ -45,3 +45,6 @@ export SSH_AUTH_SOCK="$XDG_RUNTIME_DIR/ssh-agent.socket"
 # Podman
 export DOCKER_HOST="unix://$XDG_RUNTIME_DIR/podman/podman.sock"
 export DOCKER_BUILDKIT=0
+
+# Fix MAIL when using 'sudo su'
+export MAIL="/var/spool/mail/${USER}"
