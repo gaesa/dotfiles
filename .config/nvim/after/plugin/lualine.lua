@@ -31,7 +31,7 @@ local function mixindent()
     end
 end
 
--- Override 'encoding': Only display when encoding isn't UTF-8
+-- Override 'encoding': Display only when encoding isn't UTF-8
 local function encoding()
     if vim.bo.fenc == "utf-8" then
         return ""
