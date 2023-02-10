@@ -1,3 +1,8 @@
+-- Encoding
+vim.opt.fileencodings = "ucs-bom,utf-8,gbk,sjis,euc-jp,big5,gb18030,latin1"
+-- EOL
+vim.opt.fileformats = "unix,dos,mac"
+
 -- Line number
 vim.opt.nu = true
 vim.opt.rnu = true
