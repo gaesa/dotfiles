@@ -23,12 +23,16 @@ vim.keymap.set("n", "N", "Nzzzv")
 vim.keymap.set("n", "G", "Gzz", { noremap = true })
 
 -- Clipboard
-vim.keymap.set("n", "<leader>p", [["+p]])
-vim.keymap.set("n", "<leader>P", [["+P]])
-vim.keymap.set("x", "<leader>p", [["_dP]])
+vim.keymap.set({ "n", "v" }, "<leader>p", [["+p]])
+vim.keymap.set({ "n", "v" }, "<leader>P", [["+P]])
 vim.keymap.set({ "n", "v" }, "<leader>y", [["+y]])
-vim.keymap.set({ "n", "v" }, "<leader>d", [["_d]])
 vim.keymap.set({ "n", "v" }, "<leader>Y", [["+y$]])
+vim.keymap.set({ "n", "v" }, "<leader>d", [["+d]])
+vim.keymap.set({ "n", "v" }, "<leader>D", [["+D]])
+vim.keymap.set({ "n", "v" }, "<leader>c", [["+c]])
+vim.keymap.set({ "n", "v" }, "<leader>C", [["+C]])
+-- vim.keymap.set("x", "<leader>p", [["_dP]])
+-- vim.keymap.set({ "n", "v" }, "<leader>d", [["_d]])
 
 -- Clear last search highlighting
 vim.keymap.set("n", "<CR>", ":nohls<CR><CR>", { noremap = true, silent = true })
