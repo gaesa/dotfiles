@@ -27,6 +27,7 @@
     rb = rebase
     mg = merge
     mgt = mergetool
-	cp = cherry-pick
+    cp = cherry-pick
+    lg = log --graph --pretty=format:'%C(auto)%h%C(auto)%d %s %C(dim white)(%aN, %ar)'
 [include]
     #path = ~/.config/git/config.d
