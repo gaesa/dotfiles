@@ -7,6 +7,8 @@ autocmd(
     { command = [[if line("'\"") > 1 && line("'\"") <= line("$") | execute "normal! g`\"" | endif]] }
 )
 
+autocmd("BufWinEnter", { command = [[normal! zz]] })
+
 -- Remove all trailing whitespace
 autocmd("BufWritePre", { pattern = { "*" }, command = [[silent! %s/\s\+$//e]] })
 
