@@ -171,15 +171,15 @@ else
 fi
 # See why '/proc' need to be excluded:
 # https://github.com/sharkdp/fd/issues/288
-export FZF_DEFAULT_COMMAND="fd --type f -H --strip-cwd-prefix --exclude "/proc" --exclude "/mnt" --exclude ".git" --exclude ".snapshots" --exclude ".stversions" --exclude ".stfolder" --exclude ".var" --exclude ".local/share/Trash" --exclude ".cache" --exclude "tim-sounds""
+export FZF_DEFAULT_COMMAND="fd --type f -H --strip-cwd-prefix --exclude '/proc' --exclude '/mnt' --exclude '.git' --exclude '.snapshots' --exclude '.stversions' --exclude '.stfolder' --exclude '.var' --exclude '.local/share/Trash' --exclude '.cache' --exclude 'Cache' --exclude 'cache'"
 export FZF_CTRL_T_COMMAND="$FZF_DEFAULT_COMMAND"
-export FZF_ALT_C_COMMAND="fd --type d -H --exclude ".git" --exclude ".snapshots" --exclude ".stversions" --exclude ".stfolder" --exclude "tim-sounds""
+export FZF_ALT_C_COMMAND="fd --type d -H --exclude '.git' --exclude '.snapshots' --exclude '.stversions' --exclude '.stfolder' --exclude '.var' --exclude '.local/share/Trash' --exclude '.cache' --exclude 'Cache' --exclude 'cache'"
 
 _fzf_compgen_dir() {
-    fd --type d -H --exclude ".git" --exclude ".snapshots" --exclude ".stversions" --exclude ".stfolder" --exclude "tim-sounds" . "$1"
+    fd --type d -H --exclude '.git' --exclude '.snapshots' --exclude '.stversions' --exclude '.stfolder' --exclude '.var' --exclude '.local/share/Trash' --exclude '.cache' --exclude 'Cache' --exclude 'cache' . "$1"
 }
 _fzf_compgen_path() {
-    fd -H --exclude ".git" --exclude ".snapshots" --exclude ".stversions" --exclude ".stfolder" --exclude "tim-sounds" . "$1"
+    fd -H --exclude '.git' --exclude '.snapshots' --exclude '.stversions' --exclude '.stfolder' --exclude '.var' --exclude '.local/share/Trash' --exclude '.cache' --exclude 'Cache' --exclude 'cache' . "$1"
 }
 
 # Fuzzy search with xdg-open
