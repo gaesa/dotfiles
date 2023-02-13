@@ -40,7 +40,6 @@ vim.keymap.set("n", "<CR>", ":nohls<CR><CR>", { noremap = true, silent = true })
 -- Quit and Save
 -- vim.keymap.set('n', 'Q', '<nop>')
 vim.keymap.set("n", "Q", "<ESC>:q<CR>", { silent = true })
-vim.keymap.set("n", "W", "<ESC>:up<CR>")
 if vim.o.diff == true then
     vim.keymap.set({ "n", "i" }, "<C-q>", "<ESC>:cq<CR>", { noremap = true })
 else
