@@ -7,7 +7,7 @@ lsp.preset("recommended")
 lsp.nvim_workspace()
 
 lsp.ensure_installed({
-    "sumneko_lua",
+    "lua_ls",
 })
 
 lsp.set_preferences({
