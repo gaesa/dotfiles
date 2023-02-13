@@ -2,6 +2,10 @@
 
 # Set env for some directories
 function env_on_chdir {
+    # Set GIT_DIR and GIT_WORK_TREE when at HOME
+    # An known issue: Can't use 'git clone' when at HOME
+    # ERROR message:
+    # fatal: working tree '/home/user' already exists
     if [[ "${PWD}" == "${HOME}" ]]; then
         export GIT_DIR="${XDG_DATA_HOME}/yadm/repo.git"
         # GIT_WORK_TREE must be set on server, I don't know why
