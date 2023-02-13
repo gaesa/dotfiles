@@ -16,6 +16,12 @@ vim.opt.fileformats = "unix,dos,mac"
 vim.opt.nu = true
 vim.opt.rnu = true
 
+-- Code folding
+vim.opt.foldmethod = "indent"
+vim.opt.foldenable = false
+vim.opt.foldlevel = 10
+vim.opt.foldnestmax = 10
+
 -- Reduce keycode delay
 vim.opt.timeoutlen = 1000
 vim.opt.ttimeoutlen = 50
