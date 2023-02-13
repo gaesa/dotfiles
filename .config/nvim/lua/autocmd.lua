@@ -1,6 +1,10 @@
 -- local augroup = vim.api.nvim_create_augroup
 local autocmd = vim.api.nvim_create_autocmd
 
+-- Toggle absolute and relative numbering by insert/normal mode
+autocmd("InsertEnter", { command = [[set nornu]] })
+autocmd("InsertLeave", { command = [[set rnu]] })
+
 -- Return to last edited postition
 autocmd(
     "BufReadPost",
