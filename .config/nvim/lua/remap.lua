@@ -34,10 +34,6 @@ vim.keymap.set({ "n", "v" }, "<leader>C", [["+C]])
 -- vim.keymap.set("x", "<leader>p", [["_dP]])
 -- vim.keymap.set({ "n", "v" }, "<leader>d", [["_d]])
 
--- Selection
-vim.keymap.set({ "n", "v" }, "vv", "V", { noremap = true })
-vim.keymap.set({ "n", "v" }, "V", "v$")
-
 -- Clear last search highlighting
 vim.keymap.set("n", "<CR>", ":nohls<CR><CR>", { noremap = true, silent = true })
 
