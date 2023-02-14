@@ -78,6 +78,18 @@ return require("packer").startup(function(use)
         "jose-elias-alvarez/null-ls.nvim",
         "jay-babu/mason-null-ls.nvim",
     })
+
+    -- Motion
+    use({
+        "phaazon/hop.nvim",
+        branch = "v2", -- optional but strongly recommended
+        config = function()
+            -- you can configure Hop the way you like here; see :h hop-config
+            require("hop").setup({ keys = "etovxqpdygfblzhckisuran" })
+        end,
+    })
+
+    -- Editing support
     use({
         "windwp/nvim-autopairs",
         config = function()

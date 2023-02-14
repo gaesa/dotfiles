@@ -10,3 +10,4 @@ require("thepacker")
 -- ./after/plugin/lsp.lua
 -- ./after/plugin/undotree.lua
 -- ./after/plugin/harpoon.lua
+-- ./after/plugin/hop.lua
