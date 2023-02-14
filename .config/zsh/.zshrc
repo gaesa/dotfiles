@@ -74,7 +74,10 @@ bindkey -M menuselect '^[[Z' reverse-menu-complete
 bindkey -M menuselect '^[' undo
 
 # Fix completion for some programs
-compdef _files _directories trash
+compdef "_files _directories" trash
+
+# Get files completion from specific path
+compdef "_files -W $HOME/.local/bin" srp
 
 # }}}
 
