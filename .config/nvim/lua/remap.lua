@@ -39,11 +39,15 @@ vim.keymap.set("n", "<CR>", ":nohls<CR><CR>", { noremap = true, silent = true })
 
 -- Quit and Save
 -- vim.keymap.set('n', 'Q', '<nop>')
-vim.keymap.set("n", "Q", "<ESC>:q<CR>", { silent = true })
 if vim.o.diff == true then
     vim.keymap.set({ "n", "i" }, "<C-q>", "<ESC>:cq<CR>", { noremap = true })
+    vim.keymap.set("n", "Q", "<ESC>:q<CR>", { silent = true })
+elseif vim.o.filetype == "gitcommit" then
+    vim.keymap.set({ "n", "i" }, "<C-q>", "<ESC>:cq<CR>", { noremap = true })
+    vim.keymap.set("n", "Q", "<ESC>:cq<CR>", { silent = true })
 else
     vim.keymap.set({ "n", "i" }, "<C-q>", "<ESC>:qa!<CR>", { noremap = true })
+    vim.keymap.set("n", "Q", "<ESC>:q<CR>", { silent = true })
 end
 vim.keymap.set({ "n", "i" }, "<C-s>", "<ESC>:xa<CR>", { noremap = true })
 
