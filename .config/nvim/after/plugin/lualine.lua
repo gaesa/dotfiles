@@ -1,8 +1,8 @@
 -- Trailing whitespaces status
-local function trailing()
-    local space = vim.fn.search([[\s\+$]], "nwc")
-    return space ~= 0 and "Traling:" .. space or ""
-end
+-- local function trailing()
+--     local space = vim.fn.search([[\s\+$]], "nwc")
+--     return space ~= 0 and "Traling:" .. space or ""
+-- end
 
 -- Mixed indent status
 local function mixindent()
@@ -85,7 +85,7 @@ require("lualine").setup({
             "filetype",
         },
         lualine_y = {
-            { trailing, color = "WarningMsg" },
+            -- { trailing, color = "WarningMsg" },
             { mixindent, color = "WarningMsg" },
             "progress",
         },
