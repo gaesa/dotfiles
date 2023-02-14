@@ -28,6 +28,6 @@ export QT_WAYLAND_FORCE_DPI=120
 dbus-update-activation-environment --systemd --all
 
 # Start KDE from TTY
-if [ -z "$DISPLAY" ] && [ "$(tty)" = "/dev/tty1" ]; then
+if [ -z "$WAYLAND_DISPLAY" ] && [ "$(tty)" = "/dev/tty1" ]; then
     exec startplasma-wayland
 fi
