@@ -16,7 +16,12 @@ function env_on_chdir {
     fi
 }
 add-zsh-hook -Uz chpwd() {env_on_chdir}
-
+# stupid fix for 'git clone'
+function paru {
+    cd /tmp
+    command paru "$@"
+    cd - >/dev/null
+}
 
 # Make compinit automatically find new executables in the $PATH
 # On-demand rehash
