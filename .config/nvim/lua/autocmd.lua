@@ -10,7 +10,7 @@ autocmd(
     "BufReadPost",
     { command = [[if line("'\"") > 1 && line("'\"") <= line("$") | execute "normal! g`\"" | endif]] }
 )
-
+autocmd("FileType", { pattern = { "gitcommit", }, command = [[normal! gg]] })
 autocmd("BufWinEnter", { command = [[normal! zz]] })
 
 -- Remove all trailing whitespace
