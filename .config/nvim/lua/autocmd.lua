@@ -10,7 +10,7 @@ autocmd(
     "BufReadPost",
     { command = [[if line("'\"") > 1 && line("'\"") <= line("$") | execute "normal! g`\"" | endif]] }
 )
-autocmd("FileType", { pattern = { "gitcommit", }, command = [[normal! gg]] })
+autocmd("FileType", { pattern = { "gitcommit" }, command = [[normal! gg]] })
 autocmd("BufWinEnter", { command = [[normal! zz]] })
 
 -- Remove all trailing whitespace
@@ -25,3 +25,11 @@ autocmd("BufWritePre", { pattern = { "*" }, command = [[silent! %retab]] })
 
 -- Automatically enable spell checking in specific files
 autocmd("FileType", { pattern = { "markdown", "gitcommit" }, command = [[set spell]] })
+
+-- Highlight yanked text
+autocmd("TextYankPost", {
+    pattern = "*",
+    callback = function()
+        vim.highlight.on_yank({ higroup = "Visual", timeout = 80 })
+    end,
+})
