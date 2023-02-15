@@ -8,10 +8,10 @@ vim.g.netrw_winsize = 25
 vim.keymap.set("v", "J", ":m '>+1<CR>gv=gv")
 vim.keymap.set("v", "K", ":m '<-2<CR>gv=gv")
 vim.keymap.set("n", "J", "mzJ`z") -- allow the cursor to remain in the same position
-vim.keymap.set({ "n", "v", "o" }, "j", "gjzz", { noremap = true })
-vim.keymap.set({ "n", "v", "o" }, "k", "gkzz", { noremap = true })
-vim.keymap.set({ "n", "v", "o" }, "gj", "j", { noremap = true })
-vim.keymap.set({ "n", "v", "o" }, "gk", "k", { noremap = true })
+vim.keymap.set({ "n", "v" }, "j", "gjzz", { noremap = true })
+vim.keymap.set({ "n", "v" }, "k", "gkzz", { noremap = true })
+vim.keymap.set({ "n", "v" }, "gj", "j", { noremap = true })
+vim.keymap.set({ "n", "v" }, "gk", "k", { noremap = true })
 vim.keymap.set({ "n", "v", "o" }, "H", "g0", { noremap = true })
 vim.keymap.set({ "n", "v", "o" }, "L", "g$", { noremap = true })
 
