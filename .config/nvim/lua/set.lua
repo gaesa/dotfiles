@@ -46,6 +46,7 @@ vim.opt.smartcase = true
 -- vim.opt.mousefocus = true
 
 -- History files
+vim.opt.history = 1000
 -- vim.opt.swapfile = false
 vim.opt.backup = false
 vim.opt.undodir = os.getenv("HOME") .. "/.local/state/nvim/undo"
