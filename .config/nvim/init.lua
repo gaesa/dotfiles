@@ -3,7 +3,7 @@ require("remap")
 require("autocmd")
 require("thepacker")
 -- ./lua/thepacker.lua
--- ./after/plugin/theme.lua
+-- ./after/plugin/colors.lua
 -- ./after/plugin/lualine.lua
 -- ./after/plugin/telescope.lua
 -- ./after/plugin/treesitter.lua
