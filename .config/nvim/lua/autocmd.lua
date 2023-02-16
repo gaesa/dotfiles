@@ -19,6 +19,9 @@ autocmd("BufWritePre", { pattern = { "*" }, command = [[silent! %s/\s\+$//e]] })
 -- Retab
 autocmd("BufWritePre", { pattern = { "*" }, command = [[silent! %retab]] })
 
+-- Automatically enable spell checking in specific files
+autocmd("FileType", { pattern = { "markdown", "gitcommit" }, command = [[set spell]] })
+
 -- Highlight yanked text
 autocmd("TextYankPost", {
     pattern = "*",

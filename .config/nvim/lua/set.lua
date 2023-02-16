@@ -43,3 +43,6 @@ vim.opt.smartcase = true
 -- History files
 vim.opt.swapfile = false
 vim.opt.backup = false
+
+-- Spell check
+vim.opt.spelllang = "en,cjk"
