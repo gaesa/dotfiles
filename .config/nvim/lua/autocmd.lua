@@ -63,3 +63,9 @@ autocmd("CursorMoved", {
     end,
     desc = "Auto hlsearch",
 })
+
+-- Quit with 'q'
+autocmd(
+    "FileType",
+    { pattern = { "help", "man", "startuptime", "qf" }, command = [[nnoremap <buffer><silent> q :quit<CR>]] }
+)
