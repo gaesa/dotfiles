@@ -51,7 +51,7 @@ vim.opt.backup = false
 vim.opt.undodir = os.getenv("HOME") .. "/.local/state/nvim/undo"
 vim.opt.undofile = true
 
--- Speel check
+-- Spell check
 vim.opt.spelllang = "en,cjk"
 
 -- Stop icons from moving my screen
