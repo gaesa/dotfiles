@@ -41,7 +41,8 @@ vim.opt.ignorecase = true
 vim.opt.smartcase = true
 
 -- History files
-vim.opt.swapfile = false
+vim.opt.history = 1000
+-- vim.opt.swapfile = false
 vim.opt.backup = false
 
 -- Spell check
