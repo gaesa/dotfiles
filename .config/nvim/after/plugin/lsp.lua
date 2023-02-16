@@ -20,11 +20,11 @@ lsp.set_preferences({
 })
 
 -- Enable nvim-cmp only on TAB
-lsp.setup_nvim_cmp({
-    completion = {
-        autocomplete = false,
-    },
-})
+-- lsp.setup_nvim_cmp({
+--     completion = {
+--         autocomplete = false,
+--     },
+-- })
 
 lsp.on_attach(function(client, bufnr)
     local opts = { buffer = bufnr, remap = false }
