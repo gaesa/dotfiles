@@ -19,7 +19,7 @@ vim.keymap.set("", "T", function()
     hop.hint_char1({ direction = directions.BEFORE_CURSOR, current_line_only = false, hint_offset = 1 })
 end, { remap = true })
 
-vim.keymap.set("", "gl", function()
+vim.keymap.set("", "<leader>l", function()
     hop.hint_vertical({ multi_windows = true })
 end, { remap = true })
 
