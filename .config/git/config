@@ -28,6 +28,9 @@
     mg = merge
     mgt = mergetool
     cp = cherry-pick
-    lg = log --graph --pretty=format:'%C(auto)%h%C(auto)%d %s %C(dim white)(%aN, %ar)'
+    l = log --graph --pretty=format:'%C(auto)%h%C(auto)%d %s %C(dim white)(%aN, %ar)'
+    ll = log --graph --stat --pretty=format:'%C(auto)%h%C(auto)%d %s %C(dim white)(%aN, %ar)'
+    la = log --graph --all --pretty=format:'%C(auto)%h%C(auto)%d %s %C(dim white)(%aN, %ar)'
+    lla = log --graph --all --stat --pretty=format:'%C(auto)%h%C(auto)%d %s %C(dim white)(%aN, %ar)'
 [include]
     #path = ~/.config/git/config.d
