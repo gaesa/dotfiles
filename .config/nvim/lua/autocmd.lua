@@ -26,7 +26,7 @@ autocmd("FileType", { pattern = { "markdown", "gitcommit" }, command = [[set spe
 autocmd("TextYankPost", {
     pattern = "*",
     callback = function()
-        vim.highlight.on_yank({ higroup = "Visual", timeout = 80 })
+        vim.highlight.on_yank({ higroup = "Visual", timeout = 150 })
     end,
 })
 
