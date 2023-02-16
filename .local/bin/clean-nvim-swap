@@ -1,0 +1,4 @@
+#!/usr/bin/bash
+set -Eeuo pipefail
+
+fd -t f --changed-before 2weeks . ~/.local/state/nvim/swap -x trash {}
