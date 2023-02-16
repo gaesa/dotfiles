@@ -36,9 +36,6 @@ vim.keymap.set({ "n", "v" }, "<leader>C", [["+C]])
 -- vim.keymap.set("x", "<leader>p", [["_dP]])
 -- vim.keymap.set({ "n", "v" }, "<leader>d", [["_d]])
 
--- Clear last search highlighting
-vim.keymap.set("n", "<CR>", ":nohls<CR><CR>", { noremap = true, silent = true })
-
 -- Quit and Save
 -- vim.keymap.set('n', 'Q', '<nop>')
 if vim.o.diff == true then
