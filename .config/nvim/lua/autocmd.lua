@@ -22,6 +22,15 @@ autocmd("BufWritePre", { pattern = { "*" }, command = [[silent! %retab]] })
 -- Automatically enable spell checking in specific files
 autocmd("FileType", { pattern = { "markdown", "gitcommit" }, command = [[set spell]] })
 
+-- Automatically change shortcuts in specific files
+autocmd("FileType", {
+    pattern = "gitcommit",
+    callback = function()
+        vim.keymap.set({ "n", "i" }, "<C-q>", "<ESC>:cq<CR>", { noremap = true })
+        vim.keymap.set("n", "Q", "<ESC>:cq<CR>", { silent = true })
+    end,
+})
+
 -- Highlight yanked text
 autocmd("TextYankPost", {
     pattern = "*",
