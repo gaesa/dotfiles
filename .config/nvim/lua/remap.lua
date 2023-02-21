@@ -41,9 +41,6 @@ vim.keymap.set({ "n", "v" }, "<leader>C", [["+C]])
 if vim.o.diff == true then
     vim.keymap.set({ "n", "i" }, "<C-q>", "<ESC>:cq<CR>", { noremap = true })
     vim.keymap.set("n", "Q", "<ESC>:q<CR>", { silent = true })
-elseif vim.o.filetype == "gitcommit" then
-    vim.keymap.set({ "n", "i" }, "<C-q>", "<ESC>:cq<CR>", { noremap = true })
-    vim.keymap.set("n", "Q", "<ESC>:cq<CR>", { silent = true })
 else
     vim.keymap.set({ "n", "i" }, "<C-q>", "<ESC>:qa!<CR>", { noremap = true })
     vim.keymap.set("n", "Q", "<ESC>:q<CR>", { silent = true })
