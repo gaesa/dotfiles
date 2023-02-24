@@ -75,6 +75,13 @@ def fun_cp(input_list, path):
     subprocess.run(["cp", "-i", item1, item2], check=True)
 
 
+# diff function
+def fun_diff(input_list, path):
+    item1 = path + "/" + input_list[2]
+    item2 = path + "/" + input_list[3]
+    subprocess.run(["nvim", "-d", item1, item2], check=True)
+
+
 # line count function
 def fun_lc(input_list, path):
     for item in input_list[2:]:
@@ -151,6 +158,14 @@ match input_list[1]:
             print("Too many arguments for", input_list[1])
             sys.exit(2)
         fun_cp(input_list, path)
+    case "d":
+        if len(input_list) < 4:
+            print("Missing argument for", input_list[1])
+            sys.exit(1)
+        if len(input_list) > 4:
+            print("Too many arguments for", input_list[1])
+            sys.exit(2)
+        fun_diff(input_list, path)
     case "lc":
         check_missing(input_list)
         fun_lc(input_list, path)
