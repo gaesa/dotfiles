@@ -47,6 +47,9 @@ else
 end
 vim.keymap.set({ "n", "i" }, "<C-s>", "<ESC>:xa<CR>", { noremap = true })
 
+-- Clears and redraws screen, clears search highlighting and then zz
+vim.keymap.set("n", "<Enter>", "<C-l>zz<Enter>", { noremap = true, silent = true })
+
 -- Toggle spell checking
 vim.keymap.set("n", "<F11>", "<ESC>:set spell!<CR>", { noremap = true, silent = true })
 vim.keymap.set("i", "<F11>", "<ESC>:set spell!<CR>a", { noremap = true, silent = true })
