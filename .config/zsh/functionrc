@@ -22,13 +22,15 @@ function diff() {
 #}
 #bindkey -s '^N' '^ulfcd\n'
 
-function rangercd() {
-    local tmp="$(mktemp)"
-    ranger --choosedir="$tmp" "$@"
-    if [ -f "$tmp" ]; then
-        local dir="$(cat "$tmp")"
-        rm -f "$tmp"
-        [ -d "$dir" ] && [ "$dir" != "$(pwd)" ] && cd "$dir"
+function raz() {
+    local -r tmp="$(mktemp)"
+    ranger --choosedir="${tmp}" "$@"
+    local -r dir="$(cat "${tmp}")"
+    rm -f "${tmp}"
+    if [[ "$dir" != "$(pwd)" ]]; then
+        z "$dir"
+    else
+        return 0
     fi
 }
-bindkey -s '^N' 'rangercd\n'
+bindkey -s '^N' 'raz\n'
