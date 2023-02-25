@@ -121,56 +121,50 @@ if len(input_list) == 1:
     sys.exit(1)
 
 
-def check_missing(input_list):
+def ensure_one_parameter(input_list):
     if len(input_list) < 3:
         print("Missing argument for", input_list[1])
         sys.exit(1)
+
+
+def ensure_only_two_parameter(input_list):
+    if len(input_list) < 4:
+        print("Missing argument for", input_list[1])
+        sys.exit(1)
+    if len(input_list) > 4:
+        print("Too many arguments for", input_list[1])
+        sys.exit(2)
 
 
 match input_list[1]:
     case "ls":
         fun_ls(input_list, path)
     case "cat":
-        check_missing(input_list)
+        ensure_one_parameter(input_list)
         fun_cat(input_list, path)
     case "fd":
-        check_missing(input_list)
+        ensure_one_parameter(input_list)
         fun_fd(input_list, path)
     case "rg":
-        check_missing(input_list)
+        ensure_one_parameter(input_list)
         fun_rg(input_list, path)
     case "rm":
-        check_missing(input_list)
+        ensure_one_parameter(input_list)
         fun_rm(input_list, path)
     case "mv":
-        if len(input_list) < 4:
-            print("Missing argument for", input_list[1])
-            sys.exit(1)
-        if len(input_list) > 4:
-            print("Too many arguments for", input_list[1])
-            sys.exit(2)
+        ensure_only_two_parameter(input_list)
         fun_mv(input_list, path)
     case "cp":
-        if len(input_list) < 4:
-            print("Missing argument for", input_list[1])
-            sys.exit(1)
-        if len(input_list) > 4:
-            print("Too many arguments for", input_list[1])
-            sys.exit(2)
+        ensure_only_two_parameter(input_list)
         fun_cp(input_list, path)
     case "d":
-        if len(input_list) < 4:
-            print("Missing argument for", input_list[1])
-            sys.exit(1)
-        if len(input_list) > 4:
-            print("Too many arguments for", input_list[1])
-            sys.exit(2)
+        ensure_only_two_parameter(input_list)
         fun_diff(input_list, path)
     case "lc":
-        check_missing(input_list)
+        ensure_one_parameter(input_list)
         fun_lc(input_list, path)
     case "shck":
-        check_missing(input_list)
+        ensure_one_parameter(input_list)
         fun_shck(input_list, path)
     case _:
         fun_edit(input_list, path)
