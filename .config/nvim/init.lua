@@ -8,6 +8,7 @@ require("thepacker")
 -- ./after/plugin/telescope.lua
 -- ./after/plugin/treesitter.lua
 -- ./after/plugin/lsp.lua
+-- ./after/plugin/luasnip.lua
 -- ./after/plugin/undotree.lua
 -- ./after/plugin/harpoon.lua
 -- ./after/plugin/hop.lua
