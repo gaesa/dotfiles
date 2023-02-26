@@ -26,7 +26,7 @@ function raz() {
     local -r tmp="$(mktemp)"
     ranger --choosedir="${tmp}" "$@"
     local -r dir="$(cat "${tmp}")"
-    rm -f "${tmp}"
+    rm "${tmp}"
     if [[ "$dir" != "$(pwd)" ]]; then
         z "$dir"
     else
