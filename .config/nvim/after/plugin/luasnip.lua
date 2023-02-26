@@ -12,6 +12,6 @@ ls.add_snippets("all", {
         t("Hello, world!"),
     }),
     s({ name = "Shebang for C", trig = "sbc", dscr = "Put Clang shebang for C" }, {
-        t([[//usr/bin/clang "$0" -o ${o=$(mktemp)} && exec -a "$0" "${o}" "$@"]]),
+        t([[//usr/bin/clang "$0" -o "${o=$(mktemp)}" && "${o}" "$@" && rm "${o}" && exit]]),
     }),
 })
