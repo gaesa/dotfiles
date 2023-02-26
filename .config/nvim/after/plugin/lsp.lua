@@ -101,7 +101,7 @@ null_ls.setup({
         null_ls.builtins.formatting.stylua,
         null_ls.builtins.formatting.prettier,
         null_ls.builtins.formatting.clang_format.with({
-            extra_args = { "-style={IndentWidth: 4}" },
+            extra_args = { "-style={IndentWidth: 4, CommentPragmas: '^[^ ]'}" },
         }),
         -- You can add tools not supported by mason.nvim
     },
