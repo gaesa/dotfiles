@@ -24,6 +24,7 @@
     rst = restore
     a = add
     co = checkout
+    br = branch
     cl = clone
     sub = submodule
     rb = rebase
