@@ -14,4 +14,7 @@ ls.add_snippets("all", {
     s({ name = "Shebang for C", trig = "sbc", dscr = "Put Clang shebang for C" }, {
         t([[//usr/bin/clang "$0" -o "${o=$(mktemp)}" && "${o}" "$@" && rm "${o}" && exit]]),
     }),
+    s({ name = "Shebang for Python", trig = "sbpy", dscr = "Put shebang for Python" }, {
+        t([[#!/usr/bin/env python3]]),
+    }),
 })
