@@ -22,6 +22,8 @@ vim.keymap.set("n", "<C-o>", "<C-o>zz")
 vim.keymap.set("n", "<C-i>", "<C-i>zz")
 vim.keymap.set("n", "n", "nzzzv")
 vim.keymap.set("n", "N", "Nzzzv")
+vim.keymap.set("n", "*", "*zzzv")
+vim.keymap.set("n", "#", "#zzzv")
 vim.keymap.set("n", "G", "Gzz", { noremap = true })
 
 -- Clipboard
