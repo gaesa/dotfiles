@@ -20,6 +20,7 @@
 [alias]
     st = status
     d = difftool
+    df = diff
     cm = commit
     rst = restore
     a = add
