@@ -18,7 +18,8 @@
 [mergetool "nvimdiff"]
     cmd = nvim -d \"$LOCAL\" \"$MERGED\" \"$BASE\" \"$REMOTE\" -c \"wincmd w\" -c \"wincmd J\"
 [alias]
-    st = status
+    s = status
+    st = stash
     d = difftool
     df = diff
     cm = commit
