@@ -51,7 +51,7 @@ def fun_fd(input_list, path):
 
 # grep (rg) function
 def fun_rg(input_list, path):
-    subprocess.run(["rg", "--smart-case", input_list[2], path], check=True)
+    subprocess.run(["rg", "--smart-case", input_list[2], path])
 
 
 # rm (trash) function
