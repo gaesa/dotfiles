@@ -1,23 +1,23 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 # A stupid script that avoids repeatedly typing the script path
 # Depends On: fd, ripgrep, trash-cli, shellcheck, neovim
 
 import sys
 import subprocess
-import os.path
-
-input_list = sys.argv
-path = os.path.expanduser("~/.local/bin")
+import os
+import stat
 
 
 # ls function
 def fun_ls(input_list, path):
     if len(input_list) == 2:
-        subprocess.run(["ls", "-F", "--color=auto", path])
+        subprocess.run(["ls", "-F", "--color=auto", "--group-directories-first", path])
     else:
         for item in input_list[2:]:
             item = path + "/" + item
-            subprocess.run(["ls", "-F", "--color=auto", item])
+            subprocess.run(
+                ["ls", "-F", "--color=auto", "--group-directories-first", item]
+            )
 
 
 # cat function
@@ -26,8 +26,8 @@ def fun_cat(input_list, path):
         item = path + "/" + item
         subprocess.run(["cat", item])
         if index != len(input_list[2:]) - 1:
-            print("-" * 50, end="", sep="")
-            print("\n\n", end="")
+            print("-" * 50, sep="")
+            print("\n")
 
 
 # fd function
@@ -114,20 +114,13 @@ def fun_edit(input_list, path):
         files[i] = path + "/" + files[i]
     # expand list elements as
     # individual parameters to a function
-    subprocess.run(["nvim", "-O", *files[1:]], check=True)  # capture_output=True
+    subprocess.run(["nvim", "-O", *files[1:]], check=True)
 
     for item in files[1:]:
         if os.path.isfile(item) == True:
-            result = subprocess.run(["stat", "-c", "%a", item], stdout=subprocess.PIPE)
-            permission = result.stdout.decode("utf-8").strip()
-            if permission != 744:
-                subprocess.run(["chmod", "744", item], check=True)
-
-
-# check missing argument
-if len(input_list) == 1:
-    print("Missing argument for", os.path.basename(__file__))
-    sys.exit(1)
+            permission = oct(stat.S_IMODE(os.stat(item).st_mode))
+            if permission != 0o744:
+                os.chmod(item, 0o744)
 
 
 def ensure_one_parameter(input_list):
@@ -159,6 +152,14 @@ def ensure_only_two_parameter(input_list):
     else:
         return True
 
+
+input_list = sys.argv
+path = os.path.expanduser("~/.local/bin")
+
+# check missing argument
+if len(input_list) == 1:
+    print("Missing argument for", os.path.basename(__file__))
+    sys.exit(1)
 
 match input_list[1]:
     case "ls":
