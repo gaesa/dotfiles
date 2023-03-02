@@ -2,13 +2,13 @@ require("set")
 require("remap")
 require("autocmd")
 require("thepacker")
--- ./lua/thepacker.lua
--- ./after/plugin/colors.lua
--- ./after/plugin/lualine.lua
--- ./after/plugin/telescope.lua
--- ./after/plugin/treesitter.lua
--- ./after/plugin/lsp.lua
--- ./after/plugin/luasnip.lua
--- ./after/plugin/undotree.lua
--- ./after/plugin/harpoon.lua
--- ./after/plugin/hop.lua
+-- ~/.config/nvim/lua/thepacker.lua
+-- ~/.config/nvim/after/plugin/colors.lua
+-- ~/.config/nvim/after/plugin/lualine.lua
+-- ~/.config/nvim/after/plugin/telescope.lua
+-- ~/.config/nvim/after/plugin/treesitter.lua
+-- ~/.config/nvim/after/plugin/lsp.lua
+-- ~/.config/nvim/after/plugin/luasnip.lua
+-- ~/.config/nvim/after/plugin/undotree.lua
+-- ~/.config/nvim/after/plugin/harpoon.lua
+-- ~/.config/nvim/after/plugin/hop.lua
