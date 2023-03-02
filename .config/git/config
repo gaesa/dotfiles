@@ -8,6 +8,7 @@
 [diff]
     tool = nvimdiff
 [difftool "nvimdiff"]
+    # 'wincmd w' goes to the next window, 'wincmd H' moves the window to the far left
     cmd = nvim -d \"$LOCAL\" \"$REMOTE\" -c \"wincmd w\" -c \"wincmd H\"
 [difftool]
     prompt = false
@@ -16,7 +17,8 @@
 [mergetool]
     keepBackup = false
 [mergetool "nvimdiff"]
-    cmd = nvim -d \"$LOCAL\" \"$MERGED\" \"$BASE\" \"$REMOTE\" -c \"wincmd w\" -c \"wincmd J\"
+    #cmd = nvim -d \"$LOCAL\" \"$MERGED\" \"$BASE\" \"$REMOTE\" -c \"wincmd w\" -c \"wincmd J\"
+    cmd = nvim -d \"$LOCAL\" \"$MERGED\" \"$REMOTE\" -c \"wincmd w\" -c \"wincmd J\"
 [alias]
     s = status
     st = stash
