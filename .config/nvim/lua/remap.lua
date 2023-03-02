@@ -1,8 +1,5 @@
-vim.g.mapleader = " "
+-- Builtin file explorer
 vim.keymap.set("n", "<leader>fm", vim.cmd.Ex)
-vim.g.netrw_browse_split = 0
-vim.g.netrw_banner = 0
-vim.g.netrw_winsize = 25
 
 -- Intuitively move cursor
 vim.keymap.set("v", "J", ":m '>+1<CR>gv=gv")
@@ -42,7 +39,6 @@ vim.keymap.set({ "n", "v" }, "<leader>C", [["+C]])
 vim.keymap.set("n", "gf", ":e <cfile><CR>", { noremap = true, silent = true })
 
 -- Quit and Save
--- vim.keymap.set('n', 'Q', '<nop>')
 if vim.o.diff == true then
     vim.keymap.set({ "n", "i" }, "<C-q>", "<ESC>:cq<CR>", { noremap = true })
     vim.keymap.set("n", "Q", "<ESC>:q<CR>", { silent = true })
