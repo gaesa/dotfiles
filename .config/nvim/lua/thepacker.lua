@@ -48,8 +48,11 @@ return require("packer").startup(function(use)
     })
 
     use("theprimeagen/harpoon")
+
     use("mbbill/undotree")
+
     -- use 'tpope/vim-fugitive'
+
     use({
         "VonHeikemen/lsp-zero.nvim",
         branch = "v1.x",
@@ -93,9 +96,12 @@ return require("packer").startup(function(use)
         end,
     })
 
+    use("lukas-reineke/indent-blankline.nvim")
+
     -- Input method
     use("h-hg/fcitx.nvim")
 
+    --- Bootstrapping
     if packer_bootstrap then
         require("packer").sync()
     end

@@ -6,6 +6,7 @@ require("thepacker")
 -- ~/.config/nvim/lua/thepacker.lua
 -- ~/.config/nvim/after/plugin/colors.lua
 -- ~/.config/nvim/after/plugin/lualine.lua
+-- ~/.config/nvim/after/plugin/indent-blankline.lua
 -- ~/.config/nvim/after/plugin/telescope.lua
 -- ~/.config/nvim/after/plugin/treesitter.lua
 -- ~/.config/nvim/after/plugin/lsp.lua
