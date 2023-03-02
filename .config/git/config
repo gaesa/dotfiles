@@ -18,7 +18,7 @@
     keepBackup = false
 [mergetool "nvimdiff"]
     #cmd = nvim -d \"$LOCAL\" \"$MERGED\" \"$BASE\" \"$REMOTE\" -c \"wincmd w\" -c \"wincmd J\"
-    cmd = nvim -d \"$LOCAL\" \"$MERGED\" \"$REMOTE\" -c \"wincmd w\" -c \"wincmd J\"
+    cmd = nvim -d \"$LOCAL\" \"$REMOTE\" \"$MERGED\" -c \"wincmd W\" -c \"wincmd J\"
 [alias]
     s = status
     st = stash
