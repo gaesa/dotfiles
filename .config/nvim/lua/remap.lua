@@ -38,6 +38,9 @@ vim.keymap.set({ "n", "v" }, "<leader>C", [["+C]])
 -- vim.keymap.set("x", "<leader>p", [["_dP]])
 -- vim.keymap.set({ "n", "v" }, "<leader>d", [["_d]])
 
+-- Automatically create a new file as necessary
+vim.keymap.set("n", "gf", ":e <cfile><CR>", { noremap = true, silent = true })
+
 -- Quit and Save
 -- vim.keymap.set('n', 'Q', '<nop>')
 if vim.o.diff == true then

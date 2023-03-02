@@ -1,4 +1,4 @@
 require("set")
 require("remap")
 require("autocmd")
--- ./after/plugin/colors.lua
+-- ~/.config/nvim/after/plugin/colors.lua
