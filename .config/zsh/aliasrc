@@ -23,7 +23,7 @@ alias pf="pkgfile"
 alias pm="pacman"
 
 alias g="git"
-alias zg="z $HOME/dev/git"
+alias zg="z $HOME/dm/pj/git"
 # alias cf="g --git-dir=$HOME/.config/dotfiles/ --work-tree=$HOME"
 alias cf="yadm"
 alias cfz="e $HOME/.config/zsh/.zshrc"
