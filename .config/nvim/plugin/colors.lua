@@ -1,6 +1,6 @@
 function GreatTheme(color, time)
     local home = os.getenv("HOME")
-    local command = "test -d " .. home .. "/.local/share/nvim/site/pack/packer/start/" .. color
+    local command = "test -d " .. home .. "/.local/share/nvim/lazy/" .. color
     if os.execute(command) == 0 then
         color = color
     else

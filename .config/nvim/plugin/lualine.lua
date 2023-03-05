@@ -82,7 +82,7 @@ require("lualine").setup({
                     mac = "CR",
                 },
             },
-            "filetype",
+            { "filetype", icons_enabled = false },
         },
         lualine_y = {
             -- { trailing, color = "WarningMsg" },
