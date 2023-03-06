@@ -133,6 +133,7 @@ local plugins = {
     {
         "windwp/nvim-autopairs",
         event = "VeryLazy",
+        config = true,
     },
 
     { "lukas-reineke/indent-blankline.nvim", event = "VeryLazy" },
