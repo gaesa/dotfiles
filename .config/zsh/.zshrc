@@ -144,9 +144,9 @@ bindkey '^D' exit_zsh
 export FZF_DEFAULT_OPTS=''
 # Change theme depending on time
 if [[ "$(date +%H:%M)" > "05:30" ]] && [[ "$(date +%H:%M)" < "18:00" ]]; then
-    source "$HOME/.local/bin/theme" light
+    source "$HOME/.local/bin/set-theme" light
 else
-    source "$HOME/.local/bin/theme" dark
+    source "$HOME/.local/bin/set-theme" dark
 fi
 # See why '/proc' need to be excluded:
 # https://github.com/sharkdp/fd/issues/288
