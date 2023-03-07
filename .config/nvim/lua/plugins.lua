@@ -49,7 +49,7 @@ local plugins = {
 
     { "theprimeagen/harpoon" },
 
-    { "mbbill/undotree" },
+    { "mbbill/undotree", cmd = { "UndotreeToggle" } },
 
     --  'tpope/vim-fugitive',
 
