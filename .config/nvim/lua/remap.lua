@@ -2,8 +2,8 @@
 vim.keymap.set("n", "<leader>fm", vim.cmd.Ex)
 
 -- Intuitively move cursor
-vim.keymap.set("v", "J", ":m '>+1<CR>gv=gv")
-vim.keymap.set("v", "K", ":m '<-2<CR>gv=gv")
+vim.keymap.set("v", "J", ":m '>+1<CR>gv=gvzz")
+vim.keymap.set("v", "K", ":m '<-2<CR>gv=gvzz")
 vim.keymap.set("n", "J", "mzJ`z") -- allow the cursor to remain in the same position
 vim.keymap.set({ "n", "v" }, "j", "gjzz", { noremap = true })
 vim.keymap.set({ "n", "v" }, "k", "gkzz", { noremap = true })
