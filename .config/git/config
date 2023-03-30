@@ -23,7 +23,7 @@
     s = status
     st = stash
     d = difftool
-    df = diff
+    du = "!git-du"
     cm = commit
     rst = restore
     a = add
