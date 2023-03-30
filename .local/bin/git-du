@@ -1,0 +1,55 @@
+#!/usr/bin/env python3
+
+from subprocess import PIPE, run
+from os.path import join, isdir
+from os import getenv
+import sys
+
+
+def getPath_work_tree():
+    work_tree = (
+        run(["git", "rev-parse", "--show-toplevel"], stdout=PIPE, check=True)
+        .stdout.decode("utf-8")
+        .rstrip()
+    )
+    return work_tree
+
+
+def getPath_tracked_files(work_tree):
+    tracked_files = (
+        run(["git", "ls-tree", "--full-tree", "--name-only", "-r", "HEAD"], stdout=PIPE)
+        .stdout.decode("utf-8")
+        .rstrip()
+        .split("\n")
+    )
+    for i in range(0, len(tracked_files)):
+        tracked_files[i] = join(work_tree, tracked_files[i])
+    return tracked_files
+
+
+def getPath_git_dir(work_tree):
+    git_dir = join(work_tree, ".git")
+    GIT_DIR = getenv("GIT_DIR")
+    if isdir(git_dir):
+        return git_dir
+    else:
+        return GIT_DIR
+
+
+def main():
+    input_list = sys.argv
+    work_tree = getPath_work_tree()
+    git_dir = getPath_git_dir(work_tree)
+    tracked_files = getPath_tracked_files(work_tree)
+    if len(input_list) > 1:
+        if input_list[1] == "--all" or "-a":
+            run(["dust", *tracked_files, git_dir])
+        else:
+            print("Unrecogized argument")
+            sys.exit(1)
+    else:
+        run(["dust", *tracked_files])
+
+
+if __name__ == "__main__":
+    main()
