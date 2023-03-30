@@ -23,6 +23,7 @@
     s = status
     st = stash
     d = difftool
+    ct = shortlog -s
     du = "!git-du"
     cm = commit
     rst = restore
