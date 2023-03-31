@@ -17,4 +17,7 @@ ls.add_snippets("all", {
     s({ name = "Shebang for Python", trig = "sbpy", dscr = "Put shebang for Python" }, {
         t([[#!/usr/bin/env python3]]),
     }),
+    s({ name = "Better bash", trig = "set", dscr = "Fail fast and be aware of exit codes" }, {
+        t([[set -Eeuo pipefail]]),
+    }),
 })
