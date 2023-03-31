@@ -11,32 +11,22 @@ function diff() {
     return 0
 }
 
-#function lfcd() {
-#    local tmp="$(mktemp -uq)"
-#    trap 'rm -f $tmp >/dev/null 2>&1 && trap - HUP INT QUIT TERM PWR EXIT' HUP INT QUIT TERM PWR EXIT
-#    lf -last-dir-path="$tmp" "$@"
-#    if [ -f "$tmp" ]; then
-#        local dir="$(cat "$tmp")"
-#        [ -d "$dir" ] && [ "$dir" != "$(pwd)" ] && cd "$dir"
-#    fi
-#}
-#bindkey -s '^N' '^ulfcd\n'
-
-function raz() {
-    local -r tmp="$(mktemp)"
-    ranger --choosedir="${tmp}" "$@"
-    local -r dir="$(cat "${tmp}")"
-    rm "${tmp}"
-    if [[ "$dir" != "$(pwd)" ]]; then
-        z "$dir"
-    else
-        return 0
-    fi
-}
-bindkey -s '^N' 'raz\n'
-
 function private_mode() {
     unset HISTFILE
     printf "zsh is running in private mode, history will not be persisted.\n"
 }
 bindkey -s '^P' 'private_mode\n'
+
+function lfz() {
+    local -r tmp="$(mktemp)"
+    lf -last-dir-path="${tmp}" "$@"
+    #ranger --choosedir="${tmp}" "$@"
+    local -r dir="$(cat "${tmp}")"
+    rm "${tmp}"
+    if [[ "${dir}" != "$(pwd)" ]]; then
+        z "${dir}"
+    else
+        return 0
+    fi
+}
+bindkey -s '^N' '^ulfz\n'
