@@ -192,7 +192,7 @@ match input_list[1]:
         ensure_one_parameter(input_list)
         fun_shck(input_list, path)
     case "pdb":
-        ensure_only_one_parameter(input_list)
+        ensure_one_parameter(input_list)
         fun_pdb(input_list, path)
     case _:
         fun_edit(input_list, path)
