@@ -32,7 +32,6 @@ alias cfze="e $HOME/.config/zsh/.zshenv"
 alias cfzh="e $HOME/.config/zsh/hookrc"
 alias cfza="e $HOME/.config/zsh/aliasrc"
 alias cfzf="e $HOME/.config/zsh/functionrc"
-alias cfe="e $HOME/.config/zsh/.zshenv"
 alias cfv="e $HOME/.config/nvim/init.lua"
 
 alias mod="stat -c %a"
