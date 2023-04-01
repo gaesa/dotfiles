@@ -21,16 +21,16 @@ cmd on-cd &{{
     printf "\033]0; $(pwd | sd "$HOME" "~") - lf\007" > /dev/tty
 }}
 on-cd
-cmd open $set -f; rifle -p 0 "$fx"
+cmd open $set -f; rifle -p 0 $fx
 cmd open-with ${{
     set -f
-    rifle -l "$fx"
+    rifle -l $fx
     read -p "Open with: " method
-    rifle -p "$method" "$fx"
+    rifle -p $method $fx
 }}
 map r open-with
 cmd mkdir $mkdir -p "$(echo $* | tr ' ' '\ ')"
-cmd trash %trash "$fx"
+cmd trash %trash-put $fx
 cmd z %{{
     result="$(zoxide query --exclude $PWD $@)"
     lf -remote "send $id cd $result"
@@ -40,7 +40,7 @@ cmd zi ${{
     lf -remote "send $id cd $result"
 }}
 cmd yank-name ${{
-    result="$(basename "$fx")"
+    result="$(basename $fx)"
     echo "${result}" | wl-copy
 }}
 
