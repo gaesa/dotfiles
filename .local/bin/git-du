@@ -33,7 +33,10 @@ def getPath_git_dir(work_tree):
     if isdir(git_dir):
         return git_dir
     else:
-        return GIT_DIR
+        if GIT_DIR != None:
+            return GIT_DIR
+        else:
+            sys.exit(1)
 
 
 def main():
