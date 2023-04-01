@@ -13,7 +13,7 @@ if ! command -v paru &>/dev/null; then
     if_install="${if_install:-n}"
     case "${if_install}" in
     y | Y)
-        sudo pacman -S --needed base-devel
+        sudo pacman -Syu --needed base-devel
         cd /tmp || exit
         git clone https://aur.archlinux.org/paru.git
         cd paru || exit
@@ -32,7 +32,7 @@ read -r -p "$(printf 'Install essential packages? [Y/n]\n')" skip
 skip="${skip:-y}"
 case "${skip}" in
 y | Y)
-    paru -Syu --needed zoxide fzf powerlevel10k zsh zsh-completions zsh-history-substring-search zsh-syntax-highlighting zsh-theme-powerlevel10k-git zsh-autosuggestions git fd ripgrep trash-cli neovim duf dust pkgfile
+    paru -Syu --needed kitty zoxide fzf powerlevel10k zsh zsh-completions zsh-history-substring-search zsh-syntax-highlighting zsh-theme-powerlevel10k-git zsh-autosuggestions git fd ripgrep trash-cli neovim duf dust pkgfile
     ;;
 n | N) ;;
 *)
@@ -85,10 +85,10 @@ cf branch --set-upstream-to=origin/"${branch}" "${branch}"
 case "${branch}" in
 main)
     # Install different programs for different branches
-    read -r -p "$(printf 'Install ranger? [Y/n]\n')" if_install
+    read -r -p "$(printf 'Install lf? [Y/n]\n')" if_install
     if_install="${if_install:-y}"
     case "${if_install}" in
-    y | Y) sudo pacman -S ranger ;;
+    y | Y) sudo pacman -Syu lf ffmpegthumbnailer ;;
     n | N) ;;
     *)
         echo "Invalid parameter"
@@ -115,7 +115,7 @@ y | Y)
     # Initialize submodules
     # Fix the problem: 'fatal: not a git repository'
     if [[ "${branch}" == main ]]; then
-        cf submodule deinit -f ~/.config/ranger/plugins/ranger_devicons
+        #cf submodule deinit -f ~/.config/ranger/plugins/ranger_devicons
         printf "\n\n"
         cf submodule update --init --recursive --remote
     fi
