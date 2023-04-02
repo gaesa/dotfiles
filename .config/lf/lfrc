@@ -18,7 +18,7 @@ set cleaner ~/.config/lf/lf_kitty_clean
 # cmds/functions
 cmd on-cd &{{
     #Show current directory in window title
-    printf "\033]0; $(pwd | sd "$HOME" "~") - lf\007" > /dev/tty
+    printf "\033]0; %s - lf\007" "$(pwd | sd "$HOME" "~")" >/dev/tty
 }}
 on-cd
 cmd open $set -f; rifle -p 0 $fx
@@ -40,8 +40,8 @@ cmd zi ${{
     lf -remote "send $id cd $result"
 }}
 cmd yank-name ${{
-    result="$(basename $fx)"
-    echo "${result}" | wl-copy
+    result="$(basename $f)"
+    printf "%s" "${result}" | wl-copy
 }}
 
 # Warn about nested instances
@@ -57,7 +57,7 @@ map yy copy
 map x cut
 map p paste
 map yn yank-name
-map yp $printf "$f" | wl-copy #copy full path of the current file
+map yp $printf "%s" "$f" | wl-copy #copy full path of the current file
 map <esc> clear
 map <c-n> push :mkdir<space>
 map <c-r> reload
