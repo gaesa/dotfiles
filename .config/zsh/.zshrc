@@ -152,7 +152,7 @@ bindkey '^D' exit_zsh
 
 export FZF_DEFAULT_OPTS=''
 # Change theme depending on time
-if [[ "$(date +%H:%M)" > "05:30" ]] && [[ "$(date +%H:%M)" < "18:00" ]]; then
+if (( $(date +%H) > 6 )) && (( $(date +%H) < 18 )) then
     source "$HOME/.local/bin/set-theme" light
 else
     source "$HOME/.local/bin/set-theme" dark
