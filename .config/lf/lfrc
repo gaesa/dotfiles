@@ -43,6 +43,28 @@ cmd yank-name ${{
     result="$(basename $f)"
     printf "%s" "${result}" | wl-copy
 }}
+cmd smart-rename &{{
+    if [[ "$(echo "$fx" | wc -l)" -gt 1 ]]; then
+        lf -remote "send $id echo You can't change more than one file name"
+        lf -remote "send $id unselect"
+    else
+        filename=$(basename -- "$f")
+        extension="${filename##*.}"
+        if [[ -d "$f" ]]; then
+            lf -remote "send $id rename"
+        elif [[ -z "${extension}" ]]; then
+            lf -remote "send $id rename"
+        else
+            ext_len="$(echo ${f##*.} | wc -m)"
+            pos=""
+            for _ in $(seq "$ext_len"); do
+                pos="${pos}<left>"
+            done
+            lf -remote "send $id rename"
+            lf -remote "send $id push "$pos""
+        fi
+    fi
+}}
 
 # Warn about nested instances
 %[ $LF_LEVEL -eq 1 ] || echo "Warning: You're in a nested lf instance!"
@@ -68,8 +90,7 @@ map o &xdg-open "$f"
 map O open-with
 
 map <f-2> rename
-map A push <f-2> # at the very end
-map I push A<c-a> # at the very beginning
-map r push A<a-b><c-b> # before extension
+map R rename
+map r smart-rename # before extension if necessary
 
 map e push :!nvim<space>
