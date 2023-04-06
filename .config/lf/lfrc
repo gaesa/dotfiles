@@ -20,17 +20,26 @@ cmd on-cd &{{
     #Show current directory in window title
     printf "\033]0; %s - lf\007" "$(pwd | sd "$HOME" "~")" >/dev/tty
 }}
-on-cd
-cmd open $set -f; rifle -p 0 $fx
+cmd open ${{
+    set -f
+    rifle -p 0 $fx
+}}
 cmd open-with ${{
     set -f
     rifle -l $fx
     read -p "Open with: " method
     rifle -p $method $fx
 }}
-map r open-with
-cmd mkdir $mkdir -p "$(echo $* | tr ' ' '\ ')"
-cmd trash %trash-put $fx
+cmd mkdir ${{
+    mkdir -p "$(echo $* | tr ' ' '\ ')"
+}}
+cmd trash !{{
+    start=$(date +%s)
+    trash-put $fx
+    end=$(date +%s)
+    duration=$(( end - start ))
+    printf "It took %s seconds\n" "${duration}"
+}}
 cmd z %{{
     result="$(zoxide query --exclude $PWD $@)"
     lf -remote "send $id cd $result"
