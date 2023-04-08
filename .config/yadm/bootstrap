@@ -88,7 +88,7 @@ main)
     read -r -p "$(printf 'Install lf? [Y/n]\n')" if_install
     if_install="${if_install:-y}"
     case "${if_install}" in
-    y | Y) sudo pacman -Syu lf ffmpegthumbnailer ;;
+    y | Y) sudo pacman -Syu --needed lf ffmpegthumbnailer atool ;;
     n | N) ;;
     *)
         echo "Invalid parameter"
