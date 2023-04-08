@@ -33,12 +33,14 @@ cmd open-with ${{
 cmd mkdir ${{
     mkdir -p "$(echo $* | tr ' ' '\ ')"
 }}
-cmd trash !{{
+cmd trash ${{
     start=$(date +%s)
     trash-put $fx
     end=$(date +%s)
     duration=$(( end - start ))
-    printf "It took %s seconds\n" "${duration}"
+    if (("${duration}" > 0)); then
+        printf "It took %s seconds\n" "${duration}"
+    fi
 }}
 cmd z %{{
     result="$(zoxide query --exclude $PWD $@)"
