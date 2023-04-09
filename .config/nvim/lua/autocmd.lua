@@ -5,6 +5,24 @@ local autocmd = vim.api.nvim_create_autocmd
 autocmd("InsertEnter", { command = [[set nornu]] })
 autocmd("InsertLeave", { command = [[set rnu]] })
 
+-- Yank selection to primary clipboard automatically
+-- limitation: in some cases, this autocmd doesn't work, for example,
+-- when the cursor is at the end of a word, after pressing `viw`, only the last character is yanked
+-- related pull: https://github.com/neovim/neovim/pull/13896#issuecomment-774680224
+-- related post: https://vi.stackexchange.com/questions/36692/vimscript-how-to-detect-selection-of-a-text-object-in-visual-mode
+autocmd({ "CursorMoved", "ModeChanged" }, {
+    pattern = "*",
+    callback = function()
+        local mode = string.sub(vim.api.nvim_get_mode().mode, 1, 1)
+        if mode ~= "v" and mode ~= "V" then
+            return
+        else
+            vim.cmd([[normal! "*y]])
+            vim.cmd([[normal! gv]])
+        end
+    end,
+})
+
 -- Return to last edited postition
 autocmd(
     "BufReadPost",
