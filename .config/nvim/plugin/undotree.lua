@@ -1,6 +1,6 @@
 vim.keymap.set("n", "<leader>u", vim.cmd.UndotreeToggle)
-vim.api.nvim_exec(
-    [[
+-- stylua: ignore
+vim.api.nvim_exec2([[
     if has("persistent_undo")
        let target_path = expand('~/.local/state/undo')
 
@@ -16,7 +16,6 @@ vim.api.nvim_exec(
 
     if !exists('g:undotree_SplitWidth')
         let g:undotree_SplitWidth = 5
-    endif
-    ]],
-    false
+    endif]],
+    { output = false }
 )
