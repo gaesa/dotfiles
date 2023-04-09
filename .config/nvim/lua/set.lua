@@ -7,6 +7,9 @@ vim.opt.title = true
 -- Hide tilde "~" at the start of nonexistent line
 vim.opt.fillchars:append("eob: ")
 
+-- Diff
+vim.opt.diffopt:append("linematch:60")
+
 -- Encoding
 vim.opt.fileencodings = "ucs-bom,utf-8,gbk,sjis,euc-jp,big5,gb18030,latin1"
 -- EOL
