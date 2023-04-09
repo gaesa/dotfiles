@@ -16,10 +16,11 @@ local function mixindent()
         mixed_same_line = vim.fn.search([[\v^(\t+ | +\t)]], "nwc")
         mixed = mixed_same_line > 0
     end
-    if not mixed then
+    if vim.bo.filetype == "help" then
         return ""
-    end
-    if mixed_same_line ~= nil and mixed_same_line > 0 then
+    elseif not mixed then
+        return ""
+    elseif mixed_same_line ~= nil and mixed_same_line > 0 then
         return "mixed-indent:" .. mixed_same_line
     end
     local space_indent_cnt = vim.fn.searchcount({ pattern = space_pat, max_count = 1e3 }).total
