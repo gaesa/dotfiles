@@ -32,6 +32,7 @@ fi
 # Terminal
 export EDITOR=nvim
 export PAGER=less
+export MANPAGER='nvim +Man!'
 export SYSTEMD_LESS=FRXMK
 
 # Start ssh-agent with systemd user
