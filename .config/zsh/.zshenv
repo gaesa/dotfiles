@@ -25,8 +25,16 @@ export WGETRC="$XDG_CONFIG_HOME"/wget/wgetrc
 export PYENV_ROOT="$XDG_DATA_HOME"/pyenv
 
 # Add scripts path
-if [[ ":$PATH:" != *":$HOME/.local/bin:"* ]]; then
+if [[ -d "$HOME/.local/bin" ]] && [[ ":$PATH:" != *":$HOME/.local/bin:"* ]]; then
     path+=("$HOME/.local/bin")
+fi
+# Add add-on application software packages path
+if [[ -d "/opt/bin" ]] && [[ ":$PATH:" != *":/opt/bin:"* ]]; then
+    path+=("/opt/bin")
+fi
+# Add current directory to path
+if [[ ":$PATH:" != *":.:"* ]]; then
+    path+=(".")
 fi
 
 # Terminal
