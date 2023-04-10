@@ -39,7 +39,7 @@ vim.keymap.set({ "n", "v" }, "<leader>C", [["+C]])
 vim.keymap.set("n", "gf", ":e <cfile><CR>", { noremap = true, silent = true })
 
 -- Quit and Save
-if vim.o.diff == true then
+if vim.wo.diff == true then
     vim.keymap.set({ "n", "i" }, "<C-q>", "<ESC>:cq<CR>", { noremap = true })
     vim.keymap.set("n", "Q", "<ESC>:q<CR>", { silent = true })
 else

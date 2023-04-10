@@ -3,19 +3,6 @@ function GreatTheme(color, time)
     local command = "test -d " .. home .. "/.local/share/nvim/lazy/" .. color
     if os.execute(command) == 0 then
         color = color
-    else
-        if time == "night" then
-            color = "habamax"
-            vim.opt.cursorline = true
-        else
-            if vim.o.diff == true then
-                color = "shine"
-            else
-                color = "default"
-            end
-        end
-    end
-    if color == "everforest" then
         vim.opt.termguicolors = true
         -- vim.cmd([[let g:everforest_better_performance = 1]])
         vim.g.everforest_better_performance = 1
@@ -25,6 +12,19 @@ function GreatTheme(color, time)
             -- Maybe related features are not 100% exposed to Lua yet
             -- vim.g.erverforest_transparent_background = 1
             vim.cmd([[let g:everforest_transparent_background = 1]])
+        else
+            vim.g.erverforest_transparent_background = 0
+        end
+    else
+        if time == "night" then
+            color = "habamax"
+            vim.opt.cursorline = true
+        else
+            if vim.wo.diff == true then
+                color = "shine"
+            else
+                color = "shine"
+            end
         end
     end
     vim.cmd.colorscheme(color)
@@ -35,9 +35,13 @@ function GreatTheme(color, time)
             vim.opt.cursorlineopt = "number"
             vim.opt.cursorline = true
         end
-        if vim.o.diff == true then
+        if vim.wo.diff == true then
             vim.opt.cursorline = false
+        else
+            return
         end
+    else
+        return
     end
 end
 
@@ -54,8 +58,9 @@ if vim.env.TERM ~= "linux" then
         GreatTheme(color, time)
     end
 else
-    vim.cmd([[colorscheme habamax]])
-    if vim.o.diff == true then
+    if vim.wo.diff == true then
         vim.cmd([[colorscheme default]])
+    else
+        vim.cmd([[colorscheme habamax]])
     end
 end
