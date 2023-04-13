@@ -48,6 +48,9 @@ else
 end
 vim.keymap.set({ "n", "i" }, "<C-s>", "<ESC>:xa<CR>", { noremap = true })
 
+-- Make files executable
+vim.keymap.set("n", "<leader>x", "<cmd>!chmod u+x %<CR><Enter>", { noremap = true, silent = true })
+
 -- Clears and redraws screen, clears search highlighting and then zz
 vim.keymap.set("n", "<Enter>", "<C-l>:noh<CR>zz<Enter>", { noremap = true, silent = true })
 
