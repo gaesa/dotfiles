@@ -114,8 +114,6 @@ require("mason-null-ls").setup({
     automatic_installation = false,
     automatic_setup = false,
 })
--- Required when `automatic_setup` is true
--- require("mason-null-ls").setup_handlers()
 
 -- Formatting
 -- vim.api.nvim_command([[autocmd BufWritePre <buffer> NullFormat]])
