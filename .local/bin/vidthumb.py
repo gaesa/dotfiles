@@ -3,7 +3,7 @@ import json
 from os.path import isfile, isdir, expanduser, realpath, join, basename
 from os import makedirs, remove
 import sys
-from subprocess import DEVNULL, PIPE, run
+from subprocess import PIPE, run
 from uuid import uuid4
 
 
@@ -63,7 +63,7 @@ def gen_thumb(video, thumb_path):
             "-t",
             "25%",
         ],
-        stderr=DEVNULL,
+        check=True,
     )
 
 
