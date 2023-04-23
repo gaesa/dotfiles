@@ -29,5 +29,5 @@ dbus-update-activation-environment --systemd --all
 
 # Start KDE from TTY
 if [ -z "$WAYLAND_DISPLAY" ] && [ "$(tty)" = "/dev/tty1" ]; then
-    exec startplasma-wayland
+    exec startplasma-wayland &>"${HOME}"/.cache/startup.log
 fi
