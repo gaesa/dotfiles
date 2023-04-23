@@ -32,9 +32,10 @@ def index_file_check(index):
 
 def clean(cache_dir, index):
     cache_list = run(
-        ["fd", "-t", "--changed-before", "1months", r"(\.jpg)$", cache_dir],
+        ["fd", "-t", "f", "--changed-before", "1months", r"(\.jpg)$", cache_dir],
         capture_output=True,
         text=True,
+        check=True,
     ).stdout.splitlines()
     for cache in cache_list:
         remove(cache)
@@ -91,10 +92,10 @@ def main():
     input_len_check(input_list)
     file = input_list[1]
 
-    cache_dir = expanduser("~/.cache/vidthumb")
+    cache_dir = expanduser("~/.cache/lf_thumb")
     cache_dir_check(cache_dir)
 
-    index = f"{cache_dir}/index.json"
+    index = join(cache_dir, "index.json")
     index_file_check(index)
 
     # Remove old caches, including those whose respective media files no longer exist,
