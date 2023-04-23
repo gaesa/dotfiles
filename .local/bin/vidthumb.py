@@ -44,11 +44,8 @@ def clean(cache_dir, index):
         cache = basename(cache)
         with open(index) as f:
             d = json.load(f)
-            for key, value in d.items():
-                if value == cache:
-                    d.pop(key)
-                else:
-                    pass
+            video = d[1].pop(cache)
+            d[0].pop(video)
         with open(index, "w") as f:
             json.dump(d, f, indent=2, ensure_ascii=False)
 
@@ -87,8 +84,8 @@ def main():
     need_update_index = False
     with open(index) as f:
         d = json.load(f)
-        if video in d:
-            thumb = d[video]
+        if video in d[0]:
+            thumb = d[0][video]
             thumb_path = join(cache_dir, thumb)
             if not isfile(thumb_path):
                 gen_thumb(video, thumb_path)
@@ -101,7 +98,8 @@ def main():
             need_update_index = True
     if need_update_index:
         with open(index, "w") as f:
-            d[video] = thumb
+            d[0][video] = thumb
+            d[1][thumb] = video
             json.dump(d, f, indent=2, ensure_ascii=False)
     else:
         pass
