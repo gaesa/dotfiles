@@ -50,7 +50,7 @@ def clean(cache_dir, index):
                 else:
                     pass
         with open(index, "w") as f:
-            json.dump(d, f, indent=2)
+            json.dump(d, f, indent=2, ensure_ascii=False)
 
 
 def gen_thumb(video, thumb_path):
