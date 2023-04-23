@@ -39,7 +39,11 @@ cmd trash ${{
     end=$(date +%s)
     duration=$(( end - start ))
     if (("${duration}" > 0)); then
-        printf "It took %s seconds to remove %s\n" "${duration}" $fx
+        if (("${duration}" == 1)); then
+            printf "It took %s second to remove %s\n" "${duration}" $fx
+        else
+            printf "It took %s seconds to remove %s\n" "${duration}" $fx
+        fi
     fi
 }}
 cmd z %{{
