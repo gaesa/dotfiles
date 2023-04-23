@@ -13,7 +13,10 @@ if [[ "$filetype" =~ ^image ]]; then
 elif [[ "$filetype" =~ ^video ]]; then
     # vidthumb is from here:
     # https://raw.githubusercontent.com/duganchen/kitty-pistol-previewer/main/vidthumb
-    kitty +kitten icat --silent --stdin no --transfer-mode file --place "${w}x${h}@${x}x${y}" "$(vidthumb.py "$file")" </dev/null >/dev/tty
+    kitty +kitten icat --silent --stdin no --transfer-mode file --place "${w}x${h}@${x}x${y}" "$(thumb.py "$file")" </dev/null >/dev/tty
+    exit 1
+elif [[ "$filetype" =~ ^audio ]] && (mediainfo "$file" | rg -q -m 1 'Cover'); then
+    kitty +kitten icat --silent --stdin no --transfer-mode file --place "${w}x${h}@${x}x${y}" "$(thumb.py "$file")" </dev/null >/dev/tty
     exit 1
 else
     ~/.config/lf/scope-lf-wrapper.sh "$file"
