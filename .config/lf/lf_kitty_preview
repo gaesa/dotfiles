@@ -5,7 +5,8 @@ h="$3"
 x="$4"
 y="$5"
 
-filetype="$(file -Lb --mime-type "$file")"
+# `file -Lb --mime-type` treats .m4a as video/mp4
+filetype="$(xdg-mime query filetype "$file")"
 
 if [[ "$filetype" =~ ^image ]]; then
     kitty +kitten icat --silent --stdin no --transfer-mode file --place "${w}x${h}@${x}x${y}" "$file" </dev/null >/dev/tty
