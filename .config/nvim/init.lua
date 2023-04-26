@@ -13,3 +13,4 @@ require("plugins")
 -- ~/.config/nvim/plugin/undotree.lua
 -- ~/.config/nvim/plugin/harpoon.lua
 -- ~/.config/nvim/plugin/hop.lua
+-- ~/.config/nvim/plugin/ts-autotag.lua

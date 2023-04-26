@@ -135,6 +135,10 @@ local plugins = {
         event = "VeryLazy",
         config = true,
     },
+    {
+        "windwp/nvim-ts-autotag",
+        event = "VeryLazy",
+    },
 
     { "lukas-reineke/indent-blankline.nvim", event = "VeryLazy" },
 
