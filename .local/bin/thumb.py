@@ -25,7 +25,8 @@ def cache_dir_check(cache_dir):
 def index_file_check(index):
     if not isfile(index):
         with open(index, "w+") as f:
-            f.write("{}")
+            d = [{}, {}]
+            json.dump(d, f, indent=2, ensure_ascii=False)
     else:
         return None
 
