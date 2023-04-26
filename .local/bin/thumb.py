@@ -1,11 +1,10 @@
 #!/usr/bin/env python3
 import json
 from os.path import isfile, isdir, expanduser, realpath, join, basename
-from os import makedirs, remove
+from os import makedirs, remove, environ
 import sys
 from subprocess import DEVNULL, run
 from uuid import uuid4
-from mimetypes import guess_type
 
 
 def input_len_check(input_list):
@@ -50,40 +49,37 @@ def clean(cache_dir, index):
 
 
 def gen_thumb(media, thumb_path):
-    mime_type, _ = guess_type(media)
-    if mime_type != None:
-        if mime_type.startswith("video"):
-            run(
-                [
-                    "ffmpegthumbnailer",
-                    "-i",
-                    media,
-                    "-o",
-                    thumb_path,
-                    "-s",
-                    "0",
-                    "-t",
-                    "25%",
-                ],
-                check=True,
-                stdout=DEVNULL,
-            )
-        elif mime_type.startswith("audio"):
-            run(
-                [
-                    "ffmpeg",
-                    "-i",
-                    media,
-                    "-an",
-                    "-vcodec",
-                    "copy",
-                    thumb_path,
-                ],
-                check=True,
-                stdout=DEVNULL,
-            )
-        else:
-            sys.exit(1)
+    mime_type = environ["filetype"]
+    if mime_type.startswith("video"):
+        run(
+            [
+                "ffmpegthumbnailer",
+                "-i",
+                media,
+                "-o",
+                thumb_path,
+                "-s",
+                "0",
+                "-t",
+                "25%",
+            ],
+            check=True,
+            stdout=DEVNULL,
+        )
+    elif mime_type.startswith("audio"):
+        run(
+            [
+                "ffmpeg",
+                "-i",
+                media,
+                "-an",
+                "-vcodec",
+                "copy",
+                thumb_path,
+            ],
+            check=True,
+            stdout=DEVNULL,
+        )
     else:
         sys.exit(1)
 

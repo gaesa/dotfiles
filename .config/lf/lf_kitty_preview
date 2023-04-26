@@ -7,9 +7,10 @@ y="$5"
 
 # `file -Lb --mime-type` treats .m4a as video/mp4
 if [[ "${file}" =~ \.m4a$ ]]; then
-    filetype="audio/mp4"
+    export filetype="audio/mp4"
 else
     filetype="$(file -Lb --mime-type "${file}")"
+    export filetype
 fi
 
 if [[ "$filetype" =~ ^image ]]; then
