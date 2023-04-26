@@ -84,6 +84,9 @@ cmd extract ${{
     set -f
     atool -x $f
 }}
+cmd edit ${{
+    "${EDITOR}" $f
+}}
 
 # Warn about nested instances
 %[ $LF_LEVEL -eq 1 ] || echo "Warning: You're in a nested lf instance!"
@@ -112,4 +115,4 @@ map <f-2> rename
 map R rename
 map r smart-rename # before extension if necessary
 
-map e push :!nvim<space>
+map e edit
