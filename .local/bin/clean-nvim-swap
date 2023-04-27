@@ -1,6 +1,7 @@
 #!/usr/bin/bash
 set -Eeuo pipefail
 
-if [[ -d "${HOME}"/.local/state/nvim/swap ]]; then
-    fd -t f --changed-before 2weeks . "${HOME}"/.local/state/nvim/swap -x trash {}
+path="${HOME}"/.local/state/nvim/swap
+if [[ -d "${path}" ]]; then
+    fd -t f --changed-before 2weeks . "${path}" -x trash {}
 fi
