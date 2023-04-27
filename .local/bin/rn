@@ -1,0 +1,56 @@
+#!/usr/bin/env python3
+import sys
+from subprocess import run
+from os.path import isdir, join
+from shutil import move
+from os import getenv, listdir, remove
+
+
+def mktemp():
+    name = run(["mktemp"], capture_output=True, text=True).stdout.rstrip()
+    return name
+
+
+def save_name_list(name_list, name_record):
+    with open(name_record, "w") as f:
+        f.write("\n".join(name_list))
+
+
+def rename_edit(name_record):
+    editor = getenv("EDITOR", "nvim")
+    run([editor, name_record], check=True)
+
+
+def rename_move(path, name_list, name_record):
+    with open(name_record, "r") as f:
+        lines = f.read().splitlines()
+    if len(lines) == len(name_list):
+        for i in range(0, len(lines)):
+            if lines[i] != name_list[i]:
+                move(join(path, name_list[i]), join(path, lines[i]))
+    else:
+        remove(name_record)
+        sys.exit(1)
+
+
+def main():
+    input_list = sys.argv
+    if len(input_list) < 2:
+        sys.exit(1)
+    else:
+        for path in input_list[1:]:
+            if isdir(path):
+                name_list = listdir(path)
+                name_record = mktemp()
+                save_name_list(name_list, name_record)
+
+                rename_edit(name_record)
+                rename_move(path, name_list, name_record)
+
+                remove(name_record)
+            else:
+                pass
+
+
+if __name__ == "__main__":
+    main()
