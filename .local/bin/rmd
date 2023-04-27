@@ -1,0 +1,44 @@
+#!/usr/bin/env python3
+from os import unlink, walk, listdir, rmdir
+from os.path import isdir, islink, join, realpath
+import sys
+
+
+def rm_empty_dirs(path):
+    for root, dirs, _ in walk(path, topdown=False):
+        for dir in dirs:
+            folder_path = join(root, dir)
+            if listdir(folder_path) == []:
+                if islink(folder_path):
+                    unlink(folder_path)
+                else:
+                    rmdir(folder_path)
+            else:
+                pass
+
+    if listdir(path) == []:
+        if islink(path):
+            rmdir(realpath(path))
+            unlink(path)
+        else:
+            rmdir(path)
+    else:
+        return
+
+
+def main():
+    input_list = sys.argv
+
+    if len(input_list) < 2:
+        sys.exit(1)
+    else:
+        paths = input_list[1:]
+        for path in paths:
+            if isdir(path):
+                rm_empty_dirs(path)
+            else:
+                pass
+
+
+if __name__ == "__main__":
+    main()
