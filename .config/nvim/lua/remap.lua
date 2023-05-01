@@ -69,3 +69,19 @@ vim.keymap.set("n", "<leader>s", [[:%s/\<<C-r><C-w>\>/<C-r><C-w>/gI<Left><Left><
 
 -- FZF
 vim.keymap.set({ "n", "i" }, "<C-f>", "<ESC>:FZF<CR>", { noremap = true, silent = true })
+
+-- GitHub
+vim.keymap.set("n", "<leader>gh", function()
+    local line = vim.api.nvim_get_current_line()
+    --local _, pos = unpack(vim.api.nvim_win_get_cursor(0))
+
+    local pattern = [=[["'][%w%-_%.]+/[%w%-_%.]+["']]=]
+    local match = string.match(line, pattern)
+
+    if match ~= nil then
+        local link = "https://github.com/" .. string.sub(match, 2, -2)
+        vim.fn.jobstart({ "xdg-open", link }, { detach = true })
+    else
+        print("No GitHub link found")
+    end
+end, { noremap = true, silent = true })
