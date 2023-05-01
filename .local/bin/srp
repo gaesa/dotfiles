@@ -2,197 +2,172 @@
 # A stupid script that avoids repeatedly typing the script path
 # Depends On: fd, ripgrep, trash-cli, shellcheck, neovim
 
-import sys
-import subprocess
-import os
-import stat
+from sys import argv as sys_argv, exit as sys_exit, modules
+from subprocess import run
+from os.path import basename, join, isfile, expanduser
+from os import chmod, stat
+from stat import S_IMODE
+from inspect import isfunction, getmodule, currentframe
 
 
-# ls function
-def fun_ls(input_list, path):
-    if len(input_list) == 2:
-        subprocess.run(["ls", "-F", "--color=auto", "--group-directories-first", path])
+def ls(param_list, path):
+    if param_list == []:
+        run(["ls", "-F", "--color=auto", "--group-directories-first", path])
     else:
-        for item in input_list[2:]:
-            item = path + "/" + item
-            subprocess.run(
-                ["ls", "-F", "--color=auto", "--group-directories-first", item]
-            )
+        for item in param_list:
+            file = join(path, item)
+            run(["ls", "-F", "--color=auto", "--group-directories-first", file])
 
 
-# cat function
-def fun_cat(input_list, path):
-    for index, item in enumerate(input_list[2:]):
-        item = path + "/" + item
-        subprocess.run(["cat", item])
-        if index != len(input_list[2:]) - 1:
+def cat(param_list, path):
+    len_param_list = len(param_list)
+    for i in range(len_param_list):
+        item = param_list[i]
+        file = join(path, item)
+        run(["cat", file])
+        if i != len_param_list - 1:
             print("-" * 50, sep="")
             print("\n")
+        else:
+            pass
 
 
-# fd function
-def fun_fd(input_list, path):
-    subprocess.run(
-        [
-            "fd",
-            "--type",
-            "file",
-            input_list[2],
-            path,
-            "--exec-batch",
-            "printf",
-            # one " for 'r', one " for list, one " for shell
-            r"""%s\n""",
-            r"""{/}""",
-        ],
-        check=True,
-    )
+def ensure_one_parameter(param_list):
+    if len(param_list) < 1:
+        print("Missing argument")
+        sys_exit(1)
+    else:
+        return
+
+
+def fd(param_list, path):
+    ensure_one_parameter(param_list)
+    pattern = " ".join(param_list)
+    run(["fd", "-t", "f", pattern, path, "-x", "printf", r"%s\n", r"{/}"], check=True)
 
 
 # grep (rg) function
-def fun_rg(input_list, path):
+def rg(param_list, path):
     # if no object is found, 'rg' would return an error, but 'none' is not equal to 'error'
     # see also:
     # https://www.infoq.com/presentations/Null-References-The-Billion-Dollar-Mistake-Tony-Hoare/
-    subprocess.run(["rg", "--smart-case", input_list[2], path])
+    ensure_one_parameter(param_list)
+    pattern = " ".join(param_list)
+    run(["rg", "--smart-case", pattern, path])
 
 
 # rm (trash) function
-def fun_rm(input_list, path):
-    for item in input_list[2:]:
-        item = path + "/" + item
-        subprocess.run(["trash", item], check=True)
+def rm(param_list, path):
+    for item in param_list:
+        file = join(path, item)
+        run(["trash", file], check=True)
 
 
-# mv function
-def fun_mv(input_list, path):
-    item1 = path + "/" + input_list[2]
-    item2 = path + "/" + input_list[3]
-    subprocess.run(["mv", "-i", item1, item2], check=True)
+def mv(param_list, path):
+    file1 = join(path, param_list[0])
+    file2 = join(path, param_list[1])
+    run(["mv", "-i", file1, file2], check=True)
 
 
-# cp function
-def fun_cp(input_list, path):
-    item1 = path + "/" + input_list[2]
-    item2 = path + "/" + input_list[3]
-    subprocess.run(["cp", "-i", item1, item2], check=True)
+def cp(param_list, path):
+    file1 = join(path, param_list[0])
+    file2 = join(path, param_list[1])
+    run(["cp", "-i", file1, file2], check=True)
 
 
-# diff function
-def fun_diff(input_list, path):
-    item1 = path + "/" + input_list[2]
-    item2 = path + "/" + input_list[3]
-    subprocess.run(["nvim", "-d", item1, item2])
+def d(param_list, path):
+    file1 = join(path, param_list[0])
+    file2 = join(path, param_list[1])
+    run(["nvim", "-d", file1, file2])
+
+
+diff = d  # function alias
 
 
 # line count function
-def fun_lc(input_list, path):
-    for item in input_list[2:]:
-        item = path + "/" + item
-        subprocess.run(["wc", "-l", item])
+def lc(param_list, path):
+    for item in param_list:
+        file = join(path, item)
+        run(["wc", "-l", file])
 
 
-# shellcheck function
-def fun_shck(input_list, path):
-    for item in input_list[2:]:
-        item = path + "/" + item
-        subprocess.run(["shellcheck", "-x", "-o", "all", item])
+def shck(param_list, path):
+    for item in param_list:
+        file = join(path, item)
+        run(["shellcheck", "-x", "-o", "all", file])
 
 
-# pdb funciton
-def fun_pdb(input_list, path):
-    item = path + "/" + input_list[2]
-    subprocess.run(["python", "-m", "pdb", item])
+def pdb(param_list, path):
+    for program_name in param_list:
+        program_path = join(path, program_name)
+        run(["python", "-m", "pdb", program_path])
 
 
-# edit function
-# build an array then expand it to neovim
-# implementing this with '--remote' is very hard
-def fun_edit(input_list, path):
-    files = input_list
-    for i in range(1, len(files), 1):
-        files[i] = path + "/" + files[i]
-    # expand list elements as
-    # individual parameters to a function
-    subprocess.run(["nvim", "-O", *files[1:]])
+# build a list then expand it to neovim
+def edit(param_list, path):
+    files = []
+    for item in param_list:
+        file = join(path, f"{item}")
+        files.append(file)
+    run(["nvim", "-O", *files])
 
-    for item in files[1:]:
-        if os.path.isfile(item) == True:
-            permission = oct(stat.S_IMODE(os.stat(item).st_mode))
+    for file in files:
+        if isfile(file) == True:
+            permission = oct(S_IMODE(stat(file).st_mode))
             if permission != 0o744:
-                os.chmod(item, 0o744)
+                chmod(file, 0o744)
 
 
-def ensure_one_parameter(input_list):
-    if len(input_list) < 3:
-        print("Missing argument for", input_list[1])
-        sys.exit(1)
+def is_user_func(name):
+    if not name.isidentifier():
+        return False
     else:
-        return True
+        built_in_functions = set(dir(__builtins__))
+
+        frame = currentframe()
+        if frame == None:
+            return False
+        else:
+            frame_back = frame.f_back
+            if frame_back == None:
+                return False
+            else:
+                local_namespace = frame_back.f_locals
+
+        obj = local_namespace.get(name) or globals().get(name)
+
+        if obj != None:
+            module = getmodule(obj)
+            if (
+                isfunction(obj)
+                and name not in built_in_functions
+                and module == modules["__main__"]
+            ):
+                return True
+            else:
+                return False
+        else:
+            return False
 
 
-def ensure_only_one_parameter(input_list):
-    if len(input_list) < 3:
-        print("Missing argument for", input_list[1])
-        sys.exit(1)
-    elif len(input_list) > 3:
-        print("Too many arguments for", input_list[1])
-        sys.exit(2)
+def main():
+    input_list = sys_argv
+    path = expanduser("~/.local/bin")
+
+    if len(input_list) < 2:
+        print("Missing argument for", basename(__file__))
+        sys_exit(1)
     else:
-        return True
+        if (
+            is_user_func(input_list[1])
+            and input_list[1] != "edit"
+            and input_list[1] != "is_user_func"
+        ):
+            fun = getattr(modules[__name__], input_list[1])
+            fun(input_list[2:], path)
+        else:
+            edit(input_list[1:], path)
 
 
-def ensure_only_two_parameter(input_list):
-    if len(input_list) < 4:
-        print("Missing argument for", input_list[1])
-        sys.exit(1)
-    elif len(input_list) > 4:
-        print("Too many arguments for", input_list[1])
-        sys.exit(2)
-    else:
-        return True
-
-
-input_list = sys.argv
-path = os.path.expanduser("~/.local/bin")
-
-# check missing argument
-if len(input_list) == 1:
-    print("Missing argument for", os.path.basename(__file__))
-    sys.exit(1)
-
-match input_list[1]:
-    case "ls":
-        fun_ls(input_list, path)
-    case "cat":
-        ensure_one_parameter(input_list)
-        fun_cat(input_list, path)
-    case "fd":
-        ensure_one_parameter(input_list)
-        fun_fd(input_list, path)
-    case "rg":
-        ensure_one_parameter(input_list)
-        fun_rg(input_list, path)
-    case "rm":
-        ensure_one_parameter(input_list)
-        fun_rm(input_list, path)
-    case "mv":
-        ensure_only_two_parameter(input_list)
-        fun_mv(input_list, path)
-    case "cp":
-        ensure_only_two_parameter(input_list)
-        fun_cp(input_list, path)
-    case "d":
-        ensure_only_two_parameter(input_list)
-        fun_diff(input_list, path)
-    case "lc":
-        ensure_one_parameter(input_list)
-        fun_lc(input_list, path)
-    case "shck":
-        ensure_one_parameter(input_list)
-        fun_shck(input_list, path)
-    case "pdb":
-        ensure_one_parameter(input_list)
-        fun_pdb(input_list, path)
-    case _:
-        fun_edit(input_list, path)
+if __name__ == "__main__":
+    main()
