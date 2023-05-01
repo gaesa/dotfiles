@@ -24,6 +24,7 @@ alias kdiff="kitty +kitten diff"
 alias d="nvim -d"
 alias pf="pkgfile"
 alias pm="pacman"
+alias ctl="systemctl"
 
 alias g="git"
 alias zg="z $HOME/dm/pj/git"
