@@ -37,8 +37,12 @@
     mgt = mergetool
     cp = cherry-pick
     l = log --graph --pretty=format:'%C(auto)%h%C(auto)%d %s %C(dim white)(%aN, %ar)'
-    ll = log --graph --stat --pretty=format:'%C(auto)%h%C(auto)%d %s %C(dim white)(%aN, %ar)'
+    lf = log --graph --pretty=format:'%C(auto)%h%C(auto)%d %s %C(dim white)(%aN, %ar)' --follow
+    lfs = log --graph --stat --pretty=format:'%C(auto)%h%C(auto)%d %s %C(dim white)(%aN, %ar)' --follow
+    lfa = log --graph --all --pretty=format:'%C(auto)%h%C(auto)%d %s %C(dim white)(%aN, %ar)' --follow
+    lfsa = log --graph --stat --all --pretty=format:'%C(auto)%h%C(auto)%d %s %C(dim white)(%aN, %ar)' --follow
+    ls = log --graph --stat --pretty=format:'%C(auto)%h%C(auto)%d %s %C(dim white)(%aN, %ar)'
     la = log --graph --all --pretty=format:'%C(auto)%h%C(auto)%d %s %C(dim white)(%aN, %ar)'
-    lla = log --graph --all --stat --pretty=format:'%C(auto)%h%C(auto)%d %s %C(dim white)(%aN, %ar)'
+    lsa = log --graph --stat --all --pretty=format:'%C(auto)%h%C(auto)%d %s %C(dim white)(%aN, %ar)'
 [include]
     #path = ~/.config/git/config.d
