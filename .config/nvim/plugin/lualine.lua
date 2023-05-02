@@ -74,6 +74,11 @@ require("lualine").setup({
         },
         lualine_c = { { "filename", file_status = true, path = 1 } },
         lualine_x = {
+            {
+                require("lazy.status").updates,
+                cond = require("lazy.status").has_updates,
+                color = { fg = "#ff9e64" },
+            },
             encoding,
             {
                 "fileformat",
