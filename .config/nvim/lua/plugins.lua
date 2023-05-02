@@ -29,6 +29,7 @@ local plugins = {
         },
         event = "VeryLazy",
     },
+    { "nanotee/zoxide.vim", event = "VeryLazy" },
 
     {
         "sainnhe/everforest",
