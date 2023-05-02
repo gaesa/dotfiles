@@ -97,6 +97,8 @@ local plugins = {
         },
     },
 
+    { "RRethy/vim-illuminate", event = "VeryLazy" },
+
     -- Linter and formatter
     { "jay-babu/mason-null-ls.nvim", event = "VeryLazy" },
     { "jose-elias-alvarez/null-ls.nvim", event = "VeryLazy" },
