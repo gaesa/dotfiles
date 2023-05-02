@@ -9,8 +9,6 @@ vim.keymap.set({ "n", "v" }, "j", "gjzz", { noremap = true })
 vim.keymap.set({ "n", "v" }, "k", "gkzz", { noremap = true })
 vim.keymap.set({ "n", "v" }, "gj", "j", { noremap = true })
 vim.keymap.set({ "n", "v" }, "gk", "k", { noremap = true })
-vim.keymap.set({ "n", "v", "o" }, "H", "g0", { noremap = true })
-vim.keymap.set({ "n", "v", "o" }, "L", "g$", { noremap = true })
 
 -- Automatically center screen on current line (zz)
 vim.keymap.set("n", "<C-d>", "<C-d>zz")
