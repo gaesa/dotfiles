@@ -60,20 +60,21 @@ autocmd("TextYankPost", {
 -- Automatically disable search highlight
 -- https://github.com/glepnir/hlsearch.nvim
 local function stop_hl()
-    if vim.v.hlsearch == 0 then
+    if vim.v.hlsearch ~= 0 then
+        local keycode = vim.api.nvim_replace_termcodes("<Cmd>nohl<CR>", true, false, true)
+        vim.api.nvim_feedkeys(keycode, "n", false)
+    else
         return
     end
-    local keycode = vim.api.nvim_replace_termcodes("<Cmd>nohl<CR>", true, false, true)
-    vim.api.nvim_feedkeys(keycode, "n", false)
 end
-
 local function start_hl()
     local res = vim.fn.getreg("/")
     if vim.v.hlsearch == 1 and vim.fn.search([[\%#\zs]] .. res, "cnW") == 0 then
         stop_hl()
+    else
+        return
     end
 end
-
 autocmd("InsertEnter", {
     callback = function()
         stop_hl()
