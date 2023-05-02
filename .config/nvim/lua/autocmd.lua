@@ -36,7 +36,7 @@ autocmd("BufWritePre", { pattern = { "*" }, command = [[silent! %s/\s\+$//e]] })
 
 -- Formatter ('gg=G' is not smart, don't use it)
 -- Should be placed before 'Retab' as some formatters don't support space indent
-vim.api.nvim_create_autocmd("BufWritePre", { pattern = { "*" }, command = [[silent! NullFormat]] })
+autocmd("BufWritePre", { pattern = { "*" }, command = [[lua vim.lsp.buf.format({async = false})]] })
 
 -- Retab
 autocmd("BufWritePre", { pattern = { "*" }, command = [[silent! %retab]] })

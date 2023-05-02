@@ -47,20 +47,24 @@ local plugins = {
         cmd = { "TSInstall", "TSBufEnable", "TSBufDisable", "TSModuleInfo" },
     },
 
-    { "theprimeagen/harpoon" },
+    { "theprimeagen/harpoon", event = "VeryLazy" },
 
-    { "mbbill/undotree", cmd = { "UndotreeToggle" } },
+    { "mbbill/undotree", event = "VeryLazy" },
 
     --  'tpope/vim-fugitive',
 
     {
         "VonHeikemen/lsp-zero.nvim",
-        branch = "v1.x",
+        branch = "v2.x",
+        event = "VeryLazy",
         dependencies = {
             -- LSP Support
             { "neovim/nvim-lspconfig" },
             {
                 "williamboman/mason.nvim",
+                build = function()
+                    pcall(vim.cmd, "MasonUpdate")
+                end,
                 cmd = {
                     "MasonInstall",
                     "MasonUninstall",
@@ -81,38 +85,11 @@ local plugins = {
                     "hrsh7th/cmp-path",
                     "hrsh7th/cmp-nvim-lua",
                     "saadparwaiz1/cmp_luasnip",
-                },
-            },
-
-            -- Snippets
-            {
-                "L3MON4D3/LuaSnip",
-                dependencies = {
-                    "rafamadriz/friendly-snippets",
-                },
-                keys = {
                     {
-                        "<tab>",
-                        function()
-                            return require("luasnip").jumpable(1) and "<Plug>luasnip-jump-next" or "<tab>"
-                        end,
-                        expr = true,
-                        silent = true,
-                        mode = "i",
-                    },
-                    {
-                        "<tab>",
-                        function()
-                            require("luasnip").jump(1)
-                        end,
-                        mode = "s",
-                    },
-                    {
-                        "<s-tab>",
-                        function()
-                            require("luasnip").jump(-1)
-                        end,
-                        mode = { "i", "s" },
+                        "L3MON4D3/LuaSnip",
+                        dependencies = {
+                            "rafamadriz/friendly-snippets",
+                        },
                     },
                 },
             },
@@ -120,8 +97,8 @@ local plugins = {
     },
 
     -- Linter and formatter
-    { "jose-elias-alvarez/null-ls.nvim" },
-    { "jay-babu/mason-null-ls.nvim" },
+    { "jay-babu/mason-null-ls.nvim", event = "VeryLazy" },
+    { "jose-elias-alvarez/null-ls.nvim", event = "VeryLazy" },
 
     -- Motion
     {

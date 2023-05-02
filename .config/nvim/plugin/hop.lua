@@ -31,6 +31,6 @@ vim.keymap.set("", "S", function()
     hop.hint_words({ direction = directions.BEFORE_CURSOR, current_line_only = false })
 end, { remap = true })
 
-vim.keymap.set("", "gs", function()
+vim.keymap.set("", "<leader>gs", function()
     hop.hint_words({ multi_windows = true })
 end, { remap = true })
