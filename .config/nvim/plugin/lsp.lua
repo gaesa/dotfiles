@@ -80,16 +80,31 @@ cmp.setup({
     },
 })
 
+-- See mason-null-ls.nvim's documentation for more details:
+-- https://github.com/jay-babu/mason-null-ls.nvim#setup
+local null_ls = require("null-ls")
+require("mason-null-ls").setup({
+    ensure_installed = { "stylua" },
+    automatic_installation = false,
+    automatic_setup = true,
+    handlers = {
+        ruff = function(source_name, methods)
+            null_ls.register(null_ls.builtins.diagnostics.ruff)
+        end,
+
+        clang_format = function(source_name, methods)
+            null_ls.register(null_ls.builtins.formatting.clang_format.with({
+                extra_args = { "-style={IndentWidth: 4, ObjCBlockIndentWidth: 4, CommentPragmas: '^[^ ]',}" },
+            }))
+        end,
+    },
+})
+
 -- Integrate null-ls with lsp-zero
 -- https://github.com/VonHeikemen/lsp-zero.nvim/blob/v1.x/advance-usage.md
 -- https://github.com/VonHeikemen/lsp-zero.nvim/blob/v2.x/doc/md/guides/integrate-with-null-ls.md
-local null_ls = require("null-ls")
-local null_opts = lsp.build_options("null-ls", {})
-
 null_ls.setup({
     on_attach = function(client, bufnr)
-        null_opts.on_attach(client, bufnr)
-
         -- Formatting manually
         local format_cmd = function(input)
             vim.lsp.buf.format({
@@ -109,21 +124,6 @@ null_ls.setup({
     end,
 
     sources = {
-        null_ls.builtins.formatting.black,
-        null_ls.builtins.formatting.shfmt,
-        null_ls.builtins.formatting.stylua,
-        null_ls.builtins.formatting.prettier,
-        null_ls.builtins.formatting.clang_format.with({
-            extra_args = { "-style={IndentWidth: 4, CommentPragmas: '^[^ ]'}" },
-        }),
         -- You can add tools not supported by mason.nvim
     },
-})
-
--- See mason-null-ls.nvim's documentation for more details:
--- https://github.com/jay-babu/mason-null-ls.nvim#setup
-require("mason-null-ls").setup({
-    ensure_installed = nil,
-    automatic_installation = false,
-    automatic_setup = false,
 })
