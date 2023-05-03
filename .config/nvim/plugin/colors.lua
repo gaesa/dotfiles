@@ -1,7 +1,6 @@
 function GreatTheme(color, time)
-    local home = os.getenv("HOME")
-    local command = "test -d " .. home .. "/.local/share/nvim/lazy/" .. color
-    if os.execute(command) == 0 then
+    local colorpath = vim.fn.stdpath("data") .. "/lazy/" .. color
+    if vim.loop.fs_stat(colorpath) then
         color = color
         vim.opt.termguicolors = true
         -- vim.cmd([[let g:everforest_better_performance = 1]])
@@ -20,11 +19,7 @@ function GreatTheme(color, time)
             color = "habamax"
             vim.opt.cursorline = true
         else
-            if vim.wo.diff == true then
-                color = "shine"
-            else
-                color = "shine"
-            end
+            color = "shine"
         end
     end
     vim.cmd.colorscheme(color)
