@@ -41,6 +41,14 @@ lsp.set_sign_icons({
     info = "I",
 })
 
+-- warning: multiple different client offset_encodings
+-- detected for buffer, this is not supported yet
+-- https://github.com/jose-elias-alvarez/null-ls.nvim/issues/428
+-- https://github.com/VonHeikemen/lsp-zero.nvim/blob/v2.x/doc/md/api-reference.md#configurename-opts
+lsp.configure("clangd", {
+    capabilities = { "utf-16" },
+})
+
 lsp.setup()
 
 -- cmp
