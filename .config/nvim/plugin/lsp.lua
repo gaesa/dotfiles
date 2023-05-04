@@ -26,7 +26,7 @@ lsp.ensure_installed({
     "lua_ls",
 })
 
-lsp.on_attach(function(client, bufnr)
+lsp.on_attach(function(_, bufnr) --client
     lsp.default_keymaps({ buffer = bufnr })
     local opts = { buffer = bufnr }
     local map = vim.keymap.set
@@ -51,7 +51,7 @@ lsp.configure("clangd", {
 
 lsp.setup()
 
--- cmp
+-- Completion
 -- Make sure you setup `cmp` after lsp-zero
 local cmp = require("cmp")
 local cmp_action = require("lsp-zero").cmp_action()
@@ -72,7 +72,7 @@ cmp.setup({
         { name = "nvim_lua" },
         { name = "luasnip", keyword_length = 2 },
         { name = "path" },
-        { name = "buffer", keyword_length = 3 },
+        { name = "buffer",  keyword_length = 3 },
     },
     mapping = {
         -- `Enter` key to confirm completion
@@ -88,6 +88,7 @@ cmp.setup({
     },
 })
 
+-- Formatter and linter
 -- See mason-null-ls.nvim's documentation for more details:
 -- https://github.com/jay-babu/mason-null-ls.nvim#setup
 local null_ls = require("null-ls")
@@ -96,11 +97,11 @@ require("mason-null-ls").setup({
     automatic_installation = false,
     automatic_setup = true,
     handlers = {
-        ruff = function(source_name, methods)
+        ruff = function(_, _) --source_name, methods
             null_ls.register(null_ls.builtins.diagnostics.ruff)
         end,
 
-        clang_format = function(source_name, methods)
+        clang_format = function(_, _) --source_name, methods
             null_ls.register(null_ls.builtins.formatting.clang_format.with({
                 extra_args = { "-style={IndentWidth: 4, ObjCBlockIndentWidth: 4, CommentPragmas: '^[^ ]',}" },
             }))
