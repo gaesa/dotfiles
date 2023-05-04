@@ -21,19 +21,19 @@
 
 # file types (with matching order)
 ln             # LINK
-or             # ORPHAN
-tw             # STICKY_OTHER_WRITABLE
-ow             # OTHER_WRITABLE
-st             # STICKY
-di             # DIR
+or      󱀶       # ORPHAN
+tw             # STICKY_OTHER_WRITABLE
+ow             # OTHER_WRITABLE
+st             # STICKY
+di            # DIR
 pi      p       # FIFO
 so      s       # SOCK
 bd      b       # BLK
 cd      c       # CHR
 su      u       # SETUID
 sg      g       # SETGID
-ex             # EXEC
-fi             # FILE
+ex             # EXEC
+fi             # FILE
 
 # file extensions (vim-devicons)
 *.styl          
@@ -44,8 +44,8 @@ fi             # FILE
 *.slim          
 *.haml          
 *.ejs           
-*.css           
-*.less          
+*.css           
+*.less          
 *.md            
 *.mdx           
 *.markdown      
@@ -73,13 +73,6 @@ fi             # FILE
 *.toml          
 *.bat           
 *.mk            
-*.jpg           
-*.jpeg          
-*.bmp           
-*.png           
-*.webp          
-*.gif           
-*.ico           
 *.twig          
 *.cpp           
 *.c++           
@@ -87,7 +80,7 @@ fi             # FILE
 *.cc            
 *.cp            
 *.c             
-*.cs            
+*.cs            󰌛
 *.h             
 *.hh            
 *.hpp           
@@ -97,23 +90,23 @@ fi             # FILE
 *.nix           
 *.lua           
 *.java          
-*.sh            
-*.fish          
-*.bash          
-*.zsh           
-*.ksh           
-*.csh           
-*.awk           
-*.ps1           
+*.sh            
+*.fish          
+*.bash          
+*.zsh           
+*.ksh           
+*.csh           
+*.awk           
+*.ps1           
 *.ml            λ
 *.mli           λ
 *.diff          
-*.db            
-*.sql           
-*.dump          
+*.db            
+*.sql           
+*.dump          
 *.clj           
-*.cljc          
-*.cljs          
+*.cljc          
+*.cljs          
 *.edn           
 *.scala         
 *.go            
@@ -124,7 +117,7 @@ fi             # FILE
 *.pl            
 *.pm            
 *.t             
-*.rss           
+*.rss           󰑬
 '*.f#'          
 *.fsscript      
 *.fsx           
@@ -140,7 +133,7 @@ fi             # FILE
 *.eex           
 *.leex          
 *.heex          
-*.vim           
+*.vim           
 *.ai            
 *.psd           
 *.psb           
@@ -152,11 +145,11 @@ fi             # FILE
 *.elm           
 *.swift         
 *.xcplayground  
-*.tex           ﭨ
-*.r             ﳒ
-*.rproj         鉶
-*.sol           ﲹ
-*.pem           
+*.tex           
+*.r             󰟔
+*.rproj         󰟔
+#*.sol
+*.pem           󱕴
 
 # file names (vim-devicons) (case-insensitive not supported in lf)
 *gruntfile.coffee       
@@ -176,10 +169,10 @@ fi             # FILE
 *.zshrc                 
 *.zshenv                
 *.zprofile              
-*.vimrc                 
-*.gvimrc                
-*_vimrc                 
-*_gvimrc                
+*.vimrc                 
+*.gvimrc                
+*_vimrc                 
+*_gvimrc                
 *.bashprofile           
 *favicon.ico            
 *license                
@@ -193,7 +186,7 @@ fi             # FILE
 *gemfile                
 *makefile               
 *cmakelists.txt         
-*robots.txt             ﮧ
+*robots.txt             󱇪
 
 # file names (case-sensitive adaptations)
 *Gruntfile.coffee       
@@ -222,7 +215,7 @@ fi             # FILE
 # .*materialize.*\.js$    
 # .*materialize.*\.css$   
 # .*mootools.*\.js$       
-# .*vimrc.*               
+# .*vimrc.*               
 # Vagrantfile$            
 
 # file patterns (file name adaptations)
@@ -233,56 +226,56 @@ fi             # FILE
 *materialize.min.js     
 *materialize.min.css    
 *mootools.min.js        
-*vimrc                  
+*vimrc                  
 Vagrantfile             
 
 # archives or compressed (extensions from dircolors defaults)
-*.tar   
-*.tgz   
-*.arc   
-*.arj   
-*.taz   
-*.lha   
-*.lz4   
-*.lzh   
-*.lzma  
-*.tlz   
-*.txz   
-*.tzo   
-*.t7z   
-*.zip   
-*.z     
-*.dz    
-*.gz    
-*.lrz   
-*.lz    
-*.lzo   
-*.xz    
-*.zst   
-*.tzst  
-*.bz2   
-*.bz    
-*.tbz   
-*.tbz2  
-*.tz    
-*.deb   
-*.rpm   
-*.jar   
-*.war   
-*.ear   
-*.sar   
-*.rar   
-*.alz   
-*.ace   
-*.zoo   
-*.cpio  
-*.7z    
-*.rz    
-*.cab   
-*.wim   
-*.swm   
-*.dwm   
-*.esd   
+*.tar   
+*.tgz   
+*.arc   
+*.arj   
+*.taz   
+*.lha   
+*.lz4   
+*.lzh   
+*.lzma  
+*.tlz   
+*.txz   
+*.tzo   
+*.t7z   
+*.zip   
+*.z     
+*.dz    
+*.gz    
+*.lrz   
+*.lz    
+*.lzo   
+*.xz    
+*.zst   
+*.tzst  
+*.bz2   
+*.bz    
+*.tbz   
+*.tbz2  
+*.tz    
+*.deb   
+*.rpm   
+*.jar   
+*.war   
+*.ear   
+*.sar   
+*.rar   
+*.alz   
+*.ace   
+*.zoo   
+*.cpio  
+*.7z    
+*.rz    
+*.cab   
+*.wim   
+*.swm   
+*.dwm   
+*.esd   
 
 # image formats (extensions from dircolors defaults)
 *.jpg   
@@ -304,6 +297,10 @@ Vagrantfile             
 *.svgz  
 *.mng   
 *.pcx   
+*.webp  
+*.ico   
+
+# video formats
 *.mov   
 *.mpg   
 *.mpeg  
@@ -354,9 +351,9 @@ Vagrantfile             
 *.xspf  
 
 # other formats
-*.pdf   
+*.pdf   
 *.epub  
 *.azw3  
 *.mobi  
-*.torrent   
+*.torrent   󰸊
 *.exe   
