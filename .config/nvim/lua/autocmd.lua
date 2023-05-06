@@ -1,9 +1,9 @@
--- local augroup = vim.api.nvim_create_augroup
 local autocmd = vim.api.nvim_create_autocmd
+local group = vim.api.nvim_create_augroup("default.conf", { clear = true })
 
 -- Toggle absolute and relative numbering by insert/normal mode
-autocmd("InsertEnter", { command = [[set nornu]] })
-autocmd("InsertLeave", { command = [[set rnu]] })
+autocmd({ "InsertEnter" }, { command = [[set nornu]], group = group })
+autocmd({ "InsertLeave" }, { command = [[set rnu]], group = group })
 
 -- Yank selection to primary clipboard automatically
 -- limitation: in some cases, this autocmd doesn't work, for example,
@@ -21,44 +21,47 @@ autocmd({ "CursorMoved", "ModeChanged" }, {
             vim.cmd([[normal! gv]])
         end
     end,
+    group = group,
 })
 
 -- Return to last edited postition
 autocmd(
-    "BufReadPost",
-    { command = [[if line("'\"") > 1 && line("'\"") <= line("$") | execute "normal! g`\"" | endif]] }
+    { "BufReadPost" },
+    { command = [[if line("'\"") > 1 && line("'\"") <= line("$") | execute "normal! g`\"" | endif]], group = group }
 )
-autocmd("FileType", { pattern = { "gitcommit", "gitrebase" }, command = [[normal! gg]] })
-autocmd("BufWinEnter", { command = [[normal! zz]] })
+autocmd({ "FileType" }, { pattern = { "gitcommit", "gitrebase" }, command = [[normal! gg]], group = group })
+autocmd({ "BufWinEnter" }, { command = [[normal! zz]], group = group })
 
 -- Remove all trailing whitespace
-autocmd("BufWritePre", { pattern = { "*" }, command = [[silent! %s/\s\+$//e]] })
+autocmd({ "BufWritePre" }, { pattern = { "*" }, command = [[silent! %s/\s\+$//e]], group = group })
 
--- Formatter ('gg=G' is not smart, don't use it)
+-- Formatter
 -- Should be placed before 'Retab' as some formatters don't support space indent
-autocmd("BufWritePre", { pattern = { "*" }, command = [[lua vim.lsp.buf.format({async = false})]] })
+autocmd({ "BufWritePre" }, { pattern = { "*" }, command = [[lua vim.lsp.buf.format({async = false})]], group = group })
 
 -- Retab
-autocmd("BufWritePre", { pattern = { "*" }, command = [[silent! %retab]] })
+autocmd({ "BufWritePre" }, { pattern = { "*" }, command = [[silent! %retab]], group = group })
 
 -- Automatically enable spell checking in specific files
-autocmd("FileType", { pattern = { "markdown", "gitcommit" }, command = [[set spell]] })
+autocmd({ "FileType" }, { pattern = { "markdown", "gitcommit" }, command = [[set spell]], group = group })
 
 -- Automatically change shortcuts in specific files
-autocmd("FileType", {
+autocmd({ "FileType" }, {
     pattern = "gitcommit",
     callback = function()
         vim.keymap.set({ "n", "i" }, "<C-q>", "<ESC>:cq<CR>", { noremap = true })
         vim.keymap.set("n", "Q", "<ESC>:cq<CR>", { silent = true })
     end,
+    group = group,
 })
 
 -- Highlight yanked text
-autocmd("TextYankPost", {
+autocmd({ "TextYankPost" }, {
     pattern = "*",
     callback = function()
         vim.highlight.on_yank({ higroup = "IncSearch", timeout = 150 })
     end,
+    group = group,
 })
 
 -- Automatically disable search highlight
@@ -79,21 +82,24 @@ local function start_hl()
         return
     end
 end
-autocmd("InsertEnter", {
+autocmd({ "InsertEnter" }, {
     callback = function()
         stop_hl()
     end,
     desc = "Auto remove hlsearch",
+    group = group,
 })
-autocmd("CursorMoved", {
+autocmd({ "CursorMoved" }, {
     callback = function()
         start_hl()
     end,
     desc = "Auto hlsearch",
+    group = group,
 })
 
 -- Quit with 'q'
-autocmd(
-    "FileType",
-    { pattern = { "help", "man", "startuptime", "qf" }, command = [[nnoremap <buffer><silent> q :quit<CR>]] }
-)
+autocmd({ "FileType" }, {
+    pattern = { "help", "man", "startuptime", "qf" },
+    command = [[nnoremap <buffer><silent> q :quit<CR>]],
+    group = group,
+})
