@@ -50,7 +50,8 @@ require("illuminate").configure({
 
 -- Disable this plugin for diff
 local autocmd = vim.api.nvim_create_autocmd
-autocmd("BufWinEnter", {
+local group = vim.api.nvim_create_augroup("vim-illuminate.conf", { clear = true })
+autocmd({ "BufWinEnter" }, {
     callback = function()
         if vim.wo.diff == true then
             require("illuminate").pause()
@@ -58,4 +59,5 @@ autocmd("BufWinEnter", {
             return
         end
     end,
+    group = group,
 })
