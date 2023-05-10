@@ -150,6 +150,7 @@ fi             # FILE
 *.rproj         󰟔
 #*.sol
 *.pem           󱕴
+*.sig           🔏
 
 # file names (vim-devicons) (case-insensitive not supported in lf)
 *gruntfile.coffee       
@@ -187,6 +188,7 @@ fi             # FILE
 *makefile               
 *cmakelists.txt         
 *robots.txt             󱇪
+*.cf                    
 
 # file names (case-sensitive adaptations)
 *Gruntfile.coffee       
@@ -276,6 +278,7 @@ Vagrantfile             
 *.swm   
 *.dwm   
 *.esd   
+*.xp3   
 
 # image formats (extensions from dircolors defaults)
 *.jpg   
