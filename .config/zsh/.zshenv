@@ -34,9 +34,13 @@ fi
 if [[ -d "/opt/bin" ]] && [[ ":$PATH:" != *":/opt/bin:"* ]]; then
     path+=("/opt/bin")
 fi
-# Add current directory to path
+# Add current directory to PATH
 if [[ ":$PATH:" != *":.:"* ]]; then
     path+=(".")
+fi
+# Add doom emacs to PATH
+if [[ -d "$HOME/.config/emacs/bin" ]] && [[ ":$PATH:" != *":$HOME/.config/emacs/bin:"* ]]; then
+    path+=("$HOME/.config/emacs/bin")
 fi
 
 # Terminal

@@ -5,7 +5,7 @@ alias la='ls -F -A --color=auto --group-directories-first'
 alias ll='ls -lhF --color=auto --group-directories-first'
 alias lla='ls -lhF -A --color=auto --group-directories-first'
 alias ip='ip --color=auto'
-alias e='nvim'
+alias e='editor.py'
 alias se='sudoedit'
 
 autoload -Uz run-help
