@@ -112,7 +112,7 @@ def edit(param_list, path):
     run(["nvim", "-O", *files])
 
     for file in files:
-        if isfile(file) == True:
+        if isfile(file):
             permission = oct(S_IMODE(stat(file).st_mode))
             if permission != 0o744:
                 chmod(file, 0o744)
@@ -125,18 +125,18 @@ def is_user_func(name):
         built_in_functions = set(dir(__builtins__))
 
         frame = currentframe()
-        if frame == None:
+        if frame is None:
             return False
         else:
             frame_back = frame.f_back
-            if frame_back == None:
+            if frame_back is None:
                 return False
             else:
                 local_namespace = frame_back.f_locals
 
         obj = local_namespace.get(name) or globals().get(name)
 
-        if obj != None:
+        if obj is not None:
             module = getmodule(obj)
             if (
                 isfunction(obj)

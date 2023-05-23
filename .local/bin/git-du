@@ -33,7 +33,7 @@ def getPath_git_dir(work_tree):
     if isdir(git_dir):
         return git_dir
     else:
-        if GIT_DIR != None:
+        if GIT_DIR is not None:
             return GIT_DIR
         else:
             sys.exit(1)
@@ -45,7 +45,7 @@ def main():
     git_dir = getPath_git_dir(work_tree)
     tracked_files = getPath_tracked_files(work_tree)
     if len(input_list) > 1:
-        if input_list[1] == "--all" or "-a":
+        if input_list[1] in {"--all", "-a"}:
             run(["dust", *tracked_files, git_dir])
         else:
             print("Unrecogized argument")
