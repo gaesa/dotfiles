@@ -109,7 +109,7 @@ def edit(param_list, path):
     for item in param_list:
         file = join(path, f"{item}")
         files.append(file)
-    run(["nvim", "-O", *files])
+    run(["nvim", "-o", *files, "-c", "wincmd H"])
 
     for file in files:
         if isfile(file):
