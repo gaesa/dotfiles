@@ -1,0 +1,43 @@
+#!/usr/bin/env python3
+from os import environ, listdir, stat as os_stat
+from os.path import expanduser, join
+from stat import S_ISSOCK
+from pynvim import attach
+from sys import argv
+
+
+def get_nvim_socket_list():
+    dir_path = environ["XDG_RUNTIME_DIR"]
+    prefix = "nvim."
+
+    socket_list = []
+    for obj in listdir(dir_path):
+        full_path = join(dir_path, obj)
+        if S_ISSOCK(os_stat(full_path).st_mode) and obj.startswith(prefix):
+            socket_list.append(full_path)
+    return socket_list
+
+
+def main():
+    def load_theme(color):
+        for path in get_nvim_socket_list():
+            with attach("socket", path=path) as nvim:
+                nvim.vars["mycolor"] = color
+                nvim.lua.vim.cmd({"cmd": cmd, "args": args})
+
+    cmd = "source"
+    colors_file = expanduser("~/.config/nvim/plugin/colors.lua")
+    args = [colors_file]  # h: vim.cmd()
+
+    if len(argv) < 2:
+        load_theme(False)  # to clear mycolor variable
+    else:
+        color = argv[1]
+        if color in {"light", "dark"}:
+            load_theme(color)
+        else:
+            return
+
+
+if __name__ == "__main__":
+    main()

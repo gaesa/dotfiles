@@ -151,12 +151,8 @@ bindkey '^D' exit_zsh
 # Fzf {{{
 
 export FZF_DEFAULT_OPTS=''
-# Change theme depending on time
-if (( $(date +%H) > 6 )) && (( $(date +%H) < 18 )) then
-    source "$HOME/.local/bin/set-theme" light
-else
-    source "$HOME/.local/bin/set-theme" dark
-fi
+# Change theme related configurations depending on time
+source "$HOME/.local/bin/switch-theme"
 # See why '/proc' need to be excluded:
 # https://github.com/sharkdp/fd/issues/288
 export FZF_DEFAULT_COMMAND="fd --type f -H --strip-cwd-prefix --exclude '/proc' --exclude '/mnt' --exclude '.git' --exclude '.snapshots' --exclude '.stversions' --exclude '.stfolder' --exclude '.var' --exclude '.local/share/Trash' --exclude '.cache' --exclude 'Cache' --exclude 'cache'"

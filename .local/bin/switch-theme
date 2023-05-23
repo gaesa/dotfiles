@@ -1,0 +1,77 @@
+#!/usr/bin/zsh
+# Set theme for fzf, kitty and neovim
+
+load_theme() {
+
+    load_fzf_theme() {
+        export FZF_DEFAULT_OPTS="--color=$1 --bind='alt-j:down,alt-k:up,ctrl-o:execute-silent(nohup xdg-open {} >/dev/null)+close+close' --height 40% --reverse --multi"
+        #export FZF_CTRL_T_OPTS="--color=$1 --preview '(highlight -O ansi -l {} 2> /dev/null || cat {} || tree -C {}) 2> /dev/null | head -200'"
+        export FZF_CTRL_T_OPTS="--color=$1"
+        #export FZF_CTRL_R_OPTS="--color=$1 --preview 'echo {}' --preview-window down:3:hidden:wrap --bind '?:toggle-preview'"
+        export FZF_CTRL_R_OPTS="--color=$1"
+        export FZF_ALT_C_OPTS="--color=$1 --preview 'tree -C {} | head -200'"
+    }
+
+    load_fzf_tty_theme() {
+        export FZF_DEFAULT_OPTS="--color=16 --bind='alt-j:down,alt-k:up,ctrl-o:execute-silent(nohup xdg-open {} >/dev/null)+close+close' --height 40% --reverse --multi"
+        export FZF_CTRL_T_OPTS="--color=16"
+        export FZF_CTRL_R_OPTS="--color=16"
+        export FZF_ALT_C_OPTS="--color=16 --preview 'tree -C {} | head -200'"
+    }
+
+    load_kitty_theme() {
+        local target_theme="${HOME}"/.config/kitty/"$1"-theme.conf
+        local current_theme="${HOME}"/.config/kitty/current-theme.conf
+        if cmp -s "${target_theme}" "${current_theme}"; then
+            return 0
+        else
+            cp "${target_theme}" "${current_theme}"
+            # The process 'kitty +kitten ssh' shouldn't be sent USRSIG1
+            pkill -USR1 -xf /usr/bin/kitty
+        fi
+    }
+
+    if [[ "${TERM}" != "linux" ]]; then
+        load_fzf_theme "$1"
+        load_kitty_theme "$1"
+        python "${HOME}/.local/bin/switch-nvim-theme" "$1" &!
+    else
+        load_fzf_tty_theme
+        python "${HOME}/.local/bin/switch-nvim-theme" "$1" &!
+    fi
+}
+
+manually_switch() {
+    typeset -A colors=(
+        light true
+        dark true
+    )
+    if [[ -n "${colors[$1]}" && "${colors[$1]}" == true ]]; then
+        load_theme "$1"
+        unset -f load_theme load_fzf_theme load_fzf_tty_theme load_kitty_theme
+    else
+        unset -f load_theme
+        return 0
+    fi
+}
+
+auto_switch() {
+    local hour="$(date +%H)"
+    if (( hour >= 6 )) && (( hour < 18 )) then
+        load_theme "light"
+    else
+        load_theme "dark"
+    fi
+    unset -f load_theme load_fzf_theme load_fzf_tty_theme load_kitty_theme
+}
+
+if [[ -n "$1" ]]; then
+    manually_switch "$1"
+else
+    auto_switch
+fi
+
+# In zsh, once a function is run, it can be called externally,
+# even if it is defined in another function
+# and even if it is prefixed with the `local`
+unset -f manually_switch auto_switch
