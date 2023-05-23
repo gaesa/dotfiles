@@ -5,6 +5,9 @@ local group = vim.api.nvim_create_augroup("default.conf", { clear = true })
 autocmd({ "InsertEnter" }, { command = [[set nornu]], group = group })
 autocmd({ "InsertLeave" }, { command = [[set rnu]], group = group })
 
+-- Change indent for some filetypes
+autocmd({ "FileType" }, { pattern = { "xml", "html" }, command = [[set tabstop=2 shiftwidth=2]], group = group })
+
 -- Yank selection to primary clipboard automatically
 -- limitation: in some cases, this autocmd doesn't work, for example,
 -- when the cursor is at the end of a word, after pressing `viw`, only the last character is yanked
