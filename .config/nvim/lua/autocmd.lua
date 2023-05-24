@@ -32,7 +32,7 @@ autocmd(
     { "BufReadPost" },
     { command = [[if line("'\"") > 1 && line("'\"") <= line("$") | execute "normal! g`\"" | endif]], group = group }
 )
-autocmd({ "FileType" }, { pattern = { "gitcommit", "gitrebase" }, command = [[normal! gg]], group = group })
+autocmd({ "FileType" }, { pattern = { "gitcommit", "gitrebase" }, command = [[normal! gg0]], group = group })
 autocmd({ "BufWinEnter" }, { command = [[normal! zz]], group = group })
 
 -- Remove all trailing whitespace
