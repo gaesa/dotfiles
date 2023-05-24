@@ -1,44 +1,92 @@
 #!/usr/bin/zsh
 
-# Set env for some directories
-function env_on_chdir {
-    # Set GIT_DIR and GIT_WORK_TREE when at HOME
-    if [[ "${PWD}" == "${HOME}" ]]; then
-        export GIT_DIR="${XDG_DATA_HOME}/yadm/repo.git"
-        # GIT_WORK_TREE must be set on server, I don't know why
-        export GIT_WORK_TREE="${HOME}"
-    else
+#-----Git-------------
+#---------------------
+_set_git_env() {
+    _set_dir() {
+        if [[ "${GIT_DIR}" != "${XDG_DATA_HOME}/yadm/repo.git" ]]; then
+            export GIT_DIR="${XDG_DATA_HOME}/yadm/repo.git"
+        else
+            return 0
+        fi
+    }
+    _set_work_tree() {
+        if [[ "${GIT_WORK_TREE}" != "${HOME}" ]]; then
+            # GIT_WORK_TREE must be set on server, I don't know why
+            export GIT_WORK_TREE="${HOME}"
+        else
+            return 0
+        fi
+    }
+    _set_dir
+    _set_work_tree
+}
+
+_clr_git_env() {
+    _clr_dir() {
         if [[ "${GIT_DIR}" == "${XDG_DATA_HOME}/yadm/repo.git" ]]; then
             unset GIT_DIR
+        else
+            return 0
+        fi
+    }
+    _clr_work_tree() {
+        if [[ "${GIT_WORK_TREE}" == "${HOME}" ]]; then
             unset GIT_WORK_TREE
         else
-            true
+            return 0
         fi
-    fi
+    }
+    _clr_dir
+    _clr_work_tree
 }
-add-zsh-hook -Uz chpwd() {env_on_chdir}
-# the cost of convenience: fix for 'git clone'
-# ERROR message:
-# fatal: working tree '/home/user' already exists
-function paru {
-    if [[ "${PWD}" == "${HOME}" ]]; then
-        unset GIT_DIR
-        unset GIT_WORK_TREE
-        command paru "$@"
-    else
-        command paru "$@"
-    fi
-}
-function git { #use `g` alias instead of duplicating this function to prevent uncompleted shell completion
-    if [[ "${PWD}" == "${HOME}" ]]; then
-        if [[ "$1" == "clone" ]] || [[ "$1" == "cl" ]]; then
-            unset GIT_DIR
-            unset GIT_WORK_TREE
-            command git "$@"
+
+_git_pre_exec() {
+    typeset -A git_cmds=(
+        g true
+        git true
+        lazygit true
+    )
+    typeset -A options=(
+        cl true
+        clone true
+    )
+
+    # There is no consistent, convenient and reliable way
+    # to convert strings to lists in bash or zsh
+    local cmd=${1%% *} # $1 here would be treated as a complete command string
+    local remainder="${1#* }"
+    local option="${remainder%% *}"
+
+
+    if [[ -n "${git_cmds[$cmd]}" && "${git_cmds[$cmd]}" == true ]]; then
+        if [[ "${PWD}" == "${HOME}" ]]; then
+            if [[ -n "${option}" ]]; then
+                if [[ -n "${options[$option]}" && "${options[$option]}" == true ]]; then
+                    _clr_git_env
+                else
+                    _set_git_env
+                fi
+            else
+                _set_git_env
+            fi
         else
-            command git "$@"
+            _clr_git_env
         fi
     else
-        command git "$@"
+        _clr_git_env
     fi
 }
+preexec_functions+=(_git_pre_exec)
+
+# Set env for some directories
+# Make git completion work at HOME
+_git_env_on_chdir() {
+    # Set GIT_DIR and GIT_WORK_TREE when at HOME
+    if [[ "${PWD}" == "${HOME}" ]]; then
+        _set_git_env
+    else
+        _clr_git_env
+    fi
+}
+add-zsh-hook -Uz chpwd() {_git_env_on_chdir}
