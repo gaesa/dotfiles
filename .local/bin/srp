@@ -2,7 +2,7 @@
 # A stupid script that avoids repeatedly typing the script path
 # Depends On: fd, ripgrep, trash-cli, shellcheck, neovim
 
-from sys import argv as sys_argv, exit as sys_exit, modules
+from sys import argv, exit as sys_exit, modules
 from subprocess import run
 from os.path import basename, join, isfile, expanduser
 from os import chmod, stat
@@ -10,13 +10,20 @@ from stat import S_IMODE
 from inspect import isfunction, getmodule, currentframe
 
 
+def get_full_path(param_list, path):
+    full_path = []
+    for item in param_list:
+        file = join(path, item)
+        full_path.append(file)
+    return full_path
+
+
 def ls(param_list, path):
     if param_list == []:
         run(["ls", "-F", "--color=auto", "--group-directories-first", path])
     else:
-        for item in param_list:
-            file = join(path, item)
-            run(["ls", "-F", "--color=auto", "--group-directories-first", file])
+        files = get_full_path(param_list, path)
+        run(["ls", "-F", "--color=auto", "--group-directories-first", *files])
 
 
 def cat(param_list, path):
@@ -28,11 +35,11 @@ def cat(param_list, path):
             return
 
     len_param_list = len(param_list)
-    for i in range(len_param_list):
-        item = param_list[i]
-        file = join(path, item)
+    i = 0
+    for file in get_full_path(param_list, path):
         run(["cat", file])
         print_necessary_separator()
+        i += 1
 
 
 def ensure_one_parameter(param_list):
@@ -61,8 +68,7 @@ def rg(param_list, path):
 
 # rm (trash) function
 def rm(param_list, path):
-    for item in param_list:
-        file = join(path, item)
+    for file in get_full_path(param_list, path):
         run(["trash", file], check=True)
 
 
@@ -89,29 +95,18 @@ diff = d  # function alias
 
 # line count function
 def lc(param_list, path):
-    for item in param_list:
-        file = join(path, item)
-        run(["wc", "-l", file])
+    files = get_full_path(param_list, path)
+    run(["wc", "-l", *files])
 
 
 def shck(param_list, path):
-    for item in param_list:
-        file = join(path, item)
+    for file in get_full_path(param_list, path):
         run(["shellcheck", "-x", "-o", "all", file])
-
-
-def pdb(param_list, path):
-    for program_name in param_list:
-        program_path = join(path, program_name)
-        run(["python", "-m", "pdb", program_path])
 
 
 # build a list then expand it to neovim or emacs
 def edit(param_list, path):
-    files = []
-    for item in param_list:
-        file = join(path, item)
-        files.append(file)
+    files = get_full_path(param_list, path)
 
     import editor
 
@@ -160,22 +155,19 @@ def is_user_func(name):
 
 
 def main():
-    input_list = sys_argv
     path = expanduser("~/.local/bin")
 
-    if len(input_list) < 2:
+    if len(argv) < 2:
         print("Missing argument for", basename(__file__))
         sys_exit(1)
     else:
-        if (
-            is_user_func(input_list[1])
-            and input_list[1] != "edit"
-            and input_list[1] != "is_user_func"
+        if is_user_func(argv[1]) and (
+            argv[1] not in {"get_full_path", "edit", "is_user_func"}
         ):
-            fun = getattr(modules[__name__], input_list[1])
-            fun(input_list[2:], path)
+            fun = getattr(modules[__name__], argv[1])
+            fun(argv[2:], path)
         else:
-            edit(input_list[1:], path)
+            edit(argv[1:], path)
 
 
 if __name__ == "__main__":
