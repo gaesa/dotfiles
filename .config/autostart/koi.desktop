@@ -1,0 +1,10 @@
+[Desktop Entry]
+Categories=Utility;
+Comment=Switch between light and dark.
+Exec=koi
+Icon=koi
+Name=Koi
+StartupNotify=false
+StartupWMClass=koi
+Terminal=false
+Type=Application
