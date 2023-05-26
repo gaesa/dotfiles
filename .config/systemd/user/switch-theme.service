@@ -1,0 +1,10 @@
+[Unit]
+Description=Switch theme for kitty, neovim
+OnFailure=status_email@%n.service
+
+[Service]
+Type=forking
+ExecStart=%h/.local/bin/switch-theme
+Environment=TERM=xterm-kitty
+#Restart=on-failure
+#RestartSec=1min
