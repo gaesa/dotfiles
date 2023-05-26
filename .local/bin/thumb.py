@@ -1,15 +1,25 @@
 #!/usr/bin/env python3
 import json
-from os.path import isfile, isdir, expanduser, realpath, join, basename
-from os import makedirs, remove, environ
-import sys
+from os.path import (
+    isfile,
+    isdir,
+    expanduser,
+    realpath,
+    join,
+    basename,
+    splitext,
+    getmtime,
+)
+from os import makedirs, remove, environ, listdir
+from datetime import datetime
+from sys import exit as sys_exit, argv
 from subprocess import DEVNULL, run
 from uuid import uuid4
 
 
 def input_len_check(input_list):
     if len(input_list) < 2:
-        sys.exit(1)
+        sys_exit(1)
     else:
         return None
 
@@ -30,13 +40,78 @@ def index_file_check(index):
         return None
 
 
+def within_one_month(old_dt, new_dt):
+    def evaluate():
+        d_mon = new_dt.month - old_dt.month
+        if d_mon == 0:
+            return True
+        elif d_mon == 1:
+            d_day = new_dt.day - old_dt.day
+            if d_day < 0:
+                return True
+            elif d_day == 0:
+                d_hour = new_dt.hour - old_dt.hour
+                if d_hour < 0:
+                    return True
+                elif d_hour == 0:
+                    d_min = new_dt.minute - old_dt.minute
+                    if d_min < 0:
+                        return True
+                    elif d_min == 0:
+                        d_sec = new_dt.second - old_dt.second
+                        if d_sec < 0:
+                            return True
+                        elif d_sec == 0:
+
+                            def int_to_decimal(num):
+                                k = len(str(num))
+                                return num / (10**k)
+
+                            d_msec = int_to_decimal(
+                                new_dt.microsecond
+                            ) - int_to_decimal(old_dt.microsecond)
+
+                            if d_msec > 0:
+                                return False
+                            else:
+                                return True
+                        else:
+                            return False
+                    else:
+                        return False
+                else:
+                    return False
+            else:
+                return False
+        else:
+            return False
+
+    d_year = new_dt.year - old_dt.year
+    if d_year == 0:
+        return evaluate()
+    elif d_year == 1:
+        if new_dt.month == 1 and old_dt.month == 12:
+            return evaluate()
+        else:
+            return False
+    else:
+        return False
+
+
 def clean(cache_dir, index):
-    cache_list = run(
-        ["fd", "-t", "f", "--changed-before", "1months", r"(\.jpg)$", cache_dir],
-        capture_output=True,
-        text=True,
-        check=True,
-    ).stdout.splitlines()
+    def get_cache_list():
+        cache_list = []
+        for obj in listdir(cache_dir):
+            full_path = join(cache_dir, obj)
+            if splitext(obj)[1] == ".jpg" and (
+                not within_one_month(
+                    datetime.fromtimestamp(getmtime(full_path)), datetime.now()
+                )
+            ):
+                cache_list.append(full_path)
+        return cache_list
+
+    cache_list = get_cache_list()
     for cache in cache_list:
         remove(cache)
         cache = basename(cache)
@@ -81,13 +156,12 @@ def gen_thumb(media, thumb_path):
             stdout=DEVNULL,
         )
     else:
-        sys.exit(1)
+        sys_exit(1)
 
 
 def main():
-    input_list = sys.argv
-    input_len_check(input_list)
-    file = input_list[1]
+    input_len_check(argv)
+    file = argv[1]
 
     cache_dir = expanduser("~/.cache/lf_thumb")
     cache_dir_check(cache_dir)
@@ -123,10 +197,8 @@ def main():
             d[0][media] = thumb
             d[1][thumb] = media
             json.dump(d, f, indent=2, ensure_ascii=False)
-    else:
-        pass
 
-    print(thumb_path)  # to display the thumbnail on the screen
+    print(thumb_path)  # to pass data to bash through STDOUT
 
 
 if __name__ == "__main__":
