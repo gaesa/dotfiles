@@ -92,7 +92,7 @@ def within_one_month(old_dt, new_dt):
 
 
 def clean(cache_dir, index):
-    def get_cache_list():
+    def get_old_cache():
         cache_list = []
         for obj in listdir(cache_dir):
             full_path = join(cache_dir, obj)
@@ -104,12 +104,15 @@ def clean(cache_dir, index):
                 cache_list.append(full_path)
         return cache_list
 
-    cache_list = get_cache_list()
-    for cache in cache_list:
-        remove(cache)
-        cache = basename(cache)
+    old_cache_list = get_old_cache()
+    if old_cache_list == []:
+        return
+    else:
         with open(index) as f:
             d = json.load(f)
+        for cache in old_cache_list:
+            remove(cache)
+            cache = basename(cache)
             media = d[1].pop(cache)
             d[0].pop(media)
         with open(index, "w") as f:
@@ -193,9 +196,9 @@ def main():
                 gen_thumb(media, thumb_path)
                 need_update_index = True
         if need_update_index:
+            d[0][media] = thumb
+            d[1][thumb] = media
             with open(index, "w") as f:
-                d[0][media] = thumb
-                d[1][thumb] = media
                 json.dump(d, f, indent=2, ensure_ascii=False)
 
         print(thumb_path)  # to pass data to bash through STDOUT
