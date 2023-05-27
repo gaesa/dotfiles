@@ -1,14 +1,19 @@
 #!/usr/bin/env python3
-import sys
+from sys import exit as sys_exit, argv
 from subprocess import run
 from os.path import isdir, join
 from shutil import move
 from os import getenv, listdir, remove
 
 
-def mktemp():
-    name = run(["mktemp"], capture_output=True, text=True).stdout.rstrip()
-    return name
+def mktemp(prefix=""):
+    from uuid import uuid4
+
+    name = f"{prefix}{str(uuid4())}"
+    dir = "/tmp"
+    path = join(dir, name)
+    open(path, "w").close()
+    return path
 
 
 def save_name_list(name_list, name_record):
@@ -25,23 +30,29 @@ def rename_move(path, name_list, name_record):
     with open(name_record, "r") as f:
         lines = f.read().splitlines()
     if len(lines) == len(name_list):
-        for i in range(0, len(lines)):
+        for i in range(len(lines)):
             if lines[i] != name_list[i]:
                 move(join(path, name_list[i]), join(path, lines[i]))
     else:
+        print(
+            "WARNING: Some lines have been deleted, "
+            "this operation is not allowed\n"
+            "But don't panic, your files are safe "
+            "and haven't been modified\n"
+            "Please try again with this in mind"
+        )
         remove(name_record)
-        sys.exit(1)
+        sys_exit(1)
 
 
 def main():
-    input_list = sys.argv
-    if len(input_list) < 2:
-        sys.exit(1)
+    if len(argv) < 2:
+        print("No directory is given")
     else:
-        for path in input_list[1:]:
+        for path in argv[1:]:
             if isdir(path):
                 name_list = listdir(path)
-                name_record = mktemp()
+                name_record = mktemp(prefix="rename-")
                 save_name_list(name_list, name_record)
 
                 rename_edit(name_record)
@@ -49,7 +60,7 @@ def main():
 
                 remove(name_record)
             else:
-                pass
+                print(f"The given directory '{path}' doesn't exist")
 
 
 if __name__ == "__main__":
