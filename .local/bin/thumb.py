@@ -17,13 +17,6 @@ from subprocess import DEVNULL, run
 from uuid import uuid4
 
 
-def input_len_check(input_list):
-    if len(input_list) < 2:
-        sys_exit(1)
-    else:
-        return None
-
-
 def cache_dir_check(cache_dir):
     if not isdir(cache_dir):
         makedirs(cache_dir, mode=0o700)
@@ -156,49 +149,57 @@ def gen_thumb(media, thumb_path):
             stdout=DEVNULL,
         )
     else:
+        print(
+            "This program only supports generating thumbnails "
+            "for videos and audios that have covers"
+        )
         sys_exit(1)
 
 
 def main():
-    input_len_check(argv)
-    file = argv[1]
+    if len(argv) < 2:
+        print("No file is given")
+    else:
+        file = argv[1]
 
-    cache_dir = expanduser("~/.cache/lf_thumb")
-    cache_dir_check(cache_dir)
+        cache_dir = expanduser("~/.cache/lf_thumb")
+        cache_dir_check(cache_dir)
 
-    index = join(cache_dir, "index.json")
-    index_file_check(index)
+        index = join(cache_dir, "index.json")
+        index_file_check(index)
 
-    # Remove old caches, including those whose respective media files no longer exist,
-    # and delete the corresponding JSON contents
-    clean(cache_dir, index)
+        # Remove old cache files, including those
+        # whose respective media files no longer exist,
+        # and delete the corresponding JSON contents
+        clean(cache_dir, index)
 
-    media = realpath(file, strict=True)
+        media = realpath(file, strict=True)
 
-    need_update_index = False
-    with open(index) as f:
-        d = json.load(f)
-        if media in d[0]:
-            thumb = d[0][media]
-            thumb_path = join(cache_dir, thumb)
-            # record: yes, cache: no
-            if not isfile(thumb_path):
-                gen_thumb(media, thumb_path)
+        need_update_index = False
+        with open(index) as f:
+            d = json.load(f)
+            if media in d[0]:
+                thumb = d[0][media]
+                thumb_path = join(cache_dir, thumb)
+                # record: yes, cache: no
+                if not isfile(thumb_path):
+                    gen_thumb(media, thumb_path)
+                else:
+                    pass
             else:
-                pass
-        else:
-            # record: no, cache: any
-            thumb = str(uuid4()) + ".jpg"
-            thumb_path = join(cache_dir, thumb)
-            gen_thumb(media, thumb_path)
-            need_update_index = True
-    if need_update_index:
-        with open(index, "w") as f:
-            d[0][media] = thumb
-            d[1][thumb] = media
-            json.dump(d, f, indent=2, ensure_ascii=False)
+                # record: no, cache: any
+                thumb = str(uuid4()) + ".jpg"
+                thumb_path = join(cache_dir, thumb)
+                gen_thumb(media, thumb_path)
+                need_update_index = True
+        if need_update_index:
+            with open(index, "w") as f:
+                d[0][media] = thumb
+                d[1][thumb] = media
+                json.dump(d, f, indent=2, ensure_ascii=False)
 
-    print(thumb_path)  # to pass data to bash through STDOUT
+        print(thumb_path)  # to pass data to bash through STDOUT
+        return thumb_path
 
 
 if __name__ == "__main__":
