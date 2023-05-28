@@ -101,6 +101,7 @@ bindkey -v '^H' backward-delete-char
 # Default '^W' is stuck after accepting suggestions
 bindkey -v '^W' backward-kill-word
 bindkey -v '^U' backward-kill-line
+bindkey -v '^K' kill-line
 
 # Change cursor shape for different vi modes.
 function zle-keymap-select() {
