@@ -20,16 +20,19 @@ def ls(param_list, path):
 
 
 def cat(param_list, path):
+    def print_necessary_separator():
+        if i != len_param_list - 1:
+            print("-" * 50, sep="")
+            print("\n")
+        else:
+            return
+
     len_param_list = len(param_list)
     for i in range(len_param_list):
         item = param_list[i]
         file = join(path, item)
         run(["cat", file])
-        if i != len_param_list - 1:
-            print("-" * 50, sep="")
-            print("\n")
-        else:
-            pass
+        print_necessary_separator()
 
 
 def ensure_one_parameter(param_list):
@@ -107,15 +110,21 @@ def pdb(param_list, path):
 def edit(param_list, path):
     files = []
     for item in param_list:
-        file = join(path, f"{item}")
+        file = join(path, item)
         files.append(file)
-    run(["nvim", "-o", *files, "-c", "wincmd H"])
 
-    for file in files:
-        if isfile(file):
-            permission = oct(S_IMODE(stat(file).st_mode))
-            if permission != 0o744:
-                chmod(file, 0o744)
+    import editor
+
+    editor.edit(files=files)
+
+    def check_update_permission():
+        for file in files:
+            if isfile(file):
+                permission = oct(S_IMODE(stat(file).st_mode))
+                if permission != 0o744:
+                    chmod(file, 0o744)
+
+    check_update_permission()
 
 
 def is_user_func(name):

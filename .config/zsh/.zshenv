@@ -32,7 +32,7 @@ fi
 if [[ -d "/opt/bin" ]] && [[ ":$PATH:" != *":/opt/bin:"* ]]; then
     path+=("/opt/bin")
 fi
-# Add current directory to path
+# Add current directory to PATH
 if [[ ":$PATH:" != *":.:"* ]]; then
     path+=(".")
 fi
