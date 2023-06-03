@@ -164,8 +164,7 @@ def main():
         if is_user_func(argv[1]) and (
             argv[1] not in {"get_full_path", "edit", "is_user_func"}
         ):
-            fun = getattr(modules[__name__], argv[1])
-            fun(argv[2:], path)
+            getattr(modules[__name__], argv[1])(argv[2:], path)
         else:
             edit(argv[1:], path)
 
