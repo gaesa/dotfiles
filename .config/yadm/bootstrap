@@ -1,101 +1,179 @@
-#!/usr/bin/bash
+#!/usr/bin/env python3
 # yadm clone --bare --single-branch --branch <branch> <url>
 # Make sure some programs are installed and force a checkout
 
-if [[ $(grep -E '^NAME=' /etc/os-release | tr -d '"' | cut -c 6-) != 'Arch Linux' ]]; then
-    echo "This script currently doesn't support OS other than Arch Linux"
-    exit
-fi
+from distro import name
+from platform import system
+from shutil import which
+from sys import exit as sys_exit
+from subprocess import run, DEVNULL
+from os import environ, getuid
+from os.path import join
 
-# Install paru if it doesn't exist
-if ! command -v paru &>/dev/null; then
-    sudo pacman -Syu --needed base-devel
-    cd /tmp || exit
-    git clone https://aur.archlinux.org/paru.git
-    cd paru || exit
-    makepkg -si
-    cd "${HOME}" || exit
-fi
 
-# Install programs that are required for all branches
-paru -Syu --needed kitty-terminfo zoxide fzf zsh zsh-completions zsh-history-substring-search zsh-syntax-highlighting zsh-theme-powerlevel10k-git zsh-autosuggestions git fd ripgrep trash-cli neovim python-pynvim duf dust pkgfile
+def get_sudo_cmd():
+    uid = getuid()
+    if uid != 0:
+        return ["sudo"]
+    else:
+        return []
 
-# An alias
-function cf {
-    yadm "$@"
-}
 
-# Hide untracked files
-cf config status.showUntrackedFiles no
+def check_os():
+    err_msg = "This script currently doesn't support OS other than Arch Linux"
+    if system() != "Linux":
+        sys_exit(err_msg)
+    else:
+        if name() != "Arch Linux":
+            sys_exit(err_msg)
+        else:
+            return
 
-# Fix the problem that 'requested upstream branch does not exist'
-if ! cf config --get remote.origin.fetch >/dev/null; then
-    cf remote set-branches origin --add '*'
-fi
 
-# Switch to the desired branch
-cf branch -a
-read -r -p "$(printf 'Which branch do you want to use?\n')" branch
-cf checkout "${branch}"
+def check_paru(sudo_cmd):
+    if which("paru") is None:
+        run([*sudo_cmd, "pacman", "-Syu", "--needed", "base-devel"], check=True)
+        dir = environ["XDG_RUNTIME_DIR"]
+        run(
+            ["git", "clone", "https://aur.archlinux.org/paru.git"],
+            cwd=dir,
+            check=True,
+        )
+        run(["makepkg", "-si"], cwd=join(dir, "paru"), check=True)
+        print()
+    else:
+        return
 
-# Set origin, 'git clone' should have done it
-# cf remote add origin <url>
-#
-# Set default remote for 'git pull'
-cf config branch."${branch}".remote origin
-cf config branch."${branch}".merge refs/heads/"${branch}"
-#
-# Set default remote for 'git push'
-cf branch --set-upstream-to=origin/"${branch}" "${branch}"
-#
-# avoid fetching all branches
-cf remote set-branches origin "${branch}"
 
-# Do different things for different branches
-case "${branch}" in
-main)
-    # Install different programs for different branches
-    sudo pacman -Syu --needed kitty
-    read -r -p "$(printf 'Install lf? [Y/n]\n')" if_install
-    if_install="${if_install:-y}"
-    case "${if_install}" in
-    y | Y) sudo pacman -Syu --needed lf ffmpegthumbnailer atool ;;
-    n | N) ;;
-    *)
-        echo "Invalid parameter"
-        exit
-        ;;
-    esac
-    ;;
-light) ;;
-*)
-    echo "Invalid parameter"
-    exit
-    ;;
-esac
+def install_common(sudo_cmd):
+    packages = {
+        "kitty-terminfo",
+        "zoxide",
+        "fzf",
+        "zsh",
+        "zsh-completions",
+        "zsh-history-substring-search",
+        "zsh-syntax-highlighting",
+        "zsh-theme-powerlevel10k-git",
+        "zsh-autosuggestions",
+        "fd",
+        "ripgrep",
+        "trash-cli",
+        "neovim",
+        "python-pynvim",
+        "duf",
+        "dust",
+        "pkgfile",
+    }
+    if sudo_cmd != []:
+        run(["paru", "-Syu", "--needed", *packages], check=True)
+        print()
+    else:
+        aur_package = "zsh-theme-powerlevel10k-git"
+        packages.discard(aur_package)
 
-# Force a checkout
-cf status
-printf "\n\n"
-read -r -p "$(printf 'Do you want to force the checkout? [y/N]\n')" checkout
-checkout="${checkout:-n}"
-case "${checkout}" in
-y | Y)
-    cf checkout -f "${branch}"
-    printf "\n\n"
-    # Initialize submodules
-    # Fix the problem: 'fatal: not a git repository'
-    if [[ "${branch}" == main ]]; then
-        #cf submodule deinit -f ~/.config/ranger/plugins/ranger_devicons
-        printf "\n\n"
-        cf submodule update --init --recursive --remote
-    fi
-    ;;
-n | N)
-    exit
-    ;;
-*)
-    echo "Invalid parameter"
-    exit
-    ;;
-esac
+        run(["pacman", "-Syu", "--needed", *packages], check=True)
+        if (
+            run(
+                ["pacman", "-Q", aur_package], stdout=DEVNULL, stderr=DEVNULL
+            ).returncode
+            != 0
+        ):
+            print(f"`{aur_package}` is not installed")
+            print()
+        else:
+            return
+
+
+def hide_untracked():
+    run(["yadm", "config", "status.showUntrackedFiles", "no"], check=True)
+
+
+def validate_upstream_branch(branch):
+    returncode = run(
+        ["yadm", "config", "--get", "remote.origin.fetch"],
+        stdout=DEVNULL,
+        stderr=DEVNULL,
+    ).returncode
+    if returncode != 0:
+        run(["yadm", "remote", "set-branches", "origin", branch], check=True)
+    else:
+        return
+
+
+def force_checkout(branch):
+    run(["yadm", "status"], check=True)
+    print()
+
+    want_checkout = input(":: Do you want to force the checkout? [y/N] ")
+    if want_checkout in {"y", "Y"}:
+        run(["yadm", "checkout", "-f", branch], check=True)
+        print()
+    elif want_checkout in {"n", "N", ""}:
+        return
+    else:
+        sys_exit("Invalid parameter")
+
+
+def update_submodule():
+    has_submodule = run(
+        ["yadm", "submodule", "status"], check=True, capture_output=True, text=True
+    ).stdout.rstrip()
+    if has_submodule != "":
+        run(
+            ["yadm", "submodule", "update", "--init", "--recursive", "--remote"],
+            check=True,
+        )
+        print()
+    else:
+        return
+
+
+def install_for_main(sudo_cmd):
+    run([*sudo_cmd, "pacman", "-Syu", "--needed", "kitty"], check=True)
+
+    want_lf_installed = input(":: Install lf? [Y/n] ")
+    if want_lf_installed in {"y", "Y", ""}:
+        run(
+            [
+                *sudo_cmd,
+                "pacman",
+                "-Syu",
+                "--needed",
+                "lf",
+                "ffmpegthumbnailer",
+                "atool",
+            ],
+            check=True,
+        )
+        print()
+    elif want_lf_installed in {"n", "N"}:
+        return
+    else:
+        sys_exit("Invalid parameter")
+
+
+def main():
+    check_os()
+
+    hide_untracked()
+
+    branch = run(
+        ["yadm", "branch", "--show-current"], capture_output=True, text=True, check=True
+    ).stdout.rstrip()
+    validate_upstream_branch(branch)
+    force_checkout(branch)
+
+    update_submodule()
+
+    sudo_cmd = get_sudo_cmd()
+    check_paru(sudo_cmd)
+    install_common(sudo_cmd)
+    if branch == "main":
+        install_for_main(sudo_cmd)
+    else:
+        return
+
+
+if __name__ == "__main__":
+    main()
