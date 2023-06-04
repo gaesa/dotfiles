@@ -9,40 +9,16 @@ fi
 
 # Install paru if it doesn't exist
 if ! command -v paru &>/dev/null; then
-    read -r -p "$(printf 'Install paru? [y/N]\n')" if_install
-    if_install="${if_install:-n}"
-    case "${if_install}" in
-    y | Y)
-        sudo pacman -Syu --needed base-devel
-        cd /tmp || exit
-        git clone https://aur.archlinux.org/paru.git
-        cd paru || exit
-        makepkg -si
-        ;;
-    n | N) ;;
-    *)
-        echo "Invalid parameter"
-        exit
-        ;;
-    esac
+    sudo pacman -Syu --needed base-devel
+    cd /tmp || exit
+    git clone https://aur.archlinux.org/paru.git
+    cd paru || exit
+    makepkg -si
+    cd "${HOME}" || exit
 fi
 
 # Install programs that are required for all branches
-read -r -p "$(printf 'Install essential packages? [Y/n]\n')" skip
-skip="${skip:-y}"
-case "${skip}" in
-y | Y)
-    paru -Syu --needed kitty zoxide fzf powerlevel10k zsh zsh-completions zsh-history-substring-search zsh-syntax-highlighting zsh-theme-powerlevel10k-git zsh-autosuggestions git fd ripgrep trash-cli neovim duf dust pkgfile
-    ;;
-n | N) ;;
-*)
-    echo "Invalid parameter"
-    exit
-    ;;
-esac
-
-# Go back to work tree
-cd "${HOME}" || exit
+paru -Syu --needed kitty-terminfo zoxide fzf zsh zsh-completions zsh-history-substring-search zsh-syntax-highlighting zsh-theme-powerlevel10k-git zsh-autosuggestions git fd ripgrep trash-cli neovim python-pynvim duf dust pkgfile
 
 # An alias
 function cf {
@@ -53,17 +29,8 @@ function cf {
 cf config status.showUntrackedFiles no
 
 # Fix the problem that 'requested upstream branch does not exist'
-if ! cf config --get remote.origin.fetch >/dev//null; then
-    cf remote rm origin
-    read -r -p "$(printf 'Which remote do you want to use?\n1: https://github.com/gaesa/dotfiles.git\n2: git@github.com:gaesa/dotfiles.git\n')" url
-    case $url in
-    1) cf remote add origin https://github.com/gaesa/dotfiles.git ;;
-    2) cf remote add origin git@github.com:gaesa/dotfiles.git ;;
-    *)
-        echo "Invalid parameter"
-        exit
-        ;;
-    esac
+if ! cf config --get remote.origin.fetch >/dev/null; then
+    cf remote set-branches origin --add '*'
 fi
 
 # Switch to the desired branch
@@ -80,11 +47,15 @@ cf config branch."${branch}".merge refs/heads/"${branch}"
 #
 # Set default remote for 'git push'
 cf branch --set-upstream-to=origin/"${branch}" "${branch}"
+#
+# avoid fetching all branches
+cf remote set-branches origin "${branch}"
 
 # Do different things for different branches
 case "${branch}" in
 main)
     # Install different programs for different branches
+    sudo pacman -Syu --needed kitty
     read -r -p "$(printf 'Install lf? [Y/n]\n')" if_install
     if_install="${if_install:-y}"
     case "${if_install}" in
