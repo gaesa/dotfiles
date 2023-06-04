@@ -152,16 +152,16 @@ def gen_thumb(media, thumb_path):
             stdout=DEVNULL,
         )
     else:
-        print(
+        mes = (
             "This program only supports generating thumbnails "
             "for videos and audios that have covers"
         )
-        sys_exit(1)
+        sys_exit(mes)
 
 
 def main():
     if len(argv) < 2:
-        print("No file is given")
+        sys_exit("No file is given")
     else:
         file = argv[1]
 

@@ -44,8 +44,7 @@ def cat(param_list, path):
 
 def ensure_one_parameter(param_list):
     if len(param_list) < 1:
-        print("Missing argument")
-        sys_exit(1)
+        sys_exit("Missing argument")
     else:
         return
 
@@ -158,8 +157,7 @@ def main():
     path = expanduser("~/.local/bin")
 
     if len(argv) < 2:
-        print("Missing argument for", basename(__file__))
-        sys_exit(1)
+        sys_exit(f"Missing argument for `{basename(__file__)}`")
     else:
         if is_user_func(argv[1]) and (
             argv[1] not in {"get_full_path", "edit", "is_user_func"}
