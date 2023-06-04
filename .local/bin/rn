@@ -4,6 +4,7 @@ from subprocess import run
 from os.path import isdir, join
 from shutil import move
 from os import getenv, listdir, remove
+from uuid import uuid4
 
 
 def sorted_name_list(root, names):
@@ -18,10 +19,8 @@ def sorted_name_list(root, names):
 
 
 def mktemp(prefix=""):
-    from uuid import uuid4
-
     name = f"{prefix}{str(uuid4())}"
-    dir = "/tmp"
+    dir = getenv("XDG_RUNTIME_DIR", "/tmp")
     path = join(dir, name)
     open(path, "w").close()
     return path
