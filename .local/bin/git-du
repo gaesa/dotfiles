@@ -40,8 +40,7 @@ def get_git_dir(work_tree):
         if GIT_DIR is not None:
             return GIT_DIR
         else:
-            print("Where is your path to the repository?")
-            sys_exit(1)
+            sys_exit("Where is your path to the repository?")
 
 
 def main():
@@ -53,8 +52,7 @@ def main():
             git_dir = get_git_dir(work_tree)
             run(["dust", *tracked_files, git_dir])
         else:
-            print("Unrecogized argument")
-            sys_exit(1)
+            sys_exit("Unrecogized argument")
     else:
         run(["dust", *tracked_files])
 

@@ -61,15 +61,15 @@ def rename_move(dir, name_list, name_record):
                     else:
                         move(src_path, join(dir, lines[i]))
     else:
-        print(
+        remove(name_record)
+        mes = (
             "WARNING: Some lines have been deleted, "
             "this operation is not allowed\n"
             "But don't panic, your files are safe "
             "and haven't been modified\n"
             "Please try again with this in mind"
         )
-        remove(name_record)
-        sys_exit(1)
+        sys_exit(mes)
 
 
 def main():
