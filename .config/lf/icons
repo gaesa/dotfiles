@@ -101,9 +101,9 @@ fi             # FILE
 *.ml            λ
 *.mli           λ
 *.diff          
-*.db            
-*.sql           
-*.dump          
+*.db            
+*.sql           
+*.dump          
 *.clj           
 *.cljc          
 *.cljs          
@@ -187,7 +187,7 @@ fi             # FILE
 *gemfile                
 *makefile               
 *cmakelists.txt         
-*robots.txt             󱇪
+*robots.txt             󰚩
 *.cf                    
 
 # file names (case-sensitive adaptations)
