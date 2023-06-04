@@ -44,5 +44,9 @@
     ls = log --graph --stat --pretty=format:'%C(auto)%h%C(auto)%d %s %C(dim white)(%aN, %ar)'
     la = log --graph --all --pretty=format:'%C(auto)%h%C(auto)%d %s %C(dim white)(%aN, %ar)'
     lsa = log --graph --stat --all --pretty=format:'%C(auto)%h%C(auto)%d %s %C(dim white)(%aN, %ar)'
+[submodule]
+    recurse = true
+[submodule "*"]
+    ignore = all
 [include]
     #path = ~/.config/git/config.d
