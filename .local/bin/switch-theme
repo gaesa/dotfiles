@@ -51,7 +51,7 @@ auto_switch() {
     unset -f load_theme load_fzf_theme load_fzf_tty_theme
 }
 
-if [[ -n "$1" ]]; then
+if (( $# > 0 )); then
     manually_switch "$1"
 else
     auto_switch
