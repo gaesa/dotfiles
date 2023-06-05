@@ -4,6 +4,7 @@ After=graphical.target
 
 [Timer]
 OnCalendar=*-*-* 6,18:00:00
+AccuracySec=100ms
 Unit=switch-theme.service
 
 [Install]
