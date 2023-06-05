@@ -1,9 +1,10 @@
 # Basic vars
-set shell bash
+set shell zsh
 set shellopts '-eu'
 set ifs "\n"
 set scrolloff 10
 set icons true #Read ~/.config/lf/icons
+set cursorpreviewfmt "\033[7m" #pre-r29 behavior
 set sortby time #mtime
 set reverse true #Show newest files first
 set incsearch true
@@ -55,37 +56,12 @@ cmd zi ${{
     lf -remote "send $id cd $result"
 }}
 cmd yank-name ${{
-    result="$(basename $f)"
+    result="${f##*/}"
     printf "%s" "${result}" | wl-copy
-}}
-cmd smart-rename &{{
-    if [[ "$(echo "$fx" | wc -l)" -gt 1 ]]; then
-        lf -remote "send $id echo You can't change more than one file name"
-        lf -remote "send $id unselect"
-    else
-        filename=$(basename -- "$f")
-        extension="${filename##*.}"
-        if [[ -d "$f" ]]; then
-            lf -remote "send $id rename"
-        elif [[ -z "${extension}" ]]; then
-            lf -remote "send $id rename"
-        else
-            ext_len="$(echo ${f##*.} | wc -m)"
-            pos=""
-            for _ in $(seq "$ext_len"); do
-                pos="${pos}<left>"
-            done
-            lf -remote "send $id rename"
-            lf -remote "send $id push "$pos""
-        fi
-    fi
 }}
 cmd extract ${{
     set -f
     atool -x $f
-}}
-cmd edit ${{
-    "${EDITOR}" $f
 }}
 
 # Warn about nested instances
@@ -112,8 +88,6 @@ map <enter> shell
 map o &xdg-open "$f"
 map O open-with
 
-map <f-2> rename
-map R rename
-map r smart-rename # before extension if necessary
-
-map e edit
+map r rename
+map R push r<c-e>
+map <f-2> push r<c-e>
