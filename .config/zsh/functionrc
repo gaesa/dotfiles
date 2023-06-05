@@ -2,12 +2,12 @@
 
 # yt-dlp audio with search
 function yta() {
-    mpv --profile=audio --ytdl-format=bestaudio ytdl://ytsearch:"$*"
+    command mpv --profile=audio --ytdl-format=bestaudio ytdl://ytsearch:"$*"
 }
 
 # Replace diff with git diff
 function diff() {
-    git diff --no-index "$1" "$2"
+    command git diff --no-index "$1" "$2"
     return 0
 }
 
@@ -17,14 +17,39 @@ function private_mode() {
 }
 bindkey -s '^P' 'private_mode\n'
 
+function mktemp() {
+    local -r file_name="$(uuidgen --random)"
+    if (( $# > 0 )); then
+        local -r prefix="${1}-"
+    else
+        local -r prefix=""
+    fi
+    local -r runtime_dir="${XDG_RUNTIME_DIR:-/tmp}"
+    local -r file="${runtime_dir}/${prefix}${file_name}"
+    touch "${file}"
+    if (( $(stat -c %a "${file}") != 600 )); then
+        chmod 600 "${file}" >/dev/null
+        printf "%s\n" "${file}"
+    else
+        printf "%s\n" "${file}"
+    fi
+}
+
 function lfz() {
-    local -r tmp="$(mktemp)"
-    lf -last-dir-path="${tmp}" "$@"
-    #ranger --choosedir="${tmp}" "$@"
-    local -r dir="$(cat "${tmp}")"
-    rm "${tmp}"
-    if [[ "${dir}" != "$(pwd)" ]]; then
-        z "${dir}"
+    local -r tmp="$(mktemp lfz)"
+    command lf -last-dir-path="${tmp}" "$@"
+    if [[ -f "${tmp}" ]]; then
+        local -r dir="$(cat "${tmp}")"
+        command rm "${tmp}"
+        if [[ -d "${dir}" ]]; then
+            if [[ "${dir}" != "$(pwd)" ]]; then
+                z "${dir}"
+            else
+                return 0
+            fi
+        else
+            return 0
+        fi
     else
         return 0
     fi
