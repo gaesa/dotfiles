@@ -4,18 +4,26 @@
 #---------------------
 _set_git_env() {
     _set_dir() {
-        if [[ "${GIT_DIR}" != "${XDG_DATA_HOME}/yadm/repo.git" ]]; then
-            export GIT_DIR="${XDG_DATA_HOME}/yadm/repo.git"
+        if [[ -v GIT_DIR ]]; then
+            if [[ "${GIT_DIR}" != "${XDG_DATA_HOME}/yadm/repo.git" ]]; then
+                export GIT_DIR="${XDG_DATA_HOME}/yadm/repo.git"
+            else
+                return 0
+            fi
         else
-            return 0
+            export GIT_DIR="${XDG_DATA_HOME}/yadm/repo.git"
         fi
     }
     _set_work_tree() {
-        if [[ "${GIT_WORK_TREE}" != "${HOME}" ]]; then
-            # GIT_WORK_TREE must be set on server, I don't know why
-            export GIT_WORK_TREE="${HOME}"
+        if [[ -v GIT_WORK_TREE ]]; then
+            if [[ "${GIT_WORK_TREE}" != "${HOME}" ]]; then
+                # GIT_WORK_TREE must be set on server, I don't know why
+                export GIT_WORK_TREE="${HOME}"
+            else
+                return 0
+            fi
         else
-            return 0
+            export GIT_WORK_TREE="${HOME}"
         fi
     }
     _set_dir
@@ -24,15 +32,23 @@ _set_git_env() {
 
 _clr_git_env() {
     _clr_dir() {
-        if [[ "${GIT_DIR}" == "${XDG_DATA_HOME}/yadm/repo.git" ]]; then
-            unset GIT_DIR
+        if [[ -v GIT_DIR ]]; then
+            if [[ "${GIT_DIR}" == "${XDG_DATA_HOME}/yadm/repo.git" ]]; then
+                unset GIT_DIR
+            else
+                return 0
+            fi
         else
             return 0
         fi
     }
     _clr_work_tree() {
-        if [[ "${GIT_WORK_TREE}" == "${HOME}" ]]; then
-            unset GIT_WORK_TREE
+        if [[ -v GIT_WORK_TREE ]]; then
+            if [[ "${GIT_WORK_TREE}" == "${HOME}" ]]; then
+                unset GIT_WORK_TREE
+            else
+                return 0
+            fi
         else
             return 0
         fi
@@ -59,10 +75,10 @@ _git_pre_exec() {
     local option="${remainder%% *}"
 
 
-    if [[ -n "${git_cmds[$cmd]}" && "${git_cmds[$cmd]}" == true ]]; then
+    if [[ -v git_cmds["${cmd}"] && "${git_cmds[$cmd]}" == true ]]; then
         if [[ "${PWD}" == "${HOME}" ]]; then
-            if [[ -n "${option}" ]]; then
-                if [[ -n "${options[$option]}" && "${options[$option]}" == true ]]; then
+            if [[ -v option ]]; then
+                if [[ -v options["${option}"] && "${options[$option]}" == true ]]; then
                     _clr_git_env
                 else
                     _set_git_env
