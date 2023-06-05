@@ -93,6 +93,8 @@ cmd edit ${{
 
 # Bindings
 map g top
+map <space> :toggle
+map <esc> :unselect; clear
 map DD trash
 map <delete> trash
 map E extract
@@ -102,7 +104,6 @@ map x cut
 map p paste
 map yn yank-name
 map yp $printf "%s" "$f" | wl-copy #copy full path of the current file
-map <esc> clear
 map <c-n> push :mkdir<space>
 map <c-r> reload
 map <c-f> $lf -remote "send $id select \"$(fzf)\""
