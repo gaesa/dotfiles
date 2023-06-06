@@ -1,4 +1,5 @@
 local autocmd = vim.api.nvim_create_autocmd
+local del_autocmd = vim.api.nvim_del_autocmd
 local group = vim.api.nvim_create_augroup("default.conf", { clear = true })
 
 -- Toggle absolute and relative numbering by insert/normal mode
@@ -70,7 +71,7 @@ autocmd({ "TextYankPost" }, {
     group = group,
 })
 
--- Automatically disable search highlight
+-- Auto remove search highlight and rehighlight when using n or N
 -- https://github.com/glepnir/hlsearch.nvim
 local function stop_hl()
     if vim.v.hlsearch ~= 0 then
@@ -88,19 +89,46 @@ local function start_hl()
         return
     end
 end
-autocmd({ "InsertEnter" }, {
-    callback = function()
-        stop_hl()
-    end,
-    desc = "Auto remove hlsearch",
+
+local buffers = {}
+local function hs_event(bufnr)
+    if buffers[bufnr] then
+        return
+    else
+        buffers[bufnr] = true
+        local cm_id = autocmd("CursorMoved", {
+            buffer = bufnr,
+            group = group,
+            callback = start_hl,
+            desc = "Auto hlsearch",
+        })
+
+        local ie_id = autocmd("InsertEnter", {
+            buffer = bufnr,
+            group = group,
+            callback = stop_hl,
+            desc = "Auto remove hlsearch",
+        })
+
+        autocmd("BufDelete", {
+            buffer = bufnr,
+            group = group,
+            callback = function(opt)
+                buffers[bufnr] = nil
+                pcall(del_autocmd, cm_id)
+                pcall(del_autocmd, ie_id)
+                pcall(del_autocmd, opt.id)
+            end,
+        })
+    end
+end
+
+autocmd("BufWinEnter", {
     group = group,
-})
-autocmd({ "CursorMoved" }, {
-    callback = function()
-        start_hl()
+    callback = function(opt)
+        hs_event(opt.buf)
     end,
-    desc = "Auto hlsearch",
-    group = group,
+    desc = "Auto remove search highlight and rehighlight when using n or N",
 })
 
 -- Quit with 'q'
