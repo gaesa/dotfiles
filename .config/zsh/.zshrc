@@ -167,16 +167,6 @@ _fzf_compgen_path() {
     fd -H --exclude '.git' --exclude '.snapshots' --exclude '.stversions' --exclude '.stfolder' --exclude '.var' --exclude '.local/share/Trash' --exclude '.cache' --exclude 'Cache' --exclude 'cache' . "$1"
 }
 
-# Fuzzy search with xdg-open
-#function fuzzy-xdg-open() {
-    #local output="$(fzf </dev/tty)"
-    #[ -f "$output" ] &&
-    #xdg-open "${output}" &>/dev/null
-    #zle reset-prompt
-#}
-#zle -N fuzzy-xdg-open
-#bindkey '^o' fuzzy-xdg-open
-
 # The default key binding ctrl-r is bad because it is occupied by redo in zsh's vi mode
 # source /usr/share/fzf/key-bindings.zsh
 source "$ZDOTDIR"/plugins/fzf/key-bindings.zsh
