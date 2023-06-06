@@ -6,7 +6,14 @@ autocmd({ "InsertEnter" }, { command = [[set nornu]], group = group })
 autocmd({ "InsertLeave" }, { command = [[set rnu]], group = group })
 
 -- Change indent for some filetypes
-autocmd({ "FileType" }, { pattern = { "xml", "html" }, command = [[set tabstop=2 shiftwidth=2]], group = group })
+autocmd({ "FileType" }, {
+    pattern = { "xml", "html", "javascript" },
+    callback = function()
+        vim.opt.tabstop = 2
+        vim.opt.shiftwidth = 2
+    end,
+    group = group,
+})
 
 -- Yank selection to primary clipboard automatically
 -- limitation: in some cases, this autocmd doesn't work, for example,
