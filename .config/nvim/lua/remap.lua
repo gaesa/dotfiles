@@ -39,14 +39,10 @@ map({ "n" }, "<leader>C", [["+C]])
 map("n", "gf", ":e <cfile><CR>", { noremap = true, silent = true })
 
 -- Quit and Save
-if vim.wo.diff == true then
-    map({ "n", "i" }, "<C-q>", "<ESC>:cq<CR>", { noremap = true })
-    map("n", "Q", "<ESC>:q<CR>", { silent = true })
-else
-    map({ "n", "i" }, "<C-q>", "<ESC>:qa!<CR>", { noremap = true })
-    map("n", "Q", "<ESC>:q<CR>", { silent = true })
-end
-map({ "n", "i" }, "<C-s>", "<ESC>:xa<CR>", { noremap = true })
+map({ "n" }, "q", ":q<CR>", { noremap = true, silent = true })
+map({ "n" }, "Q", "q", { noremap = true, silent = true })
+map({ "n", "i" }, "<C-q>", "<ESC>:qa!<CR>", { noremap = true, silent = true })
+map({ "n", "i" }, "<C-s>", "<ESC>:xa<CR>", { noremap = true, silent = true })
 
 -- Make files executable
 map("n", "<leader>x", "<cmd>!chmod u+x %<CR><Enter>", { noremap = true, silent = true })
