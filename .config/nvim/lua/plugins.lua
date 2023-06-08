@@ -120,6 +120,14 @@ local plugins = {
         "windwp/nvim-ts-autotag",
         event = "VeryLazy",
     },
+    {
+        "echasnovski/mini.nvim",
+        event = "VeryLazy",
+        version = false,
+        config = function()
+            require("mini.surround").setup()
+        end,
+    },
 
     { "lukas-reineke/indent-blankline.nvim", event = "VeryLazy" },
 

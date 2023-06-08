@@ -70,6 +70,9 @@ map("n", "<leader>s", [[:%s/\<<C-r><C-w>\>/<C-r><C-w>/gI<Left><Left><Left>]])
 -- FZF
 map({ "n", "i" }, "<C-f>", "<ESC>:FZF<CR>", { noremap = true, silent = true })
 
+-- Surround
+map({ "n" }, "s", "<NOP>", { noremap = true })
+
 -- GitHub
 map("n", "<leader>gh", function()
     local line = vim.api.nvim_get_current_line()
