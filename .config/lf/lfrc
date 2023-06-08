@@ -23,13 +23,17 @@ cmd on-cd &{{
 }}
 cmd open ${{
     set -f
-    rifle -p 0 $fx
+    if [[ "$(file -Lb --mime-type $f)" == "application/x-executable" ]]; then
+        "$f"
+    else
+        rifle -p 0 $f # open files with lf integration
+    fi
 }}
 cmd open-with ${{
     set -f
     rifle -l $fx
     read -p "Open with: " method
-    rifle -p $method $fx
+    rifle -p $method $f
 }}
 cmd mkdir ${{
     mkdir -p "$(echo $* | tr ' ' '\ ')"
@@ -85,7 +89,7 @@ map <c-r> reload
 map <c-f> $lf -remote "send $id select \"$(fzf)\""
 map <backspace> set hidden! #<backspace> is ctrl-h, <backspace2> is backspace
 map <enter> shell
-map o &xdg-open "$f"
+map o open
 map O open-with
 
 map r rename
