@@ -55,7 +55,6 @@ vim.opt.history = 1000
 
 -- Backup/Swap
 -- Default: 'backup' is off, 'writebackup' is on, 'swapfile' is on
-vim.opt.undodir = os.getenv("HOME") .. "/.local/state/nvim/undo"
 vim.opt.undofile = true
 
 -- Spell check
