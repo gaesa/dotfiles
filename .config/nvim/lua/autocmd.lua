@@ -3,15 +3,25 @@ local del_autocmd = vim.api.nvim_del_autocmd
 local group = vim.api.nvim_create_augroup("default.conf", { clear = true })
 
 -- Toggle absolute and relative numbering by insert/normal mode
-autocmd({ "InsertEnter" }, { command = [[set nornu]], group = group })
-autocmd({ "InsertLeave" }, { command = [[set rnu]], group = group })
+autocmd({ "InsertEnter" }, {
+    callback = function()
+        vim.wo.rnu = false
+    end,
+    group = group,
+})
+autocmd({ "InsertLeave" }, {
+    callback = function()
+        vim.wo.rnu = true
+    end,
+    group = group,
+})
 
 -- Change indent for some filetypes
 autocmd({ "FileType" }, {
     pattern = { "xml", "html", "javascript" },
     callback = function()
-        vim.opt.tabstop = 2
-        vim.opt.shiftwidth = 2
+        vim.bo.tabstop = 2
+        vim.bo.shiftwidth = 2
     end,
     group = group,
 })
@@ -22,49 +32,61 @@ autocmd({ "FileType" }, {
 -- related pull: https://github.com/neovim/neovim/pull/13896#issuecomment-774680224
 -- related post: https://vi.stackexchange.com/questions/36692/vimscript-how-to-detect-selection-of-a-text-object-in-visual-mode
 autocmd({ "CursorMoved", "ModeChanged" }, {
-    pattern = "*",
     callback = function()
         local mode = string.sub(vim.api.nvim_get_mode().mode, 1, 1)
-        if mode ~= "v" and mode ~= "V" then
-            return
+        if mode == "v" or mode == "V" then
+            vim.cmd.normal({ args = { '"*y' }, bang = true })
+            vim.cmd.normal({ args = { "gv" }, bang = true })
         else
-            vim.cmd([[normal! "*y]])
-            vim.cmd([[normal! gv]])
+            return
         end
     end,
     group = group,
 })
 
--- Return to last edited postition
-autocmd(
-    { "BufReadPost" },
-    { command = [[if line("'\"") > 1 && line("'\"") <= line("$") | execute "normal! g`\"" | endif]], group = group }
-)
-autocmd({ "FileType" }, { pattern = { "gitcommit", "gitrebase" }, command = [[normal! gg0]], group = group })
-autocmd({ "BufWinEnter" }, { command = [[normal! zz]], group = group })
+-- Return to last edited postition and `zz`
+-- checks if the '" mark is defined, and jumps to it if so
+-- limitation: doesn't work for `help`
+autocmd({ "BufWinEnter" }, {
+    callback = function()
+        local excluded_filetype = { gitcommit = true, gitrebase = true }
+        if excluded_filetype[vim.bo.filetype] then
+            vim.cmd.normal({ args = { "zz" }, bang = true })
+        elseif vim.fn.line([['"]]) > 1 and (vim.fn.line([['"]]) <= vim.fn.line("$")) then
+            vim.cmd.normal({ args = { [[g`"]] }, bang = true })
+            vim.cmd.normal({ args = { "zz" }, bang = true })
+        else
+            vim.cmd.normal({ args = { "zz" }, bang = true })
+        end
+    end,
+    group = group,
+})
 
 -- Remove all trailing whitespace
-autocmd({ "BufWritePre" }, { pattern = { "*" }, command = [[silent! %s/\s\+$//e]], group = group })
+autocmd({ "BufWritePre" }, {
+    command = [[silent! %s/\s\+$//e]],
+    group = group,
+})
 
 -- Retab
-autocmd({ "BufWritePre" }, { pattern = { "*" }, command = [[silent! %retab]], group = group })
+autocmd({ "BufWritePre" }, {
+    callback = function()
+        vim.cmd.retab({ bang = true })
+    end,
+    group = group,
+})
 
 -- Automatically enable spell checking in specific files
-autocmd({ "FileType" }, { pattern = { "markdown", "gitcommit" }, command = [[set spell]], group = group })
-
--- Automatically change shortcuts in specific files
 autocmd({ "FileType" }, {
-    pattern = "gitcommit",
+    pattern = { "markdown", "gitcommit" },
     callback = function()
-        vim.keymap.set({ "n", "i" }, "<C-q>", "<ESC>:cq<CR>", { noremap = true })
-        vim.keymap.set("n", "Q", "<ESC>:cq<CR>", { silent = true })
+        vim.wo.spell = true
     end,
     group = group,
 })
 
 -- Highlight yanked text
 autocmd({ "TextYankPost" }, {
-    pattern = "*",
     callback = function()
         vim.highlight.on_yank({ higroup = "IncSearch", timeout = 150 })
     end,
@@ -131,9 +153,21 @@ autocmd("BufWinEnter", {
     desc = "Auto remove search highlight and rehighlight when using n or N",
 })
 
+-- Automatically change shortcuts in specific files
+autocmd({ "FileType" }, {
+    pattern = "gitcommit",
+    callback = function()
+        vim.keymap.set({ "n", "i" }, "<C-q>", "<ESC>:cq<CR>", { buffer = true, noremap = true, silent = true })
+        vim.keymap.set({ "n" }, "Q", ":cq<CR>", { buffer = true, noremap = true, silent = true })
+    end,
+    group = group,
+})
+
 -- Quit with 'q'
 autocmd({ "FileType" }, {
     pattern = { "help", "man", "startuptime", "qf" },
-    command = [[nnoremap <buffer><silent> q :quit<CR>]],
+    callback = function()
+        vim.keymap.set({ "n" }, "q", ":q<CR>", { buffer = true, noremap = true, silent = true })
+    end,
     group = group,
 })
