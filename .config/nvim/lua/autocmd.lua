@@ -163,20 +163,15 @@ autocmd("BufWinEnter", {
 })
 
 -- Automatically change shortcuts in specific files
-autocmd({ "FileType" }, {
-    pattern = "gitcommit",
+autocmd({ "WinEnter" }, {
+    -- `vim.wo` is set after the `BufWinEnter` event is triggered
     callback = function()
-        vim.keymap.set({ "n", "i" }, "<C-q>", "<ESC>:cq<CR>", { buffer = true, noremap = true, silent = true })
-        vim.keymap.set({ "n" }, "Q", ":cq<CR>", { buffer = true, noremap = true, silent = true })
-    end,
-    group = group,
-})
-
--- Quit with 'q'
-autocmd({ "FileType" }, {
-    pattern = { "help", "man", "startuptime", "qf" },
-    callback = function()
-        vim.keymap.set({ "n" }, "q", ":q<CR>", { buffer = true, noremap = true, silent = true })
+        local git_filetype = { gitcommit = true, gitrebase = true }
+        if vim.wo.diff or git_filetype[vim.bo.filetype] then
+            vim.keymap.set({ "n", "i" }, "<C-q>", "<ESC>:cq<CR>", { buffer = true, noremap = true, silent = true })
+        else
+            return
+        end
     end,
     group = group,
 })
