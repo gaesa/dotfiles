@@ -55,15 +55,7 @@ def within_one_month(old_dt, new_dt):
                         if d_sec < 0:
                             return True
                         elif d_sec == 0:
-
-                            def int_to_decimal(num):
-                                k = len(str(num))
-                                return num / (10**k)
-
-                            d_msec = int_to_decimal(
-                                new_dt.microsecond
-                            ) - int_to_decimal(old_dt.microsecond)
-
+                            d_msec = new_dt.microsecond - old_dt.microsecond
                             if d_msec > 0:
                                 return False
                             else:
