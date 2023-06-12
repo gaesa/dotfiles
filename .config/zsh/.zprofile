@@ -8,7 +8,7 @@ export QT_IM_MODULE=fcitx
 export XMODIFIERS=@im=fcitx
 export SDL_IM_MODULE=fcitx
 export GLFW_IM_MODULE=ibus
-export FCITX_SOCKET=/tmp
+export FCITX_SOCKET="$XDG_RUNTIME_DIR"
 
 # Wayland
 export CLUTTER_BACKEND=wayland
