@@ -1,0 +1,7 @@
+[Unit]
+Description=Clean old files
+OnFailure=status_email@%n.service
+
+[Service]
+Type=oneshot
+ExecStart=%h/.local/bin/clean-old
