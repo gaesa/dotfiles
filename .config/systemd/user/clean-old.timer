@@ -1,0 +1,12 @@
+[Unit]
+Description=Clean old files daily
+
+[Timer]
+OnCalendar=daily
+AccuracySec=5min
+RandomizedDelaySec=5s
+Persistent=true
+Unit=clean-old.service
+
+[Install]
+WantedBy=timers.target
