@@ -11,9 +11,6 @@ ls.add_snippets("all", {
     s("hi", {
         t("Hello, world!"),
     }),
-})
-
-ls.add_snippets("python", {
     s({ name = "Shebang for Python", trig = "sbpy", dscr = "Put shebang for Python" }, {
         t([[#!/usr/bin/env python3]]),
     }),
