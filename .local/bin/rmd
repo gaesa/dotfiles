@@ -1,10 +1,21 @@
 #!/usr/bin/env python3
 from os import unlink, walk, listdir, rmdir
 from os.path import isdir, islink, join, realpath
-from sys import argv
+from sys import argv, exit as sys_exit, stderr
 
 
-def rm_empty_dirs(path):
+def extract_args(args):
+    paths = []
+    for i in range(len(args)):
+        if args[i] in {"-p", "--preserve"}:
+            paths += args[i + 1 :]
+            return paths, True
+        else:
+            paths.append(args[i])
+    return paths, False
+
+
+def rm_empty_dirs(path, preserve):
     for root, dirs, _ in walk(path, topdown=False):
         for dir in dirs:
             folder_path = join(root, dir)
@@ -14,26 +25,32 @@ def rm_empty_dirs(path):
                 else:
                     rmdir(folder_path)
 
-    if listdir(path) == []:
-        if islink(path):
-            rmdir(realpath(path))
-            unlink(path)
+    if not preserve:
+        if listdir(path) == []:
+            if islink(path):
+                rmdir(realpath(path))
+                unlink(path)
+            else:
+                if path != ".":
+                    rmdir(path)
+                else:
+                    return
         else:
-            rmdir(path)
+            return
     else:
         return
 
 
 def main():
     if len(argv) < 2:
-        print("No directory is given")
+        sys_exit("No directory is given")
     else:
-        paths = argv[1:]
+        paths, preserve = extract_args(argv[1:])
         for path in paths:
             if isdir(path):
-                rm_empty_dirs(path)
+                rm_empty_dirs(path, preserve)
             else:
-                pass
+                print(f"Invalid path: {path}", file=stderr)
 
 
 if __name__ == "__main__":
