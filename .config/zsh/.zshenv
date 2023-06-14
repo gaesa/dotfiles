@@ -23,6 +23,7 @@ export _JAVA_OPTIONS=-Djava.util.prefs.userRoot="$XDG_CONFIG_HOME"/java
 export ANDROID_HOME="$XDG_DATA_HOME"/android
 export WGETRC="$XDG_CONFIG_HOME"/wget/wgetrc
 export PYENV_ROOT="$XDG_DATA_HOME"/pyenv
+export RIPGREP_CONFIG_PATH="$XDG_CONFIG_HOME"/ripgreprc
 
 export TEXMACS_HOME_PATH="$XDG_STATE_HOME"/texmacs
 
