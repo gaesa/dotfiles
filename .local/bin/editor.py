@@ -28,7 +28,7 @@ def open_with_emacs(files):
         p = Popen(
             [
                 "emacsclient",
-                "--alternate-editor=emacs --daemon",
+                "--alternate-editor=",
                 "-nc",
                 "--eval",
                 sexp,
