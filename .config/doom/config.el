@@ -52,15 +52,15 @@
              (hour (nth 2 current-time)))
         (if (and (>= hour 6) (< hour 18))
             (switch-theme-light)
-            (switch-theme-dark)))
-      (let ((colors #s(hash-table size 2
-                                  test equal
-                                  data (
-                                        "light" t
-                                        "dark" t))))
-           (if (gethash color colors)
-               (funcall (intern (format "switch-theme-%s" color)))
-               (error "Invalid color: %s" color)))))
+          (switch-theme-dark)))
+    (let ((colors #s(hash-table size 2
+                                test equal
+                                data (
+                                      "light" t
+                                      "dark" t))))
+      (if (gethash color colors)
+          (funcall (intern (format "switch-theme-%s" color)))
+        (error "Invalid color: %s" color)))))
 
 (add-hook 'after-init-hook #'switch-theme)
 ;': refer symbols as itself instead of the stored value
@@ -104,6 +104,12 @@
 (define-key evil-normal-state-map (kbd "Q") #'evil-record-macro)
 (define-key evil-normal-state-map (kbd "C-s") #'evil-save-modified-and-close)
 (define-key evil-normal-state-map (kbd "C-q") (lambda () (interactive) (evil-quit-all t)))
+(define-key evil-insert-state-map (kbd "M-h") #'evil-backward-char)
+(define-key evil-insert-state-map (kbd "M-j") #'evil-next-visual-line)
+(define-key evil-insert-state-map (kbd "M-k") #'evil-previous-visual-line)
+(define-key evil-insert-state-map (kbd "M-l") #'evil-forward-char)
+(define-key evil-insert-state-map (kbd "M-o") #'evil-open-below)
+(define-key evil-insert-state-map (kbd "M-O") #'evil-open-above)
 
 (defun my/center-line (&rest _)
   (evil-scroll-line-to-center nil))
@@ -146,8 +152,8 @@
     (process-send-eof wl-copy-process))
   (defun wl-paste-handler ()
     (if (and wl-copy-process (process-live-p wl-copy-process))
-        nil ; should return nil if we're the current paste owner
-        (shell-command-to-string "wl-paste -n")))
+        nil                 ; should return nil if we're the current paste owner
+      (shell-command-to-string "wl-paste -n")))
   (setq interprogram-cut-function 'wl-copy-handler
         interprogram-paste-function 'wl-paste-handler))
 
@@ -167,7 +173,7 @@
 (defun my-highlighter (level responsive display)
   (if (> 1 level)
       nil
-      (highlight-indent-guides--highlighter-default level responsive display)))
+    (highlight-indent-guides--highlighter-default level responsive display)))
 (setq highlight-indent-guides-highlighter-function 'my-highlighter)
 
 ;; Scheme & other lisp
@@ -185,6 +191,15 @@
     (lispy-mode 1)))
 (add-hook 'minibuffer-setup-hook 'conditionally-enable-lispy)
 
+;; DONT WORK:
+;; Disable lispy-comment for specific files
+;; (defun my/disable-lispy-comment ()
+;;   (when (string= (buffer-file-name) (expand-file-name "~/.config/doom/init.el"))
+;;     (define-key lispy-mode-map (kbd ";") nil)))
+;; (add-hook 'find-file-hook #'my/disable-lispy-comment)
+;; (eval-after-load "lispy"
+;;   `(progn
+;;      (define-key lispy-mode-map (kbd ";") nil)))
 
 ;; Whenever you reconfigure a package, make sure to wrap your config in an
 ;; `after!' block, otherwise Doom's defaults may override your settings. E.g.
