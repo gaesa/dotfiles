@@ -1,5 +1,0 @@
-[submodule ".config/doom"]
-    path = .config/doom
-    url = git@github.com:gaesa/doom-emacs-config.git
-    branch = main
-    ignore = all
