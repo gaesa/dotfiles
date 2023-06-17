@@ -110,6 +110,7 @@
 (define-key evil-insert-state-map (kbd "M-l") #'evil-forward-char)
 (define-key evil-insert-state-map (kbd "M-o") #'evil-open-below)
 (define-key evil-insert-state-map (kbd "M-O") #'evil-open-above)
+(define-key evil-insert-state-map (kbd "C-k") #'kill-line)
 
 (defun my/center-line (&rest _)
   (evil-scroll-line-to-center nil))
