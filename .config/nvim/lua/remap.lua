@@ -24,7 +24,39 @@ map({ "n" }, "#", "#zzzv")
 map({ "n" }, "G", "Gzz")
 
 -- Emacs-like keybinding
-map({ "i", "c", "t" }, "<C-a>", "<Home>")
+local function get_cur_pos()
+    local pos = vim.api.nvim_win_get_cursor(0)
+    local row = pos[1] - 1
+    local col = pos[2]
+    return row, col
+end
+local function all_blank_before_cursor(row, col)
+    local str = vim.api.nvim_buf_get_text(0, row, 0, row, col, {})[1]
+    local blank_space = { [" "] = true, ["\t"] = true }
+    for i = 1, #str, 1 do
+        local char = string.sub(str, i, i)
+        if not blank_space[char] then
+            return false
+        end
+    end
+    return true
+end
+local function need_goto_start(row, col)
+    if col == 0 then
+        return false
+    else
+        return all_blank_before_cursor(row, col)
+    end
+end
+map({ "c", "t" }, "<C-a>", "<Home>")
+map({ "i" }, "<C-a>", function()
+    local row, col = get_cur_pos()
+    if need_goto_start(row, col) then
+        vim.api.nvim_win_set_cursor(0, { row + 1, 0 })
+    else
+        vim.cmd.normal({ args = { "^" }, bang = true })
+    end
+end)
 map({ "i", "c", "t" }, "<C-e>", "<End>")
 map({ "i", "t" }, "<C-b>", "<Left>")
 map({ "i", "t" }, "<C-f>", "<Right>")
@@ -35,20 +67,31 @@ map({ "i", "c", "t" }, "<A-f>", "<S-Right>")
 map({ "i" }, "<A-d>", function()
     vim.cmd.normal({ args = { "de" }, bang = true })
 end)
-map({ "i" }, "<C-u>", function()
-    -- cmap, tmap don't work
-    vim.cmd.normal({ args = { "d^" }, bang = true })
+map({ "i" }, "<C-u>", function() -- cmap, tmap don't work
+    local row, col = get_cur_pos()
+    if col == 0 then
+        if row > 0 then
+            row = row - 1
+        end
+        local len = #vim.api.nvim_buf_get_lines(0, row, row + 1, true)[1]
+        vim.api.nvim_win_set_cursor(0, { row + 1, len })
+        vim.cmd.normal({ args = { "gJ" }, bang = true })
+    else
+        if all_blank_before_cursor(row, col) then
+            vim.cmd.normal({ args = { "d0" }, bang = true })
+        else
+            vim.cmd.normal({ args = { "d^" }, bang = true })
+        end
+    end
 end)
 map({ "i" }, "<C-k>", function()
+    -- The position of cursor can't be corrected by:
     -- vim.cmd.normal({ args = { "d$" }, bang = true })
-    -- the position of cursor can't be fixed
-    local pos = vim.api.nvim_win_get_cursor(0)
-    local row = pos[1]
-    local col = pos[2]
-    local len = #vim.api.nvim_buf_get_lines(0, row - 1, row, true)[1]
-    local str = vim.api.nvim_buf_get_text(0, row - 1, col, row - 1, len, {})[1]
+    local row, col = get_cur_pos()
+    local len = #vim.api.nvim_buf_get_lines(0, row, row + 1, true)[1]
+    local str = vim.api.nvim_buf_get_text(0, row, col, row, len, {})[1]
     vim.fn.setreg('"', str, "c")
-    vim.api.nvim_buf_set_text(0, row - 1, col, row - 1, len, {})
+    vim.api.nvim_buf_set_text(0, row, col, row, len, {})
 end)
 
 -- Clipboard
