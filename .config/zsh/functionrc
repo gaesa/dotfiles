@@ -15,7 +15,7 @@ function private_mode() {
     unset HISTFILE
     printf "zsh is running in private mode, history will not be persisted.\n"
 }
-bindkey -s '^P' 'private_mode\n'
+bindkey -s '^[p' 'private_mode\n'
 
 function mktemp() {
     local -r file_name="$(uuidgen --random)"
@@ -54,4 +54,4 @@ function lfz() {
         return 0
     fi
 }
-bindkey -s '^N' '^ulfz\n'
+bindkey -s '^[m' '^ulfz\n'

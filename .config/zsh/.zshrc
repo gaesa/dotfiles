@@ -100,8 +100,15 @@ bindkey -v '^?' backward-delete-char
 bindkey -v '^H' backward-delete-char
 # Default '^W' is stuck after accepting suggestions
 bindkey -v '^W' backward-kill-word
+bindkey -v '^[d' kill-word
 bindkey -v '^U' backward-kill-line
 bindkey -v '^K' kill-line
+bindkey -v '^A' beginning-of-line
+bindkey -v '^E' end-of-line
+bindkey -v '^B' backward-char
+bindkey -v '^F' forward-char
+bindkey -v '^[b' backward-word
+bindkey -v '^[f' forward-word
 
 # Change cursor shape for different vi modes.
 function zle-keymap-select() {
@@ -121,12 +128,11 @@ preexec() { echo -ne '\e[6 q'; } # Use beam shape cursor for each new prompt.
 
 # Edit line in vim with ctrl-e:
 autoload edit-command-line; zle -N edit-command-line
-bindkey '^e' edit-command-line
-bindkey -M vicmd '^e' edit-command-line
+bindkey '^[e' edit-command-line
+bindkey -M vicmd '^[e' edit-command-line
 
-# Default wordchars is bad as it contains slash
-# WORDCHARS=$WORDCHARS:s:/:
-WORDCHARS='*?_-.[]~=&;!#$%^(){}<>'
+# Default wordchars is bad as it contains `/`, `_`, `-`, `.`
+WORDCHARS='*?[]~=&;!#$%^(){}<>'
 
 # Zsh reverse bindkey lookup
 function reverse-bindkey-lookup() {
@@ -193,7 +199,9 @@ source /usr/share/zsh/plugins/zsh-syntax-highlighting/zsh-syntax-highlighting.zs
 # https://github.com/zsh-users/zsh-history-substring-search
 source /usr/share/zsh/plugins/zsh-history-substring-search/zsh-history-substring-search.zsh
 bindkey '^[[A' history-substring-search-up
+bindkey '^P' history-substring-search-up
 bindkey '^[[B' history-substring-search-down
+bindkey '^N' history-substring-search-down
 bindkey -M vicmd 'k' history-substring-search-up
 bindkey -M vicmd 'j' history-substring-search-down
 
