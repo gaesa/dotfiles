@@ -31,6 +31,7 @@ autocmd({ "FileType" }, {
 -- when the cursor is at the end of a word, after pressing `viw`, only the last character is yanked
 -- related pull: https://github.com/neovim/neovim/pull/13896#issuecomment-774680224
 -- related post: https://vi.stackexchange.com/questions/36692/vimscript-how-to-detect-selection-of-a-text-object-in-visual-mode
+-- https://vi.stackexchange.com/questions/31420/how-to-get-the-range-of-selected-lines-in-visual-lines-mode
 autocmd({ "CursorMoved", "ModeChanged" }, {
     callback = function()
         local mode = string.sub(vim.api.nvim_get_mode().mode, 1, 1)
@@ -168,7 +169,7 @@ autocmd({ "WinEnter" }, {
     callback = function()
         local git_filetype = { gitcommit = true, gitrebase = true }
         if vim.wo.diff or git_filetype[vim.bo.filetype] then
-            vim.keymap.set({ "n", "i" }, "<C-q>", "<ESC>:cq<CR>", { buffer = true, noremap = true, silent = true })
+            vim.keymap.set({ "n", "i" }, "<C-q>", "<Esc>:cq<CR>", { buffer = true, noremap = true, silent = true })
         else
             return
         end
