@@ -15,9 +15,9 @@ fi
 
 if [[ "$filetype" =~ ^image ]]; then
     kitty +kitten icat --silent --stdin no --transfer-mode file --place "${w}x${h}@${x}x${y}" "$file" </dev/null >/dev/tty
-    exit 1 #to clear the last displayed image
+    exit 1 #to clear the last displayed image, no idea on why we need do this
 elif [[ "$filetype" =~ ^video ]]; then
-    # vidthumb is from here:
+    # Inspired by the following program
     # https://raw.githubusercontent.com/duganchen/kitty-pistol-previewer/main/vidthumb
     kitty +kitten icat --silent --stdin no --transfer-mode file --place "${w}x${h}@${x}x${y}" "$(thumb.py "$file")" </dev/null >/dev/tty
     exit 1
@@ -25,5 +25,5 @@ elif [[ "$filetype" =~ ^audio ]] && (mediainfo "$file" | rg -q -m 1 'Cover'); th
     kitty +kitten icat --silent --stdin no --transfer-mode file --place "${w}x${h}@${x}x${y}" "$(thumb.py "$file")" </dev/null >/dev/tty
     exit 1
 else
-    ~/.config/lf/scope-lf-wrapper.sh "$file"
+    ~/.config/ranger/scope.sh "$file"
 fi
