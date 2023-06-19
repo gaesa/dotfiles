@@ -13,10 +13,10 @@ def open_with_nvim(files):
 
 
 def open_with_emacs(files):
-    len_files = len(files)
-    if len_files == 0:
+    if files == []:
         return
     else:
+        len_files = len(files)
         sexp = f'(progn (find-file "{files[0]}") '
         if len_files == 1:
             sexp += ")"
