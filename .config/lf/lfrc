@@ -22,18 +22,10 @@ cmd on-cd &{{
     printf "\033]0; %s - lf\007" "$(pwd | sd "$HOME" "~")" >/dev/tty
 }}
 cmd open ${{
-    set -f
-    if [[ "$(file -Lb --mime-type $f)" == "application/x-executable" ]]; then
-        "$f"
-    else
-        rifle -p 0 $f # open files with lf integration
-    fi
+    opener.py "$f"
 }}
 cmd open-with ${{
-    set -f
-    rifle -l $fx
-    read -p "Open with: " method
-    rifle -p $method $f
+    opener.py -i "$f"
 }}
 cmd mkdir ${{
     mkdir -p "$(echo $* | tr ' ' '\ ')"

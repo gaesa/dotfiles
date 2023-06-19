@@ -5,13 +5,8 @@ h="$3"
 x="$4"
 y="$5"
 
-# `file -Lb --mime-type` treats .m4a as video/mp4
-if [[ "${file}" =~ \.m4a$ ]]; then
-    export filetype="audio/mp4"
-else
-    filetype="$(file -Lb --mime-type "${file}")"
-    export filetype
-fi
+filetype="$(mime "${file}")"
+export filetype
 
 if [[ "$filetype" =~ ^image ]]; then
     kitty +kitten icat --silent --stdin no --transfer-mode file --place "${w}x${h}@${x}x${y}" "$file" </dev/null >/dev/tty

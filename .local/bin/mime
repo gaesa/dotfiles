@@ -1,0 +1,5 @@
+#!/usr/bin/env python3
+from opener import get_mime_type
+from sys import argv
+
+print(get_mime_type(" ".join(argv[1:])))
