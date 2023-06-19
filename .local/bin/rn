@@ -3,9 +3,8 @@ from sys import exit as sys_exit, argv
 from subprocess import run
 from os.path import isdir, join
 from shutil import move
-from os import getenv, listdir, remove, chmod, stat
-from stat import S_IMODE
-from uuid import uuid4
+from os import getenv, listdir, remove
+from mktemp import mktemp
 
 
 def sorted_name_list(root, names):
@@ -17,23 +16,6 @@ def sorted_name_list(root, names):
         else:
             files.append(name)
     return sorted(files) + sorted(dirs)
-
-
-def mktemp(prefix=""):
-    if prefix != "":
-        name = f"{prefix}-{str(uuid4())}"
-    else:
-        name = str(uuid4())
-    dir = getenv("XDG_RUNTIME_DIR", "/tmp")
-    path = join(dir, name)
-    open(path, "w").close()
-
-    permission = oct(S_IMODE(stat(path).st_mode))
-    if permission != 0o600:
-        chmod(path, 0o600)
-        return path
-    else:
-        return path
 
 
 def save_name_list(name_list, name_record):

@@ -17,24 +17,6 @@ function private_mode() {
 }
 bindkey -s '^[p' 'private_mode\n'
 
-function mktemp() {
-    local -r file_name="$(uuidgen --random)"
-    if (( $# > 0 )); then
-        local -r prefix="${1}-"
-    else
-        local -r prefix=""
-    fi
-    local -r runtime_dir="${XDG_RUNTIME_DIR:-/tmp}"
-    local -r file="${runtime_dir}/${prefix}${file_name}"
-    touch "${file}"
-    if (( $(stat -c %a "${file}") != 600 )); then
-        chmod 600 "${file}" >/dev/null
-        printf "%s\n" "${file}"
-    else
-        printf "%s\n" "${file}"
-    fi
-}
-
 function lfz() {
     local -r tmp="$(mktemp lfz)"
     command lf -last-dir-path="${tmp}" "$@"
