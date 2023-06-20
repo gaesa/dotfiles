@@ -29,7 +29,7 @@ local plugins = {
         },
         event = "VeryLazy",
     },
-    { "nanotee/zoxide.vim", event = "VeryLazy" },
+    { "nanotee/zoxide.vim", cmd = { "Z", "Zi" } },
 
     {
         "sainnhe/everforest",
@@ -49,8 +49,11 @@ local plugins = {
     },
 
     { "theprimeagen/harpoon", event = "VeryLazy" },
-
-    { "mbbill/undotree", event = "VeryLazy" },
+    {
+        "mbbill/undotree",
+        event = { "TextChanged", "TextChangedI" },
+        cmd = { "UndotreeFocus", "UndotreeToggle", "UndotreeShow", "UndotreeHide" },
+    },
 
     --  'tpope/vim-fugitive',
 
@@ -108,17 +111,18 @@ local plugins = {
     {
         "phaazon/hop.nvim",
         branch = "v2", -- optional but strongly recommended
+        event = "VeryLazy",
     },
 
     -- Editing support
     {
         "windwp/nvim-autopairs",
-        event = "VeryLazy",
+        event = "InsertEnter",
         config = true,
     },
     {
         "windwp/nvim-ts-autotag",
-        event = "VeryLazy",
+        event = "InsertEnter",
     },
     {
         "echasnovski/mini.nvim",
@@ -132,7 +136,7 @@ local plugins = {
     { "lukas-reineke/indent-blankline.nvim", event = "VeryLazy" },
 
     -- Input method
-    { "h-hg/fcitx.nvim", event = "VeryLazy" },
+    { "h-hg/fcitx.nvim", event = "InsertEnter" },
 }
 
 local opts = {
