@@ -19,6 +19,9 @@ elif [[ "$filetype" =~ ^video ]]; then
 elif [[ "$filetype" =~ ^audio ]] && (mediainfo "$file" | rg -q -m 1 'Cover'); then
     kitty +kitten icat --silent --stdin no --transfer-mode file --place "${w}x${h}@${x}x${y}" "$(thumb.py "$file")" </dev/null >/dev/tty
     exit 1
+elif [[ "$filetype" == "application/pdf" ]]; then
+    kitty +kitten icat --silent --stdin no --transfer-mode file --place "${w}x${h}@${x}x${y}" "$(thumb.py "$file")" </dev/null >/dev/tty
+    exit 1
 else
     ~/.config/ranger/scope.sh "$file"
 fi

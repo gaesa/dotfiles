@@ -21,7 +21,7 @@ def cache_dir_check(cache_dir):
     if not isdir(cache_dir):
         makedirs(cache_dir, mode=0o700)
     else:
-        return None
+        return
 
 
 def index_file_check(index):
@@ -30,7 +30,7 @@ def index_file_check(index):
             d = [{}, {}]
             json.dump(d, f, indent=2, ensure_ascii=False)
     else:
-        return None
+        return
 
 
 def within_one_month(old_dt, new_dt):
@@ -143,10 +143,17 @@ def gen_thumb(media, thumb_path):
             check=True,
             stdout=DEVNULL,
         )
+    elif mime_type == "application/pdf":
+        run(
+            ["pdftoppm", "-singlefile", "-jpeg", media, thumb_path[:-4]],
+            # remove `.jpg`
+            check=True,
+            stdout=DEVNULL,
+        )
     else:
         mes = (
             "This program only supports generating thumbnails "
-            "for videos and audios that have covers"
+            "for videos, audios that have covers, pdfs"
         )
         sys_exit(mes)
 
