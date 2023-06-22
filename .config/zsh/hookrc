@@ -106,3 +106,15 @@ _git_env_on_chdir() {
     fi
 }
 add-zsh-hook -Uz chpwd() {_git_env_on_chdir}
+
+#------Pyvenv---------
+#---------------------
+_auto_pyvenv() {
+    if [[ -n "${VIRTUAL_ENV}" && "${PWD}" != "$VIRTUAL_ENV"* ]]; then
+        deactivate
+    fi
+    if [[ -z "$VIRTUAL_ENV" && -f "${PWD}/bin/activate" ]]; then
+        source "${PWD}/bin/activate"
+    fi
+}
+add-zsh-hook -Uz chpwd() {_auto_pyvenv}
