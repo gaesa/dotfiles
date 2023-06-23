@@ -38,6 +38,11 @@ if [[ ":$PATH:" != *":.:"* ]]; then
     path+=(".")
 fi
 
+# Add cargo/bin to PATH
+if [[ -d "$HOME/.local/share/cargo/bin" ]] && [[ ":$PATH:" != *":$HOME/.local/share/cargo/bin:"* ]]; then
+    path+=("$HOME/.local/share/cargo/bin")
+fi
+
 # Terminal
 export EDITOR=nvim
 export PAGER=less
