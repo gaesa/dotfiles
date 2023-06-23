@@ -43,6 +43,10 @@ fi
 if [[ -d "$HOME/.config/emacs/bin" ]] && [[ ":$PATH:" != *":$HOME/.config/emacs/bin:"* ]]; then
     path+=("$HOME/.config/emacs/bin")
 fi
+# Add cargo/bin to PATH
+if [[ -d "$HOME/.local/share/cargo/bin" ]] && [[ ":$PATH:" != *":$HOME/.local/share/cargo/bin:"* ]]; then
+    path+=("$HOME/.local/share/cargo/bin")
+fi
 
 # Terminal
 export EDITOR=nvim
