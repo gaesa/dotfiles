@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-from os.path import expanduser, isdir
+from os.path import expanduser, isdir, join
 from subprocess import run
 
 
@@ -25,29 +25,18 @@ def clean(path_time):
             continue
 
 
-def trash_empty():
-    run(["trash-empty", "-f", "7"], check=True)
-
-
 def main():
-    recent_documents_path = expanduser("~/.local/share/RecentDocuments")
-    watch_later_path = expanduser("~/.config/mpv/watch_later")
-    neovim_swap_path = expanduser("~/.local/state/nvim/swap")
-    okular_docdate_path = expanduser("~/.local/share/okular/docdate")
-    stversions_path = expanduser("~/nt/.stversions")
-    telegram_desktop_path = expanduser("~/dl/Telegram Desktop")
+    HOME = expanduser("~")
+    neovim_swap_path = join(HOME, ".local/state/nvim/swap")
+    neovim_undo_path = join(HOME, ".local/state/nvim/undo")
 
     path_time = {
-        recent_documents_path: "1weeks",
-        watch_later_path: "6months",
         neovim_swap_path: "2weeks",
-        okular_docdate_path: "1weeks",
-        stversions_path: "1weeks",
-        telegram_desktop_path: "1months",
+        neovim_undo_path: "6months",
     }
 
     clean(path_time)
-    trash_empty()
+    run(["trash-empty", "-f", "7"], check=True)
 
 
 if __name__ == "__main__":
