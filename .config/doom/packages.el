@@ -10,6 +10,7 @@
 (package! xdotool :disable t)
 (package! xprop :disable t)
 (package! xwininfo :disable t)
+(package! flycheck :disable t)
 
 (unpin! org-roam company-org-roam)
 

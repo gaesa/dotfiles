@@ -172,11 +172,39 @@
 ;; The following example highlighter will highlight normally,
 ;; except that it will not highlight the first level of indentation:
 ;; source: https://github.com/DarthFennec/highlight-indent-guides/blob/master/README.md#custom-highlighter-function
-(defun my-highlighter (level responsive display)
+(defun my/indent-guide-highlighter (level responsive display)
   (if (> 1 level)
       nil
     (highlight-indent-guides--highlighter-default level responsive display)))
-(setq highlight-indent-guides-highlighter-function #'my-highlighter)
+(setq highlight-indent-guides-highlighter-function #'my/indent-guide-highlighter)
+
+(setq highlight-indent-guides-auto-enabled nil)
+(defun lighten-hex (hex percent)
+  "Lighten a given hexadecimal color by a percentage."
+  (let* ((r (string-to-number (substring hex 1 3) 16))
+         (g (string-to-number (substring hex 3 5) 16))
+         (b (string-to-number (substring hex 5 7) 16))
+         (alpha (- 1 (/ percent 100.0)))
+         (bg 255)
+         (calculate (lambda (n)
+                      (round (+ (* (- 1 alpha) bg) (* alpha n))))))
+    (format "#%02x%02x%02x" (funcall calculate r) (funcall calculate g) (funcall calculate b))))
+(defun set-color-for-highlight-indent-guides (val)
+  (set-face-foreground 'highlight-indent-guides-character-face
+                       (lighten-hex (face-attribute 'font-lock-comment-face :foreground) val)))
+(after! highlight-indent-guides
+  (let* ((current-time (decode-time))
+         (hour (nth 2 current-time))
+         (val (if (and (>= hour 6) (< hour 18))
+                  40
+                -40)))
+    (set-color-for-highlight-indent-guides val)))
+(run-at-time "06:00"
+             (* 24 60 60)
+             (lambda () (set-color-for-highlight-indent-guides 40)))
+(run-at-time "18:00"
+             (* 24 60 60)
+             (lambda () (set-color-for-highlight-indent-guides -40)))
 
 ;; Scheme & other lisp
 (progn (add-hook 'scheme-mode-hook #'smartparens-strict-mode)
