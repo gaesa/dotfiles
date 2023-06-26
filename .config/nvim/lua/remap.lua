@@ -129,6 +129,14 @@ map({ "n", "i" }, "<F11>", function()
     vim.wo.spell = not vim.wo.spell
 end)
 
+-- Buffers
+map({ "n" }, "<leader>bn", function()
+    vim.cmd.bnext()
+end)
+map({ "n" }, "<leader>bN", function()
+    vim.cmd.bprev()
+end)
+
 -- QuickFix
 map({ "n" }, "<C-j>", "<cmd>cnext<CR>zz")
 map({ "n" }, "<C-k>", "<cmd>cprev<CR>zz")
