@@ -13,7 +13,7 @@ set period 1 #Set the interval in seconds for periodic checks of directory updat
 set autoquit on #Automatically quit server when there are no clients left connected
 set mouse true #Send mouse events as input
 set preview true
-set previewer ~/.config/lf/preview.py
+set previewer ~/.config/lf/previewSandbox.sh
 set cleaner ~/.config/lf/preview_clean.py
 
 # cmds/functions
