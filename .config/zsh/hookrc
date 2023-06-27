@@ -105,7 +105,8 @@ _git_env_on_chdir() {
         _clr_git_env
     fi
 }
-add-zsh-hook -Uz chpwd() {_git_env_on_chdir}
+_git_env_on_chdir
+chpwd_functions+=_git_env_on_chdir
 
 #------Pyvenv---------
 #---------------------
@@ -117,4 +118,4 @@ _auto_pyvenv() {
         source "${PWD}/bin/activate"
     fi
 }
-add-zsh-hook -Uz chpwd() {_auto_pyvenv}
+chpwd_functions+=_auto_pyvenv
