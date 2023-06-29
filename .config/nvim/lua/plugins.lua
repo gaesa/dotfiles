@@ -109,8 +109,8 @@ local plugins = {
 
     -- Motion
     {
-        "phaazon/hop.nvim",
-        branch = "v2", -- optional but strongly recommended
+        "echasnovski/mini.jump",
+        version = false,
         event = "VeryLazy",
     },
 
@@ -125,12 +125,10 @@ local plugins = {
         event = "InsertEnter",
     },
     {
-        "echasnovski/mini.nvim",
-        event = "VeryLazy",
+        "echasnovski/mini.surround",
         version = false,
-        config = function()
-            require("mini.surround").setup()
-        end,
+        event = "VeryLazy",
+        config = true,
     },
 
     { "lukas-reineke/indent-blankline.nvim", event = "VeryLazy" },
