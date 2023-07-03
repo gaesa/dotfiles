@@ -155,7 +155,8 @@ autocmd("BufWinEnter", {
 })
 
 -- Automatically change shortcuts in specific files
-autocmd({ "WinEnter" }, {
+autocmd({ "BufEnter" }, {
+    -- `WinEnter` doesn't trigger after running `git commit` from shell
     -- `vim.wo` is set after the `BufWinEnter` event is triggered
     callback = function()
         local git_filetype = { gitcommit = true, gitrebase = true }
