@@ -33,10 +33,10 @@ load_theme() {
     if [[ "${TERM}" != "linux" ]]; then
         load_fzf_theme "$1"
         load_kitty_theme "$1"
-        python "${HOME}/.local/bin/switch-nvim-theme" "$1" &!
+        '/usr/bin/python' "${HOME}/.local/bin/switch-nvim-theme" "$1" &!
     else
         load_fzf_tty_theme
-        python "${HOME}/.local/bin/switch-nvim-theme" "$1" &!
+        '/usr/bin/python' "${HOME}/.local/bin/switch-nvim-theme" "$1" &!
     fi
 }
 
