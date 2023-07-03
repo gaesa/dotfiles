@@ -62,6 +62,14 @@ autocmd({ "BufWinEnter" }, {
     end,
     group = group,
 })
+autocmd({ "filetype" }, {
+    pattern = { "help" },
+    callback = function()
+        vim.keymap.set({ "n", "x" }, "j", "gj", { buffer = true, silent = true })
+        vim.keymap.set({ "n", "x" }, "k", "gk", { buffer = true, silent = true })
+    end,
+    group = group,
+})
 
 -- Remove all trailing whitespace
 autocmd({ "BufWritePre" }, {
@@ -161,7 +169,7 @@ autocmd({ "BufEnter" }, {
     callback = function()
         local git_filetype = { gitcommit = true, gitrebase = true }
         if vim.wo.diff or git_filetype[vim.bo.filetype] then
-            vim.keymap.set({ "n", "i" }, "<C-q>", "<Esc>:cq<CR>", { buffer = true, noremap = true, silent = true })
+            vim.keymap.set({ "n", "i" }, "<C-q>", "<Esc>:cq<CR>", { buffer = true, silent = true })
         else
             return
         end
