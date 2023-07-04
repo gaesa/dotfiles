@@ -28,11 +28,12 @@ export RIPGREP_CONFIG_PATH="$XDG_CONFIG_HOME/ripgreprc"
 export TEXMACS_HOME_PATH="$XDG_STATE_HOME/texmacs"
 
 # Terminal
-export EDITOR=nvim
-export BROWSER=librewolf
-export PAGER=less
+export EDITOR='nvim'
+export BROWSER='librewolf'
+export PAGER='less -R'
+export LESS='-R'
 export MANPAGER='nvim +Man!'
-export SYSTEMD_LESS=FRXMK
+export SYSTEMD_LESS='FRXMK'
 
 # Start ssh-agent with systemd user
 export SSH_AUTH_SOCK="$XDG_RUNTIME_DIR/ssh-agent.socket"
