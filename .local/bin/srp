@@ -65,8 +65,8 @@ def rg(param_list, path):
     run(["rg", "--smart-case", pattern, path])
 
 
-# rm (trash) function
-def rm(param_list, path):
+# trash function
+def tr(param_list, path):
     for file in get_full_path(param_list, path):
         run(["trash", file], check=True)
 

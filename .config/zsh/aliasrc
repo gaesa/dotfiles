@@ -8,6 +8,9 @@ alias ip='ip --color=auto'
 alias mkdir='mkdir -p'
 alias rm='rm -r'
 alias cp='cp -r'
+alias tr="trash"
+alias trl="trash-list"
+alias trr="trash-restore"
 alias e='editor.py'
 alias mktemp="${HOME}/.local/bin/mktemp"
 alias se='sudo -e'
