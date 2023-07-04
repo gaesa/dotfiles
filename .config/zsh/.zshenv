@@ -27,10 +27,11 @@ export WGETRC="$XDG_CONFIG_HOME/wget/wgetrc"
 export RIPGREP_CONFIG_PATH="$XDG_CONFIG_HOME/ripgreprc"
 
 # Terminal
-export EDITOR=nvim
-export PAGER=less
+export EDITOR='nvim'
+export PAGER='less -R'
+export LESS='-R'
 export MANPAGER='nvim +Man!'
-export SYSTEMD_LESS=FRXMK
+export SYSTEMD_LESS='FRXMK'
 
 # Start ssh-agent with systemd user
 export SSH_AUTH_SOCK="$XDG_RUNTIME_DIR/ssh-agent.socket"
