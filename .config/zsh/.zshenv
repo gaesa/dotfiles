@@ -1,3 +1,5 @@
+# vim:fileencoding=utf-8:foldmethod=marker
+# Export {{{
 export ZDOTDIR="$HOME/.config/zsh"
 
 # Clean up my home
@@ -25,27 +27,6 @@ export WGETRC="$XDG_CONFIG_HOME/wget/wgetrc"
 export RIPGREP_CONFIG_PATH="$XDG_CONFIG_HOME/ripgreprc"
 export TEXMACS_HOME_PATH="$XDG_STATE_HOME/texmacs"
 
-# Add scripts path
-if [[ -d "$HOME/.local/bin" ]] && [[ ":$PATH:" != *":$HOME/.local/bin:"* ]]; then
-    path+=("$HOME/.local/bin")
-fi
-# Add add-on application software packages path
-if [[ -d "/opt/bin" ]] && [[ ":$PATH:" != *":/opt/bin:"* ]]; then
-    path+=("/opt/bin")
-fi
-# Add current directory to PATH
-if [[ ":$PATH:" != *":.:"* ]]; then
-    path+=(".")
-fi
-# Add doom emacs to PATH
-if [[ -d "$HOME/.config/emacs/bin" ]] && [[ ":$PATH:" != *":$HOME/.config/emacs/bin:"* ]]; then
-    path+=("$HOME/.config/emacs/bin")
-fi
-# Add cargo/bin to PATH
-if [[ -d "$HOME/.local/share/cargo/bin" ]] && [[ ":$PATH:" != *":$HOME/.local/share/cargo/bin:"* ]]; then
-    path+=("$HOME/.local/share/cargo/bin")
-fi
-
 # Terminal
 export EDITOR=nvim
 export BROWSER=librewolf
@@ -62,3 +43,24 @@ export DOCKER_BUILDKIT=0
 
 # Fix MAIL when using 'sudo su'
 export MAIL="/var/spool/mail/${USER}"
+#}}}
+
+# path+ {{{
+add_paths (){
+    local -r paths=("$@") # fucking shell
+    for added_path in $paths; do # fucking shell
+        if [[ -d "$added_path" && ":$PATH:" != *":$added_path:"* ]]; then
+            path+=("$added_path")
+        fi
+    done
+}
+local added_paths=(
+    "$HOME/.local/bin" #scripts path
+    '.' #current directory
+    '/opt/bin' #add-on application software packages path
+    "$HOME/.config/emacs/bin" #doom emacs
+    "$HOME/.local/share/cargo/bin"
+)
+add_paths $added_paths # fucking shell
+unset -f add_paths && unset added_paths
+#}}}
