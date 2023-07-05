@@ -5,7 +5,7 @@ from subprocess import DEVNULL, Popen, run
 from sys import argv, exit as sys_exit
 from os.path import expanduser, isfile, splitext
 from os import environ
-from configparser import ConfigParser
+from configparser import ConfigParser, SectionProxy
 
 
 def get_mime_type(file):
@@ -33,7 +33,7 @@ def get_mime_type(file):
         return mime_type
 
 
-def get_default_desktops(mime_type, interactive=False):
+def get_default_desktops(mime_type: str, interactive=False):
     config = ConfigParser()
     config.optionxform = (  # pyright: ignore [reportGeneralTypeIssues]
         str  # to make keys case-sensitive
@@ -48,24 +48,17 @@ def get_default_desktops(mime_type, interactive=False):
     ]
 
     def extract_desktops():
-        def get_mime_section():
-            if i == 0:
-                if interactive:
-                    return config["Added Associations"]
-                else:
-                    return config["Default Applications"]
-            else:
-                return config["MIME Cache"]
-
-        def split_strip_semicolon_choose():
-            def gen_list():
+        def get_desktop_name_decide():
+            def gen_list(mime_section: SectionProxy, mime_type: str) -> list[str]:
+                desktop = mime_section[mime_type]
                 if desktop[-1] == ";":
                     default_desktops = desktop[:-1].split(";")
                 else:
                     default_desktops = desktop.split(";")
                 return default_desktops
 
-            def gen_str():
+            def gen_str(mime_section: SectionProxy, mime_type: str) -> str:
+                desktop = mime_section[mime_type]
                 index = desktop.find(";")
                 default_desktop = desktop[:index]
                 return default_desktop
@@ -75,21 +68,49 @@ def get_default_desktops(mime_type, interactive=False):
             else:
                 return gen_str
 
-        split_strip_semicolon = split_strip_semicolon_choose()
-        for i in range(len(mime_configs)):
-            if isfile(mime_configs[i]):
-                config.read(mime_configs[i])
-                mime_section = get_mime_section()
+        get_desktop_name = get_desktop_name_decide()
+
+        def extract_from_system_config():
+            for mime_config in mime_configs[1:]:
+                if isfile(mime_config):
+                    config.read(mime_config)
+                    mime_section = config["MIME Cache"]
+                    if mime_type in mime_section:
+                        return get_desktop_name(mime_section, mime_type)
+            return fallback()
+
+        def extract_from_user_config():
+            def extract_from_added_assoc():
+                mime_section = config["Added Associations"]
                 if mime_type in mime_section:
-                    desktop = mime_section[mime_type]
-                    return split_strip_semicolon()
-        return fallback()
+                    return get_desktop_name(mime_section, mime_type)
+                else:
+                    return extract_from_system_config()
+
+            def extract_from_default_apps():
+                mime_section = config["Default Applications"]
+                if mime_type in mime_section:
+                    return get_desktop_name(mime_section, mime_type)
+                else:
+                    return extract_from_added_assoc()
+
+            mime_user_config = mime_configs[0]
+            if isfile(mime_user_config):
+                config.read(mime_user_config)
+                if interactive:
+                    return extract_from_added_assoc()
+                else:
+                    return extract_from_default_apps()
+            else:
+                return extract_from_system_config()
+
+        return extract_from_user_config()
 
     def fallback():
         def parse_desktop_names():
             i = 0
             start = i + 21
-            desktop_names = []
+            desktop_names: list[str] = []
             while start < len(info):
                 if info[i:start] == "\nDesktopEntryName : '":
                     i = start
