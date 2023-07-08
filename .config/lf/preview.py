@@ -25,8 +25,7 @@ def print_image(image):
     with open("/dev/tty", "w") as tty:
         run(
             [
-                "kitty",
-                "+kitten",
+                "kitten",
                 "icat",
                 "--stdin",
                 "no",
