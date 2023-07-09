@@ -19,66 +19,49 @@ from subprocess import DEVNULL, run
 from uuid import uuid4
 
 
-def cache_dir_check(cache_dir):
-    if not isdir(cache_dir):
-        makedirs(cache_dir, mode=0o700)
-    else:
-        return
-
-
-def index_file_check(index):
-    if not isfile(index):
-        with open(index, "w+") as f:
-            d = [{}, {}]
-            json.dump(d, f, indent=2, ensure_ascii=False)
-    else:
-        return
-
-
-def within_one_month(old_dt, new_dt):
-    def evaluate():
+def within_one_month(old_dt: datetime, new_dt: datetime):
+    def cmp_mon():
         d_mon = new_dt.month - old_dt.month
         if d_mon == 0:
             return True
         elif d_mon == 1:
-            d_day = new_dt.day - old_dt.day
-            if d_day < 0:
-                return True
-            elif d_day == 0:
-                d_hour = new_dt.hour - old_dt.hour
-                if d_hour < 0:
-                    return True
-                elif d_hour == 0:
-                    d_min = new_dt.minute - old_dt.minute
-                    if d_min < 0:
-                        return True
-                    elif d_min == 0:
-                        d_sec = new_dt.second - old_dt.second
-                        if d_sec < 0:
-                            return True
-                        elif d_sec == 0:
-                            d_msec = new_dt.microsecond - old_dt.microsecond
-                            if d_msec > 0:
-                                return False
-                            else:
-                                return True
-                        else:
-                            return False
-                    else:
-                        return False
-                else:
-                    return False
-            else:
-                return False
+            return cmp_day()
         else:
             return False
 
+    def cmp_day():
+        def cmp_date(date: str):
+            old: int = getattr(old_dt, date)
+            new: int = getattr(new_dt, date)
+            delta = new - old
+            if delta < 0:
+                return True
+            elif delta == 0:
+                next_unit_dict = {
+                    "day": "hour",
+                    "hour": "minute",
+                    "minute": "second",
+                    "second": "microsecond",
+                }
+                next_unit = next_unit_dict[date]
+                if next_unit == "microsecond":
+                    return cmp_msec()
+                else:
+                    return cmp_date(next_unit)
+            else:
+                return False
+
+        return cmp_date("day")
+
+    def cmp_msec():
+        return not (new_dt.microsecond > old_dt.microsecond)
+
     d_year = new_dt.year - old_dt.year
     if d_year == 0:
-        return evaluate()
+        return cmp_mon()
     elif d_year == 1:
         if new_dt.month == 1 and old_dt.month == 12:
-            return evaluate()
+            return cmp_day()
         else:
             return False
     else:
@@ -86,6 +69,9 @@ def within_one_month(old_dt, new_dt):
 
 
 def clean(cache_dir, index):
+    # Remove old cache files, including those
+    # whose respective media files no longer exist,
+    # and delete the corresponding JSON contents
     def get_old_cache():
         cache_list = []
         for obj in listdir(cache_dir):
@@ -114,8 +100,7 @@ def clean(cache_dir, index):
 
 
 def gen_thumb(media, thumb_path):
-    mime_type = environ["mime_type"]
-    if mime_type.startswith("video"):
+    def gen_for_video():
         run(
             [
                 "ffmpegthumbnailer",
@@ -131,7 +116,8 @@ def gen_thumb(media, thumb_path):
             check=True,
             stdout=DEVNULL,
         )
-    elif mime_type.startswith("audio"):
+
+    def gen_for_audio():
         run(
             [
                 "ffmpeg",
@@ -145,57 +131,93 @@ def gen_thumb(media, thumb_path):
             check=True,
             stdout=DEVNULL,
         )
-    elif mime_type == "application/pdf":
+
+    def gen_for_pdf():
         run(
             ["pdftoppm", "-singlefile", "-jpeg", media, thumb_path[:-4]],
             # remove `.jpg`
             check=True,
             stdout=DEVNULL,
         )
-    else:
+
+    def exit_with_msg():
         mes = (
             "This program only supports generating thumbnails "
             "for videos, audios that have covers, pdfs"
         )
         sys_exit(mes)
 
+    mime_type = environ["mime_type"]
+    if mime_type.startswith("video"):
+        gen_for_video()
+    elif mime_type.startswith("audio"):
+        gen_for_audio()
+    elif mime_type == "application/pdf":
+        gen_for_pdf()
+    else:
+        exit_with_msg()
+
+
+def prepare(cache_dir, index):
+    def check_dir(dir):
+        if not isdir(dir):
+            makedirs(dir, mode=0o700)
+        else:
+            return
+
+    def check_index(index):
+        if not isfile(index):
+            with open(index, "w+") as f:
+                d = [{}, {}]
+                json.dump(d, f, indent=2, ensure_ascii=False)
+        else:
+            return
+
+    check_dir(cache_dir)
+    check_index(index)
+
+
+def get_thumb_path(cache_dir, index, media):
+    def upd_index():
+        if need_upd_index:
+            d[0][media] = thumb
+            d[1][thumb] = media
+            with open(index, "w") as f:
+                json.dump(d, f, indent=2, ensure_ascii=False)
+        else:
+            return
+
+    with open(index) as f:
+        d = json.load(f)
+    media_to_thumb = d[0]
+    if media in media_to_thumb:
+        need_upd_index = False
+        thumb = media_to_thumb[media]
+    else:
+        need_upd_index = True
+        thumb = str(uuid4()) + ".jpg"
+
+    thumb_path = join(cache_dir, thumb)
+    return thumb_path, upd_index
+
+
+def upd_thumb(media: str, thumb_path: str):
+    if isfile(thumb_path):
+        return
+    else:
+        gen_thumb(media, thumb_path)
+
 
 def main(file=argv[1]):
     cache_dir = expanduser("~/.cache/lf_thumb")
-    cache_dir_check(cache_dir)
-
     index = join(cache_dir, "index.json")
-    index_file_check(index)
-
-    # Remove old cache files, including those
-    # whose respective media files no longer exist,
-    # and delete the corresponding JSON contents
+    prepare(cache_dir, index)
     clean(cache_dir, index)
-
     media = realpath(file, strict=True)
 
-    need_update_index = False
-    with open(index) as f:
-        d = json.load(f)
-        if media in d[0]:
-            thumb = d[0][media]
-            thumb_path = join(cache_dir, thumb)
-            # record: yes, cache: no
-            if not isfile(thumb_path):
-                gen_thumb(media, thumb_path)
-            else:
-                pass
-        else:
-            # record: no, cache: any
-            thumb = str(uuid4()) + ".jpg"
-            thumb_path = join(cache_dir, thumb)
-            gen_thumb(media, thumb_path)
-            need_update_index = True
-    if need_update_index:
-        d[0][media] = thumb
-        d[1][thumb] = media
-        with open(index, "w") as f:
-            json.dump(d, f, indent=2, ensure_ascii=False)
+    thumb_path, upd_index = get_thumb_path(cache_dir, index, media)
+    upd_thumb(media, thumb_path)
+    upd_index()
 
     return thumb_path
 
