@@ -18,5 +18,6 @@ set -euo pipefail
         --bind ~/.cache/lf_thumb ~/.cache/lf_thumb \
         --bind ~/.config/lf/__pycache__ ~/.config/lf/__pycache__ \
         --unshare-all \
+        --die-with-parent \
         ~/.config/lf/preview.py "$@"
 )
