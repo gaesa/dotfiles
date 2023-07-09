@@ -32,7 +32,7 @@ def main():
                 if code in {22, None}:
                     remove(path)
                 else:
-                    raise OSError(code)
+                    raise
 
     cmd = "source"
     colors_file = expanduser("~/.config/nvim/plugin/colors.lua")
