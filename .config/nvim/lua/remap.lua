@@ -23,6 +23,12 @@ map({ "n" }, "*", "*zzzv")
 map({ "n" }, "#", "#zzzv")
 map({ "n" }, "G", "Gzz")
 
+-- Easier to go to the start and end of the screen line
+map({ "n", "x", "o" }, "H", "g^")
+map({ "n", "x", "o" }, "L", "g$")
+map({ "n", "x", "o" }, "gT", "H")
+map({ "n", "x", "o" }, "gB", "L")
+
 -- Emacs-like keybinding
 local function get_cur_pos()
     local pos = vim.api.nvim_win_get_cursor(0)
