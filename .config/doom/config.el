@@ -225,7 +225,43 @@
 (defun conditionally-enable-lispy ()
   (when (eq this-command 'eval-expression)
     (lispy-mode 1)))
-(add-hook 'minibuffer-setup-hook 'conditionally-enable-lispy)
+(add-hook 'minibuffer-setup-hook #'conditionally-enable-lispy)
+
+
+;;; Configure magit to use `myconf` (and not `.git`) as the git
+;;; directory when a `myconf` directory is found in the current
+;;; working directory (which Emacs calls its `default-directory'
+;;; per buffer) and there is no `.git` directory.
+;;; NOTE: This setting will apply for the entire Emacs process,
+;;; regardless of magit invocation in other directories.
+(unless (boundp 'my/git-dir-hook?)
+  (eval-after-load 'magit
+    '(let ((myconf-path (expand-file-name "~/.local/share/yadm/repo.git")))
+       (when (and (file-exists-p myconf-path)
+                  (not (file-exists-p ".git")))
+         (add-to-list 'magit-git-global-arguments
+                      (format "--git-dir=%s" myconf-path)))))
+  (setq my/git-dir-hook? t))
+
+(defun find-git-root (dir)
+  (cond ((file-directory-p (expand-file-name ".git" dir)) dir)
+        ((string= dir "/") nil)
+        (t (find-git-root (directory-file-name (file-name-directory dir))))))
+(defun git-dir-hook ()
+  (eval-after-load 'magit
+    '(let* ((myconf-path (expand-file-name "~/.local/share/yadm/repo.git"))
+            (git-arg (format "--git-dir=%s" myconf-path)))
+       (if (and (file-exists-p myconf-path)
+                (null (find-git-root default-directory)))
+           (if (member git-arg magit-git-global-arguments)
+               nil
+             (add-to-list 'magit-git-global-arguments git-arg))
+         (if (member git-arg magit-git-global-arguments)
+             (setq magit-git-global-arguments (remove git-arg magit-git-global-arguments))
+           nil)))))
+(add-hook 'window-buffer-change-functions (lambda (_) (git-dir-hook)))
+;; (add-hook 'find-file-hook (lambda () (git-dir-hook)))
+;; triggered only once after a file is loaded into the buffer
 
 ;; DONT WORK:
 ;; Disable lispy-comment for specific files
