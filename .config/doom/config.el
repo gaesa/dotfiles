@@ -29,7 +29,13 @@
 (custom-set-faces!                      ;affects comments in source codes
   '(font-lock-comment-face :slant italic :underline nil :family "JetBrains Mono"))
 
-;;
+;; It seems like emacs don't respect fontconfig,
+;; so I have to manualy set the font for CJK characters
+(defun init-cjk-fonts ()
+  (dolist (script '(han kana hangul cjk-misc bopomofo))
+    (set-fontset-font t script "Noto Sans Mono CJK SC")))
+(add-hook 'after-setting-font-hook #'init-cjk-fonts)
+
 ;; If you or Emacs can't find your font, use 'M-x describe-font' to look them
 ;; up, `M-x eval-region' to execute elisp code, and 'M-x doom/reload-font' to
 ;; refresh your font settings. If Emacs still can't find your font, it likely
