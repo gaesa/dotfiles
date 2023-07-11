@@ -3,58 +3,68 @@
 #-----Git-------------
 #---------------------
 _set_git_env() {
-    _set_dir() {
+    set_dir() {
         if [[ -v GIT_DIR ]]; then
             if [[ "${GIT_DIR}" != "${XDG_DATA_HOME}/yadm/repo.git" ]]; then
                 export GIT_DIR="${XDG_DATA_HOME}/yadm/repo.git"
+                unset -f set_dir
             else
-                return 0
+                unset -f set_dir
             fi
         else
             export GIT_DIR="${XDG_DATA_HOME}/yadm/repo.git"
+            unset -f set_dir
         fi
     }
-    _set_work_tree() {
+
+    set_work_tree() {
         if [[ -v GIT_WORK_TREE ]]; then
             if [[ "${GIT_WORK_TREE}" != "${HOME}" ]]; then
                 # GIT_WORK_TREE must be set on server, I don't know why
                 export GIT_WORK_TREE="${HOME}"
+                unset -f set_work_tree
             else
-                return 0
+                unset -f set_work_tree
             fi
         else
             export GIT_WORK_TREE="${HOME}"
+            unset -f set_work_tree
         fi
     }
-    _set_dir
-    _set_work_tree
+
+    set_dir
+    set_work_tree
 }
 
 _clr_git_env() {
-    _clr_dir() {
+    clr_dir() {
         if [[ -v GIT_DIR ]]; then
             if [[ "${GIT_DIR}" == "${XDG_DATA_HOME}/yadm/repo.git" ]]; then
                 unset GIT_DIR
+                unset -f clr_dir
             else
-                return 0
+                unset -f clr_dir
             fi
         else
-            return 0
+            unset -f clr_dir
         fi
     }
-    _clr_work_tree() {
+
+    clr_work_tree() {
         if [[ -v GIT_WORK_TREE ]]; then
             if [[ "${GIT_WORK_TREE}" == "${HOME}" ]]; then
                 unset GIT_WORK_TREE
+                unset -f clr_work_tree
             else
-                return 0
+                unset -f clr_work_tree
             fi
         else
-            return 0
+            unset -f clr_work_tree
         fi
     }
-    _clr_dir
-    _clr_work_tree
+
+    clr_dir
+    clr_work_tree
 }
 
 _git_pre_exec() {
@@ -73,7 +83,6 @@ _git_pre_exec() {
     local cmd=${1%% *} # $1 here would be treated as a complete command string
     local remainder="${1#* }"
     local option="${remainder%% *}"
-
 
     if [[ -v git_cmds["${cmd}"] && "${git_cmds[$cmd]}" == true ]]; then
         if [[ "${PWD}" == "${HOME}" ]]; then
