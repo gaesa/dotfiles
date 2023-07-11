@@ -9,6 +9,7 @@ load_theme() {
         #export FZF_CTRL_R_OPTS="--color=$1 --preview 'echo {}' --preview-window down:3:hidden:wrap --bind '?:toggle-preview'"
         export FZF_CTRL_R_OPTS="--color=$1"
         export FZF_ALT_C_OPTS="--color=$1 --preview 'tree -C {} | head -200'"
+        unset -f load_fzf_theme
     }
 
     load_fzf_tty_theme() {
@@ -16,14 +17,17 @@ load_theme() {
         export FZF_CTRL_T_OPTS="--color=16"
         export FZF_CTRL_R_OPTS="--color=16"
         export FZF_ALT_C_OPTS="--color=16 --preview 'tree -C {} | head -200'"
+        unset -f load_fzf_tty_theme
     }
 
     if [[ "${TERM}" != "linux" ]]; then
         load_fzf_theme "$1"
         '/usr/bin/python' "${HOME}/.local/bin/switch-nvim-theme" "$1" &!
+        unset -f load_fzf_tty_theme
     else
         load_fzf_tty_theme
         '/usr/bin/python' "${HOME}/.local/bin/switch-nvim-theme" "$1" &!
+        unset -f load_fzf_theme
     fi
 }
 
@@ -34,9 +38,7 @@ manually_switch() {
     )
     if [[ -n "${colors[$1]}" && "${colors[$1]}" == true ]]; then
         load_theme "$1"
-        unset -f load_theme load_fzf_theme load_fzf_tty_theme
     else
-        unset -f load_theme
         return 0
     fi
 }
@@ -48,16 +50,16 @@ auto_switch() {
     else
         load_theme "dark"
     fi
-    unset -f load_theme load_fzf_theme load_fzf_tty_theme
 }
 
-if (( $# > 0 )); then
+if [[ "$*" != "" ]]; then
     manually_switch "$1"
 else
     auto_switch
 fi
 
-# In zsh, once a function is run, it can be called externally,
+# In bash, zsh and fish, once a function is run, it can be called externally,
 # even if it is defined in another function
 # and even if it is prefixed with the `local`
-unset -f manually_switch auto_switch
+# see also: https://github.com/fish-shell/fish-shell/issues/1799
+unset -f load_theme manually_switch auto_switch
