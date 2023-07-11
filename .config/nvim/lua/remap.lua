@@ -120,6 +120,9 @@ map({ "n" }, "q", ":q<CR>", { silent = true })
 map({ "n" }, "Q", "q", { silent = true })
 map({ "n", "i" }, "<C-q>", "<Esc>:qa!<CR>", { silent = true })
 map({ "n", "i" }, "<C-s>", "<Esc>:xa<CR>", { silent = true })
+map({ "n" }, "<leader>fs", function()
+    vim.cmd.up({ args = {}, bang = true })
+end)
 
 -- Make files executable
 map({ "n" }, "<leader>x", function()
