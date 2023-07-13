@@ -173,6 +173,13 @@
 ;; change `org-directory'. It must be set before org loads!
 (setq org-directory "~/org/")
 (setq org-hide-emphasis-markers t)
+(setq alert-default-style 'libnotify)
+(setq org-wild-notifier-notification-icon (expand-file-name "~/.local/share/icons-user/Org-mode-unicorn.png"))
+(setq alert-fade-time 0)
+(org-wild-notifier-mode)
+(defun play-alert-sound (&rest r)
+  (start-process "play-alert-sound" nil "mpv" "--profile=bg" (expand-file-name "~/.local/share/sounds/tuturu.mp3")))
+(advice-add 'alert :before #'play-alert-sound)
 
 ;; Indent guides
 ;; The following example highlighter will highlight normally,

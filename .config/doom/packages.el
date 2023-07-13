@@ -5,6 +5,7 @@
 ;; on the command line, then restart Emacs for the changes to take effect -- or
 ;; use 'M-x doom/reload'.
 
+(package! org-wild-notifier)
 
 (package! xclip :disable t)
 (package! xdotool :disable t)
