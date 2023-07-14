@@ -1,0 +1,18 @@
+#!/usr/bin/env python3
+from subprocess import run
+from sys import argv
+
+
+def toggle_unit(unit=argv[-1]):
+    status = run(
+        ["systemctl", *argv[1:-1], "is-active", unit], capture_output=True
+    ).returncode
+    if status == 0:
+        run(["systemctl", *argv[1:-1], "stop", unit], check=True)
+    else:
+        run(["systemctl", *argv[1:-1], "start", unit], check=True)
+    run(["systemctl", *argv[1:-1], "status", unit])
+
+
+if __name__ == "__main__":
+    toggle_unit()
