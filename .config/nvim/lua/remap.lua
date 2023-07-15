@@ -152,6 +152,12 @@ map({ "n" }, "<leader>k", "<cmd>lprev<CR>zz")
 -- Substitude
 map({ "n" }, "<leader>s", [[:%s/\<<C-r><C-w>\>/<C-r><C-w>/gI<Left><Left><Left>]])
 
+-- Manual
+map({ "n" }, "<leader>so", function()
+    local input = vim.fn.input("Search option: ")
+    vim.fn.search([[^\s*]] .. input, "wz")
+end)
+
 -- FZF
 map({ "n" }, "<C-f>", function()
     vim.cmd.FZF()
