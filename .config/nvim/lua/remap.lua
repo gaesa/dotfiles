@@ -76,12 +76,9 @@ end)
 map({ "i" }, "<C-u>", function() -- cmap, tmap don't work
     local row, col = get_cur_pos()
     if col == 0 then
-        if row > 0 then
-            row = row - 1
-        end
-        local len = #vim.api.nvim_buf_get_lines(0, row, row + 1, true)[1]
-        vim.api.nvim_win_set_cursor(0, { row + 1, len })
-        vim.cmd.normal({ args = { "gJ" }, bang = true })
+        -- `nvim_win_set_cursor` can't set cursor to after last character
+        local key = vim.api.nvim_replace_termcodes("<BS>", true, false, true)
+        vim.api.nvim_feedkeys(key, "n", false)
     else
         if all_blank_before_cursor(row, col) then
             vim.cmd.normal({ args = { "d0" }, bang = true })
