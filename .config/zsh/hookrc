@@ -114,8 +114,7 @@ _git_env_on_chdir() {
         _clr_git_env
     fi
 }
-_git_env_on_chdir
-chpwd_functions+=_git_env_on_chdir
+precmd_functions+=(_git_env_on_chdir)
 
 #------Pyvenv---------
 #---------------------
