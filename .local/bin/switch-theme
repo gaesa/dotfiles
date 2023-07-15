@@ -76,6 +76,4 @@ fi
 # even if it is defined in another function
 # and even if it is prefixed with the `local`
 # see also: https://github.com/fish-shell/fish-shell/issues/1799
-unset -f manually_switch
-unset -f auto_switch
-unset -f load_theme
+unset -f manually_switch auto_switch load_theme
