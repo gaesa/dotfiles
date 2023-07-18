@@ -24,3 +24,22 @@ require("nvim-treesitter.configs").setup({
 -- Folding
 vim.opt.foldmethod = "expr"
 vim.opt.foldexpr = "nvim_treesitter#foldexpr()"
+
+-- Fix indent for python
+local function toggle_indent(value)
+    require("nvim-treesitter.configs").setup({
+        indent = {
+            enable = value,
+        },
+    })
+end
+vim.api.nvim_create_autocmd({ "BufEnter" }, {
+    callback = function()
+        if vim.bo.filetype == "python" then
+            toggle_indent(true)
+        else
+            toggle_indent(false)
+        end
+    end,
+    group = vim.api.nvim_create_augroup("fix-indent", {}),
+})
