@@ -23,7 +23,7 @@ map({ "n" }, "*", "*zzzv")
 map({ "n" }, "#", "#zzzv")
 map({ "n" }, "G", "Gzz")
 
--- Easier to go to the start and end of the screen line
+-- Easier to press
 map({ "n", "x", "o" }, "H", "g^")
 map({ "n", "x", "o" }, "L", "g$")
 map({ "n", "x", "o" }, "gT", "H")
