@@ -137,11 +137,6 @@
 ;; Line wrap
 (+global-word-wrap-mode t)
 
-;; Remove annoying tildes
-(remove-hook 'prog-mode-hook #'vi-tilde-fringe-mode)
-(remove-hook 'text-mode-hook #'vi-tilde-fringe-mode)
-(remove-hook 'conf-mode-hook #'vi-tilde-fringe-mode)
-
 ;; Disable silly exit prompt
 (setq confirm-kill-emacs nil)
 
