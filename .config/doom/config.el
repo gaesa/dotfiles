@@ -176,6 +176,9 @@
   (start-process "play-alert-sound" nil "mpv" "--profile=bg" (expand-file-name "~/.local/share/sounds/tuturu.mp3")))
 (advice-add 'alert :before #'play-alert-sound)
 
+(add-hook 'org-mode-hook #'org-modern-mode)
+(add-hook 'org-agenda-finalize-hook #'org-modern-agenda)
+
 ;; Indent guides
 ;; The following example highlighter will highlight normally,
 ;; except that it will not highlight the first level of indentation:

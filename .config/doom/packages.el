@@ -6,6 +6,7 @@
 ;; use 'M-x doom/reload'.
 
 (package! org-wild-notifier)
+(package! org-modern)
 
 (package! xclip :disable t)
 (package! xdotool :disable t)
