@@ -1,7 +1,8 @@
 # Basic vars
 set shell zsh
-set shellopts '-eu'
+set shellopts '-euy'
 set ifs "\n"
+set filesep "\n"  # default already
 set scrolloff 10
 set icons true #Read ~/.config/lf/icons
 set cursorpreviewfmt "\033[7m" #pre-r29 behavior
