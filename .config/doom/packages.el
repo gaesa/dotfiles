@@ -7,6 +7,8 @@
 
 (package! org-wild-notifier)
 (package! org-modern)
+;ligagure issue: https://github.com/doomemacs/doomemacs/issues/5738
+(package! ligature :recipe (:host github :repo "mickeynp/ligature.el"))
 
 (package! xclip :disable t)
 (package! xdotool :disable t)
