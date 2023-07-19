@@ -51,8 +51,8 @@ local added_paths=(
     "$HOME/.local/bin" #scripts path
     '.' #current directory
     '/opt/bin' #add-on application software packages path
-    "$HOME/.config/emacs/bin" #doom emacs
-    "$HOME/.local/share/cargo/bin"
+    "$XDG_CONFIG_HOME/emacs/bin" #doom emacs
+    "$XDG_DATA_HOME/cargo/bin"
 )
 add_paths $added_paths # fucking shell
 unset -f add_paths && unset added_paths
