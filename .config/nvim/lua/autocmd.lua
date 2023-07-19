@@ -179,6 +179,7 @@ autocmd({ "BufEnter" }, {
         local git_filetype = { gitcommit = true, gitrebase = true }
         if vim.wo.diff or git_filetype[vim.bo.filetype] then
             vim.keymap.set({ "n", "i" }, "<C-q>", "<Esc>:cq<CR>", { buffer = true, silent = true })
+            vim.keymap.set({ "n" }, "q", ":cq<CR>", { buffer = true, silent = true })
         else
             return
         end
