@@ -53,7 +53,7 @@ cmd zi ${{
     lf -remote "send $id cd $result"
 }}
 cmd yank-name ${{
-    result="${f##*/}"
+    result="$(basename "$f")"
     printf "%s" "${result}" | wl-copy
 }}
 cmd extract ${{
