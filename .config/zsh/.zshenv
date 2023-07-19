@@ -50,7 +50,7 @@ local added_paths=(
     "$HOME/.local/bin" #scripts path
     '.' #current directory
     '/opt/bin' #add-on application software packages path
-    "$HOME/.local/share/cargo/bin"
+    "$XDG_DATA_HOME/cargo/bin"
 )
 add_paths $added_paths # fucking shell
 unset -f add_paths && unset added_paths
