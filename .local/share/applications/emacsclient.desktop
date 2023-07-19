@@ -1,0 +1,21 @@
+[Desktop Entry]
+Name=Emacs (Client)
+GenericName=Text Editor
+Comment=Edit text
+Exec=emacsclient -nc --alternate-editor= %F
+Icon=emacs
+Type=Application
+Terminal=false
+Categories=Development;TextEditor;
+StartupNotify=true
+StartupWMClass=Emacs
+Keywords=emacsclient;
+Actions=new-window;new-instance;
+
+[Desktop Action new-window]
+Name=New Window
+Exec=/usr/bin/emacsclient --alternate-editor= --create-frame %F
+
+[Desktop Action new-instance]
+Name=New Instance
+Exec=emacs %F
