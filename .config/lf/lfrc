@@ -86,5 +86,9 @@ map o open
 map O open-with
 
 map r rename
-map R push r<c-e>
-map <f-2> push r<c-e>
+map i rename
+map R $rn "$PWD" #bulkrename
+map I :rename; cmd-home
+map A :rename; cmd-end
+map c :rename; cmd-delete-home
+map C :rename; cmd-end; cmd-delete-home
