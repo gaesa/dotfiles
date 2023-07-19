@@ -81,6 +81,12 @@ cmd paste %{{
     fi
 }}
 
+# Reload
+cmd reload-config ${{
+    lf -remote "send $id source ~/.config/lf/lfrc"
+}}
+map <c-r> :reload-config; reload
+
 # Bindings
 map g top
 map <space> :toggle
@@ -95,7 +101,6 @@ map p paste
 map yn yank-name
 map yp $printf "%s" "$f" | wl-copy #copy full path of the current file
 map <c-n> push :mkdir<space>
-map <c-r> reload
 map <c-f> $lf -remote "send $id select \"$(fzf)\""
 map <backspace> set hidden! #<backspace> is ctrl-h, <backspace2> is backspace
 map <enter> shell
