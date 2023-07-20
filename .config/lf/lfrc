@@ -31,17 +31,11 @@ cmd open-with ${{
 cmd mkdir ${{
     mkdir -p "$(echo $* | tr ' ' '\ ')"
 }}
-cmd trash ${{
-    start=$(date +%s)
-    trash-put $fx
-    end=$(date +%s)
-    duration=$(( end - start ))
-    if (("${duration}" > 0)); then
-        if (("${duration}" == 1)); then
-            printf "It took %s second to remove %s\n\n" "${duration}" $fx
-        else
-            printf "It took %s seconds to remove %s\n\n" "${duration}" $fx
-        fi
+cmd trash &{{
+    if [[ "$XDG_CURRENT_DESKTOP" == "KDE" ]]; then
+        kioclient5 move $fx trash:/ &>>"$XDG_RUNTIME_DIR/trash.log"
+    else
+        trash-put $fx
     fi
 }}
 cmd z %{{
