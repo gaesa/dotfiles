@@ -86,6 +86,7 @@ map g top
 map <space> :toggle
 map <esc> :unselect; clear
 map DD trash
+map Dm $mat2 "$f"
 map <delete> trash
 map E extract
 map y
