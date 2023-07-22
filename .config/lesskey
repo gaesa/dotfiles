@@ -1,0 +1,2 @@
+#env
+LESS = -Fi --incsearch --no-histdups
