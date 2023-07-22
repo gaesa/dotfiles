@@ -195,6 +195,84 @@
 (add-hook 'org-mode-hook #'org-modern-mode)
 (add-hook 'org-agenda-finalize-hook #'org-modern-agenda)
 
+;; Company
+(with-eval-after-load 'company
+  (setq company-backends
+        '((company-capf
+           company-yasnippet
+           :separate company-dabbrev-code company-files company-dabbrev))
+        company-minimum-prefix-length 1
+        company-ignore-prefix #s(hash-table size 2
+                                            test eq
+                                            data (
+                                                  ?? t
+                                                  ?_ t))
+        company-selection-wrap-around t
+        company-idle-delay 0
+        company-dabbrev-other-buffers nil
+        company-dabbrev-code-other-buffers t
+        company-dabbrev-downcase nil
+        company-dabbrev-code-ignore-case t
+        company-dabbrev-ignore-case t)
+
+  (defun company--good-prefix-p (prefix)
+    (and (stringp (company--prefix-str prefix)) ;excludes 'stop
+         (let ((len (length prefix)))
+           (if (and (> len 1)
+                    (gethash (aref prefix 0) company-ignore-prefix))
+               nil
+             (if company--manual-prefix
+                 (or (not company-abort-manual-when-too-short)
+                     ;; Must not be less than minimum or initial length.
+                     (>= len (min company-minimum-prefix-length
+                                  (length company--manual-prefix))))
+               (>= len company-minimum-prefix-length))))))
+
+  (defun my/company-indent-or-complete-common (arg)
+    "Indent the current line or region, or complete the common part."
+    (interactive "P")
+    (cond
+     ((use-region-p)
+      (indent-region (region-beginning) (region-end)))
+     ((memq indent-line-function
+            '(indent-relative indent-relative-maybe))
+      (company-complete-common))
+     ((or (bolp) (looking-back "\s" 1)) ;New branch
+      (indent-for-tab-command arg))
+     ((let ((old-point (point))
+            (old-tick (buffer-chars-modified-tick))
+            (tab-always-indent t))
+        (indent-for-tab-command arg)
+        (when (and (eq old-point (point))
+                   (eq old-tick (buffer-chars-modified-tick)))
+          (company-complete-common))))))
+
+  (defun my/company-complete-common-or-cycle-previous (&optional arg)
+    "Insert the common part of all candidates, or select the previous one.
+       With ARG, move by that many elements."
+    (interactive "p")
+    (when (company-manual-begin)
+      (let ((tick (buffer-chars-modified-tick)))
+        (call-interactively 'company-complete-common)
+        (when (eq tick (buffer-chars-modified-tick))
+          (let ((current-prefix-arg arg))
+            (call-interactively 'company-select-previous))))))
+
+  (define-key company-mode-map (kbd "<tab>") #'my/company-indent-or-complete-common)
+  (define-key company-active-map (kbd "<tab>") #'company-complete-common-or-cycle)
+  (define-key company-active-map (kbd "<backtab>") #'my/company-complete-common-or-cycle-previous)
+  (define-key company-active-map (kbd "M-n") nil)
+  (define-key company-active-map (kbd "M-p") nil)
+  (define-key company-active-map (kbd "C-p") nil)
+  (define-key company-active-map (kbd "C-n") nil)
+  (define-key company-active-map (kbd "C-w") nil)
+  (define-key company-active-map (kbd "C-h") nil)
+  (define-key company-active-map (kbd "C-M-s") nil)
+  (define-key company-active-map (kbd "M-ESC ESC") nil))
+
+(add-hook 'after-init-hook #'global-company-mode)
+(add-hook 'after-init-hook #'company-statistics-mode)
+
 ;; Indent guides
 ;; The following example highlighter will highlight normally,
 ;; except that it will not highlight the first level of indentation:
