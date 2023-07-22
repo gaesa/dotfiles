@@ -1,6 +1,7 @@
-local autocmd = vim.api.nvim_create_autocmd
-local del_autocmd = vim.api.nvim_del_autocmd
-local group = vim.api.nvim_create_augroup("default.conf", { clear = true })
+local api = vim.api
+local autocmd = api.nvim_create_autocmd
+local del_autocmd = api.nvim_del_autocmd
+local group = api.nvim_create_augroup("default.conf", { clear = true })
 
 -- Toggle absolute and relative numbering by insert/normal mode
 autocmd({ "InsertEnter" }, {
@@ -26,18 +27,52 @@ autocmd({ "FileType" }, {
     group = group,
 })
 
--- Yank selection to primary clipboard automatically
--- limitation: in some cases, this autocmd doesn't work, for example,
--- when the cursor is at the end of a word, after pressing `viw`, only the last character is yanked
--- related pull: https://github.com/neovim/neovim/pull/13896#issuecomment-774680224
--- related post: https://vi.stackexchange.com/questions/36692/vimscript-how-to-detect-selection-of-a-text-object-in-visual-mode
--- https://vi.stackexchange.com/questions/31420/how-to-get-the-range-of-selected-lines-in-visual-lines-mode
+-- Sync visual selection to primary clipboard
+-- Limitation: In certain cases, the above autocmd may not work.
+-- For instance, when the cursor is positioned at the end of a word and
+-- the command `viw` is executed, only the last character is yanked.
+-- Because the cursor's position is the same as the start of the visual selection.
+-- One method is to use `gv` and the `<` and `>` marks,
+-- but this approach can potentially lead to infinite recursion and has a performance problem.
+-- Additionally this method is not considered elegant.
+-- Issue1: https://github.com/neovim/neovim/issues/4773
+-- Issue2: https://github.com/neovim/neovim/issues/19708
+-- Pull1: https://github.com/neovim/neovim/pull/13896
+-- Pull2: https://github.com/neovim/neovim/pull/3708
+-- Post1: https://vi.stackexchange.com/questions/36692/vimscript-how-to-detect-selection-of-a-text-object-in-visual-mode
+-- Post2: https://vi.stackexchange.com/questions/31420/how-to-get-the-range-of-selected-lines-in-visual-lines-mode
 autocmd({ "CursorMoved", "ModeChanged" }, {
     callback = function()
+        local function get_start_end(pos1, pos2)
+            local pos1_row = pos1[1]
+            local pos1_col = pos1[2]
+            local pos2_row = pos2[1]
+            local pos2_col = pos2[2]
+
+            if pos1_row < pos2_row then
+                return pos1, pos2
+            elseif pos1_row == pos2_row then
+                if pos1_col < pos2_col then
+                    return pos1, pos2
+                else
+                    return pos2, pos1
+                end
+            else
+                return pos2, pos1
+            end
+        end
         local mode = string.sub(vim.api.nvim_get_mode().mode, 1, 1)
-        if mode == "v" or mode == "V" then
-            vim.cmd.normal({ args = { '"*y' }, bang = true })
-            vim.cmd.normal({ args = { "gv" }, bang = true })
+        if mode == "v" then
+            -- I have tested that vim.api.nvim_buf_get_mark(0, "v") doesn't
+            -- retrieve the correct position when compared to vim.fn.getpos("v").
+            -- Both `vim.fn.getpos("'<")` and `vim.api.nvim_buf_get_mark(0, "<")` fail to
+            -- retrieve the latest content when the current mode is visual mode.
+            local v_pos = vim.fn.getpos("v")
+            v_pos = { v_pos[2], v_pos[3] - 1 } -- (1, 1)-index to (1, 0)-index
+            local cur_pos = api.nvim_win_get_cursor(0)
+            local start_pos, end_pos = get_start_end(v_pos, cur_pos)
+            local text = api.nvim_buf_get_text(0, start_pos[1] - 1, start_pos[2], end_pos[1] - 1, end_pos[2] + 1, {})
+            vim.fn.setreg("*", text)
         else
             return
         end
