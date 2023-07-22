@@ -22,8 +22,7 @@ export RIPGREP_CONFIG_PATH="$XDG_CONFIG_HOME/ripgreprc"
 
 # Terminal {{{
 export EDITOR='nvim'
-export PAGER='less -R'
-export LESS='-R'
+export PAGER='less'
 export MANPAGER='nvim +Man!'
 export SYSTEMD_LESS='FRXMK'
 #}}}

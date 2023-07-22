@@ -5,6 +5,11 @@
     email = 71256557+gaesa@users.noreply.github.com
 [init]
     defaultBranch = main
+[core]
+    pager = less -R --redraw-on-quit
+    # Why is this not the default for `git`?
+    # `--mouse` can fix scrolling, but makes it impossible to
+    # select text with mouse
 [diff]
     tool = nvimdiff
 [difftool "nvimdiff"]
