@@ -1,0 +1,7 @@
+# -*- mode: snippet -*-
+# name: refactor conventional commit
+# key: refactor
+# --
+refactor(${1:scope}): ${2:title}
+
+$0

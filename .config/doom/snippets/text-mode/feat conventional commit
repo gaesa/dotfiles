@@ -1,0 +1,7 @@
+# -*- mode: snippet -*-
+# name: feat conventional commit
+# key: feat
+# --
+feat(${1:scope}): ${2:title}
+
+$0

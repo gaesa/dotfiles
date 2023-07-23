@@ -1,0 +1,7 @@
+# -*- mode: snippet -*-
+# name: style conventional commit
+# key: style
+# --
+style(${1:scope}): ${2:title}
+
+$0

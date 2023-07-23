@@ -1,0 +1,7 @@
+# -*- mode: snippet -*-
+# name: chore conventional commit
+# key: chore
+# --
+chore(${1:scope}): ${2:title}
+
+$0
