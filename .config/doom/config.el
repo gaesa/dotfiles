@@ -118,6 +118,10 @@
 (define-key evil-insert-state-map (kbd "M-o") #'evil-open-below)
 (define-key evil-insert-state-map (kbd "M-O") #'evil-open-above)
 (define-key evil-insert-state-map (kbd "C-k") #'kill-line)
+(define-key evil-normal-state-map (kbd "C-n") nil)
+(define-key evil-normal-state-map (kbd "C-p") nil)
+(define-key evil-insert-state-map (kbd "C-n") nil)
+(define-key evil-insert-state-map (kbd "C-p") nil)
 
 (defun my/center-line (&rest _)
   (evil-scroll-line-to-center nil))
@@ -272,6 +276,17 @@
 
 (add-hook 'after-init-hook #'global-company-mode)
 (add-hook 'after-init-hook #'company-statistics-mode)
+
+;; Snippets
+(with-eval-after-load 'yasnippet
+  (define-key yas-keymap (kbd "<tab>") nil)
+  (define-key yas-keymap (kbd "TAB") nil)
+  (define-key yas-keymap (kbd "<backtab>") nil)
+  (define-key yas-keymap (kbd "S-<tab>") nil)
+  (define-key yas-keymap (kbd "C-a") nil)
+  (define-key yas-keymap (kbd "C-e") nil)
+  (define-key yas-keymap (kbd "C-n") #'yas-next-field-or-maybe-expand)
+  (define-key yas-keymap (kbd "C-p") #'yas-prev-field))
 
 ;; Indent guides
 ;; The following example highlighter will highlight normally,
