@@ -72,19 +72,19 @@ cmp.setup({
         { name = "nvim_lua" },
         { name = "luasnip", keyword_length = 2 },
         { name = "path" },
-        { name = "buffer",  keyword_length = 3 },
+        { name = "buffer", keyword_length = 3 },
     },
     mapping = {
         -- `Enter` key to confirm completion
         ["<CR>"] = cmp.mapping.confirm({ select = true }),
-
-        ["<Up>"] = cmp.mapping.select_prev_item(cmp_select_opts),
-        ["<Down>"] = cmp.mapping.select_next_item(cmp_select_opts),
+        ["<C-c>"] = cmp.mapping.abort(),
+        ["<C-g>"] = cmp.mapping.abort(),
 
         ["<Tab>"] = cmp_action.tab_complete(),
         ["<S-Tab>"] = cmp_action.select_prev_or_fallback(),
 
-        --["<Esc>"] = cmp.mapping.abort(),
+        ["<C-n>"] = cmp_action.luasnip_next_or_expand(),
+        ["<C-p>"] = cmp_action.luasnip_jump_backward(),
     },
 })
 
