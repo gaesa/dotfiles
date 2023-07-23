@@ -360,6 +360,19 @@
              (* 24 60 60)
              (lambda () (set-color-for-highlight-indent-guides -40)))
 
+;; Symbol highlight & rename
+(require 'symbol-overlay)
+(define-key evil-normal-state-map (kbd "M-n") #'symbol-overlay-jump-next)
+(define-key evil-normal-state-map (kbd "M-p") #'symbol-overlay-jump-prev)
+(advice-add 'symbol-overlay-jump-next :after #'my/center-line)
+(advice-add 'symbol-overlay-jump-prev :after #'my/center-line)
+(map! :leader "r r" #'symbol-overlay-rename)
+(map! :leader "r q" #'symbol-overlay-query-replace)
+(advice-add 'symbol-overlay-query-replace :after #'symbol-overlay-remove-all)
+(global-set-key (kbd "<f7>") #'symbol-overlay-mode)
+(global-set-key (kbd "<f8>") #'symbol-overlay-remove-all)
+;; (add-hook 'find-file-hook #'symbol-overlay-mode)
+
 ;; Scheme & other lisp
 (defun geiser-repl? (buf)
   (let ((str (buffer-name buf)))
