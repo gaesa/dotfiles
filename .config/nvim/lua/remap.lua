@@ -73,12 +73,15 @@ map({ "i", "c", "t" }, "<A-f>", "<S-Right>")
 map({ "i" }, "<A-d>", function()
     vim.cmd.normal({ args = { "de" }, bang = true })
 end)
+local function press_backspace()
+    local key = vim.api.nvim_replace_termcodes("<BS>", true, false, true)
+    vim.api.nvim_feedkeys(key, "n", false)
+end
 map({ "i" }, "<C-u>", function() -- cmap, tmap don't work
     local row, col = get_cur_pos()
     if col == 0 then
         -- `nvim_win_set_cursor` can't set cursor to after last character
-        local key = vim.api.nvim_replace_termcodes("<BS>", true, false, true)
-        vim.api.nvim_feedkeys(key, "n", false)
+        press_backspace()
     else
         if all_blank_before_cursor(row, col) then
             vim.cmd.normal({ args = { "d0" }, bang = true })
@@ -93,8 +96,18 @@ map({ "i" }, "<C-k>", function()
     local row, col = get_cur_pos()
     local len = #vim.api.nvim_buf_get_lines(0, row, row + 1, true)[1]
     local str = vim.api.nvim_buf_get_text(0, row, col, row, len, {})[1]
-    vim.fn.setreg('"', str, "c")
-    vim.api.nvim_buf_set_text(0, row, col, row, len, {})
+    if str == "" then
+        local line = vim.api.nvim_buf_line_count(0)
+        if row == line - 1 then
+            return
+        else
+            vim.api.nvim_win_set_cursor(0, { row + 2, 0 })
+            press_backspace()
+        end
+    else
+        vim.fn.setreg('"', str, "c")
+        vim.api.nvim_buf_set_text(0, row, col, row, len, {})
+    end
 end)
 
 -- Clipboard
