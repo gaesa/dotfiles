@@ -17,23 +17,7 @@ _set_git_env() {
         fi
     }
 
-    set_work_tree() {
-        if [[ -v GIT_WORK_TREE ]]; then
-            if [[ "${GIT_WORK_TREE}" != "${HOME}" ]]; then
-                # GIT_WORK_TREE must be set on server, I don't know why
-                export GIT_WORK_TREE="${HOME}"
-                unset -f set_work_tree
-            else
-                unset -f set_work_tree
-            fi
-        else
-            export GIT_WORK_TREE="${HOME}"
-            unset -f set_work_tree
-        fi
-    }
-
     set_dir
-    set_work_tree
 }
 
 _clr_git_env() {
@@ -50,21 +34,7 @@ _clr_git_env() {
         fi
     }
 
-    clr_work_tree() {
-        if [[ -v GIT_WORK_TREE ]]; then
-            if [[ "${GIT_WORK_TREE}" == "${HOME}" ]]; then
-                unset GIT_WORK_TREE
-                unset -f clr_work_tree
-            else
-                unset -f clr_work_tree
-            fi
-        else
-            unset -f clr_work_tree
-        fi
-    }
-
     clr_dir
-    clr_work_tree
 }
 
 _git_pre_exec() {
