@@ -28,8 +28,9 @@
     s = status
     st = stash
     d = difftool
-    ct = shortlog -s
-    du = "!git-du"
+    ctc = shortlog -s
+    ctl = !git-count-lines
+    du = !git-du
     cm = commit
     rst = restore
     rs = reset
