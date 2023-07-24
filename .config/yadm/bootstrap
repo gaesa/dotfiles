@@ -1,14 +1,13 @@
 #!/usr/bin/env python3
 # yadm clone --bare --single-branch --branch <branch> <url>
 # Make sure some programs are installed and force a checkout
-
 from distro import name
 from platform import system
 from shutil import which
 from sys import exit as sys_exit
 from subprocess import run, DEVNULL
 from os import environ, getuid
-from os.path import join
+from os.path import join, expanduser
 
 
 def get_sudo_cmd():
@@ -85,6 +84,10 @@ def install_common(sudo_cmd):
             return
 
 
+def set_worktree():
+    run(["yadm", "config", "core.worktree", expanduser("~")], check=True)
+
+
 def hide_untracked():
     run(["yadm", "config", "status.showUntrackedFiles", "no"], check=True)
 
@@ -155,7 +158,7 @@ def install_for_main(sudo_cmd):
 
 def main():
     check_os()
-
+    set_worktree()
     hide_untracked()
 
     branch = run(
