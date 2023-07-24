@@ -192,8 +192,12 @@
 (setq org-wild-notifier-notification-icon (expand-file-name "~/.local/share/icons-user/Org-mode-unicorn.png"))
 (setq alert-fade-time 0)
 (org-wild-notifier-mode)
-(defun play-alert-sound (&rest r)
-  (start-process "play-alert-sound" nil "mpv" "--profile=bg" (expand-file-name "~/.local/share/sounds/tuturu.mp3")))
+(defun play-alert-sound (&rest _)
+  (start-process "play-alert-sound"
+                 nil                    ;buffer
+                 "mpv"
+                 "--profile=bg"
+                 (expand-file-name "~/.local/share/sounds/tuturu.mp3")))
 (advice-add 'alert :before #'play-alert-sound)
 
 (add-hook 'org-mode-hook #'org-modern-mode)
@@ -346,7 +350,7 @@
 (defun set-color-for-highlight-indent-guides (val)
   (set-face-foreground 'highlight-indent-guides-character-face
                        (lighten-hex (face-attribute 'font-lock-comment-face :foreground) val)))
-(after! highlight-indent-guides
+(with-eval-after-load 'highlight-indent-guides
   (let* ((current-time (decode-time))
          (hour (nth 2 current-time))
          (val (if (and (>= hour 6) (< hour 18))
@@ -381,11 +385,11 @@
          (or (equal (substring str -1 nil) "*")
              (equal (substring str 17 18) "*")))))
 (defun geiser-close-repl ()
+  (interactive)
   (defun close-process (buf)
     (if (get-buffer-process buf)
         (delete-process buf)
       nil))
-  (interactive)
   (dolist (buf (buffer-list))
     (if (geiser-repl? buf)
         (progn (delete-windows-on buf nil)
