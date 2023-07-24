@@ -433,33 +433,25 @@
                                   (display-line-numbers-mode)))
 
 ;; Magit/yadm
-(unless (boundp 'my/git-dir-hook?)
-  (eval-after-load 'magit
-    '(let ((myconf-path (expand-file-name "~/.local/share/yadm/repo.git")))
-       (when (and (file-exists-p myconf-path)
-                  (not (file-exists-p ".git")))
-         (add-to-list 'magit-git-global-arguments
-                      (format "--git-dir=%s" myconf-path)))))
-  (setq my/git-dir-hook? t))
-
 (defun find-git-root (dir)
   (cond ((file-directory-p (expand-file-name ".git" dir)) dir)
         ((string= dir "/") nil)
-        (t (find-git-root (directory-file-name (file-name-directory dir))))))
-(defun git-dir-hook ()
-  (eval-after-load 'magit
-    '(let* ((myconf-path (expand-file-name "~/.local/share/yadm/repo.git"))
-            (git-arg (format "--git-dir=%s" myconf-path)))
-       (if (and (file-exists-p myconf-path)
-                (null (find-git-root default-directory)))
-           (if (member git-arg magit-git-global-arguments)
-               nil
-             (add-to-list 'magit-git-global-arguments git-arg))
-         (if (member git-arg magit-git-global-arguments)
-             (setq magit-git-global-arguments (remove git-arg magit-git-global-arguments))
-           nil)))))
-(add-hook 'window-buffer-change-functions (lambda (_) (git-dir-hook)))
-;; (add-hook 'find-file-hook (lambda () (git-dir-hook)))
+        (t (find-git-root (directory-file-name
+                           (file-name-directory dir))))))
+(defun my/git-dir-hook ()
+  (with-eval-after-load 'magit
+    (let* ((myconf-path (expand-file-name "~/.local/share/yadm/repo.git"))
+           (git-arg (format "--git-dir=%s" myconf-path)))
+      (if (and (file-exists-p myconf-path)
+               (null (find-git-root (expand-file-name default-directory))))
+          (if (member git-arg magit-git-global-arguments)
+              nil
+            (add-to-list 'magit-git-global-arguments git-arg))
+        (if (member git-arg magit-git-global-arguments)
+            (setq magit-git-global-arguments (remove git-arg magit-git-global-arguments))
+          nil)))))
+(add-hook 'window-buffer-change-functions (lambda (_) (my/git-dir-hook)))
+;; (add-hook 'find-file-hook (lambda () (my/git-dir-hook)))
 ;; triggered only once after a file is loaded into the buffer
 
 ;; DONT WORK:
