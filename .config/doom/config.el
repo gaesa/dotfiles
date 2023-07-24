@@ -287,6 +287,40 @@
   (define-key yas-keymap (kbd "C-e") nil)
   (define-key yas-keymap (kbd "C-n") #'yas-next-field-or-maybe-expand)
   (define-key yas-keymap (kbd "C-p") #'yas-prev-field))
+(add-hook 'snippet-mode-hook (lambda () (setq-local require-final-newline nil)))
+(defun empty-line? ()
+  (let ((char-bfr (char-before))
+        (char-aft (char-after)))
+    (and (not (and (null char-bfr)
+                   (null char-aft)))
+         (or (eq char-bfr ?\r)
+             (eq char-bfr ?\n)
+             (null char-bfr))
+         (or (eq char-aft ?\r)
+             (eq char-aft ?\n)
+             (null char-aft)))))
+(defun remove-empty-line ()
+  (let ((char-bfr (char-before))
+        (char-aft (char-after)))
+    (if (or (eq char-aft ?\r)
+            (eq char-aft ?\n)
+            (null char-aft))
+        (cond ((eq char-bfr ?\n)
+               (progn (delete-char -1)
+                      (if (eq (char-before) ?\r)
+                          (delete-char -1)
+                        nil)))
+              ((eq char-bfr ?\r) (delete-char -1))
+              (t nil))
+      nil)))
+(add-hook 'snippet-mode-hook
+          (lambda () (add-hook 'before-save-hook
+                               (lambda ()
+                                 (save-excursion
+                                   (goto-char (point-max))
+                                   (remove-empty-line)))
+                               nil
+                               'local)))
 
 ;; Indent guides
 ;; The following example highlighter will highlight normally,
