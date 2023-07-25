@@ -3,15 +3,33 @@ from subprocess import run
 from sys import argv
 
 
-def toggle_unit(unit=argv[-1]):
-    status = run(
-        ["systemctl", *argv[1:-1], "is-active", unit], capture_output=True
-    ).returncode
-    if status == 0:
-        run(["systemctl", *argv[1:-1], "stop", unit], check=True)
+def get_sudo_user_unit() -> tuple[list[str], list[str], str]:
+    if argv[1] == "--user":
+        sudo = []
+        user = ["--user"]
+        unit = argv[2]
     else:
-        run(["systemctl", *argv[1:-1], "start", unit], check=True)
-    run(["systemctl", *argv[1:-1], "status", unit])
+        sudo = ["sudo"]
+        user = []
+        unit = argv[1]
+    return sudo, user, unit
+
+
+def is_active(user: list[str], unit: str) -> bool:
+    status = run(
+        ["systemctl", *user, "is-active", unit], capture_output=True
+    ).returncode
+    return status == 0
+
+
+def toggle_unit() -> None:
+    sudo, user, unit = get_sudo_user_unit()
+    run([*sudo, "systemctl", *user, "daemon-reload"], check=True)
+    if is_active(user, unit):
+        run([*sudo, "systemctl", *user, "stop", unit], check=True)
+    else:
+        run([*sudo, "systemctl", *user, "start", unit], check=True)
+    run(["systemctl", *user, "status", unit])
 
 
 if __name__ == "__main__":

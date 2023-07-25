@@ -3,16 +3,24 @@ from subprocess import run
 from sys import argv
 
 
-def main():
+def get_sudo_user_unit() -> tuple[list[str], list[str], list[str]]:
     if argv[1] == "--user":
-        run(["systemctl", "--user", "daemon-reload"])
-        run(["systemctl", "--user", "stop", *argv[2:]])
-        run(["systemctl", "--user", "start", *argv[2:]])
+        sudo = []
+        user = ["--user"]
+        unit = argv[2:]
     else:
-        run(["systemctl", "daemon-reload"])
-        run(["sudo", "systemctl", "stop", *argv[1:]])
-        run(["sudo", "systemctl", "start", *argv[1:]])
+        sudo = ["sudo"]
+        user = []
+        unit = argv[1:]
+    return sudo, user, unit
+
+
+def restart():
+    sudo, user, unit = get_sudo_user_unit()
+    run([*sudo, "systemctl", *user, "daemon-reload"])
+    run([*sudo, "systemctl", *user, "stop", *unit])
+    run([*sudo, "systemctl", *user, "start", *unit])
 
 
 if __name__ == "__main__":
-    main()
+    restart()
