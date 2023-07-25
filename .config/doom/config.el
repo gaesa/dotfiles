@@ -405,6 +405,8 @@
 (add-hook 'minibuffer-setup-hook #'conditionally-enable-lispy)
 
 ;; Magit
+;; expand `Recent commits`
+(setf (alist-get 'unpushed magit-section-initial-visibility-alist) 'show)
 (add-hook 'git-commit-setup-hook (lambda ()
                                    (save-excursion
                                      (goto-char (point-min))
