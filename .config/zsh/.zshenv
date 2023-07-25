@@ -24,8 +24,9 @@ export RIPGREP_CONFIG_PATH="$XDG_CONFIG_HOME/ripgreprc"
 export EDITOR='nvim'
 export BROWSER='librewolf'
 export PAGER='less'
+# Note: The `SYSTEMD_LESS` cannot override the options
+# passed to 'less' if the `LESS` is set by the `lesskey` file.
 export MANPAGER='nvim +Man!'
-export SYSTEMD_LESS='FRXMK'
 #}}}
 
 # Start ssh-agent with systemd user {{{

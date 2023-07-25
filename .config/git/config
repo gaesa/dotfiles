@@ -6,10 +6,10 @@
 [init]
     defaultBranch = main
 [core]
-    pager = less -R --redraw-on-quit
-    # Why is this not the default for `git`?
-    # `--mouse` can fix scrolling, but makes it impossible to
-    # select text with mouse
+    # pager = less -R --redraw-on-quit
+    # `--mouse` can fix scrolling, but it alse
+    # disable the text selection with mouse unless
+    # press shift
 [diff]
     tool = nvimdiff
 [difftool "nvimdiff"]
