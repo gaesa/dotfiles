@@ -1,2 +1,2 @@
 #env
-LESS = -Fi --incsearch --no-histdups
+LESS = -FRKi --incsearch --no-histdups --redraw-on-quit
