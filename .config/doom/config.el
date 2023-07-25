@@ -413,6 +413,9 @@
                                            (forward-line 1)
                                            (remove-empty-line))
                                        nil))))
+(add-hook 'git-rebase-mode-hook (lambda ()
+                                  (setq-local magit-section-disable-line-numbers nil)
+                                  (display-line-numbers-mode)))
 
 ;; Magit/yadm
 (unless (boundp 'my/git-dir-hook?)
