@@ -404,13 +404,17 @@
     (lispy-mode 1)))
 (add-hook 'minibuffer-setup-hook #'conditionally-enable-lispy)
 
+;; Magit
+(add-hook 'git-commit-setup-hook (lambda ()
+                                   (save-excursion
+                                     (goto-char (point-min))
+                                     (if (empty-line?)
+                                         (progn
+                                           (forward-line 1)
+                                           (remove-empty-line))
+                                       nil))))
 
-;;; Configure magit to use `myconf` (and not `.git`) as the git
-;;; directory when a `myconf` directory is found in the current
-;;; working directory (which Emacs calls its `default-directory'
-;;; per buffer) and there is no `.git` directory.
-;;; NOTE: This setting will apply for the entire Emacs process,
-;;; regardless of magit invocation in other directories.
+;; Magit/yadm
 (unless (boundp 'my/git-dir-hook?)
   (eval-after-load 'magit
     '(let ((myconf-path (expand-file-name "~/.local/share/yadm/repo.git")))
