@@ -48,13 +48,13 @@ require("illuminate").configure({
     min_count_to_highlight = 2,
 })
 
--- Disable this plugin for diff
+-- Disable highlighting for diff
 local autocmd = vim.api.nvim_create_autocmd
 local group = vim.api.nvim_create_augroup("vim-illuminate.conf", { clear = true })
-autocmd({ "WinEnter" }, {
+autocmd({ "BufEnter" }, {
     callback = function()
         if vim.wo.diff then
-            require("illuminate").pause()
+            require("illuminate").invisible_buf()
         else
             return
         end
