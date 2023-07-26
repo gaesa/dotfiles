@@ -41,7 +41,6 @@ _git_pre_exec() {
     typeset -A git_cmds=(
         g true
         git true
-        lazygit true
     )
     typeset -A options=(
         cl true
