@@ -208,7 +208,9 @@
 (defun my/center-line (&rest _)
   (evil-scroll-line-to-center nil))
 (advice-add 'evil-search-next :after #'my/center-line) ;; n -> nzz
-(advice-add 'evil-search-previous :after #'my/center-line) ;; N -> nzz
+(advice-add 'evil-ex-search-next :after #'my/center-line) ;; n -> nzz
+(advice-add 'evil-search-previous :after #'my/center-line) ;; N -> Nzz
+(advice-add 'evil-ex-search-previous :after #'my/center-line) ;; N -> Nzz
 (advice-add 'evil-next-visual-line :after #'my/center-line) ;; gj -> gjzz
 (advice-add 'evil-previous-visual-line :after #'my/center-line) ;; gk -> gjzz
 (advice-add 'evil-scroll-up :after #'my/center-line) ;; C-u -> C-u zz
