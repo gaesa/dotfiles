@@ -111,14 +111,7 @@ map({ "i" }, "<C-k>", function()
 end)
 
 -- Clipboard
-map({ "n", "x" }, "<leader>p", [["+p]])
-map({ "n", "x" }, "<leader>P", [["+P]])
-map({ "n", "x" }, "<leader>y", [["+y]])
-map({ "n" }, "<leader>Y", [["+y$]])
-map({ "n", "x" }, "<leader>d", [["+d]])
-map({ "n" }, "<leader>D", [["+D]])
-map({ "n", "x" }, "<leader>c", [["+c]])
-map({ "n" }, "<leader>C", [["+C]])
+map({ "n", "x" }, "<leader>y", [["+]])
 -- map({ "x" }, "<leader>p", [["_dP]])
 -- map({ "n", "x" }, "<leader>d", [["_d]])
 
