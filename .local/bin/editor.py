@@ -1,7 +1,9 @@
 #!/usr/bin/env python3
 from sys import argv
 from subprocess import run, Popen, DEVNULL
-from os.path import splitext
+from os.path import isfile, splitext
+from typing import Callable
+from opener import get_mime_type
 
 
 def open_with_nvim(files):
@@ -38,31 +40,46 @@ def open_with_emacs(files):
         return p
 
 
-def wait_editor(editor):
-    if editor is not None:
-        editor.wait()
+def wait_editor(*editors: Popen[bytes] | None):
+    for editor in editors:
+        if editor is not None:
+            editor.wait()
+        else:
+            continue
+
+
+def open_with(nvim_files, emacs_files):
+    nvim = open_with_nvim(nvim_files)
+    emacs = open_with_emacs(emacs_files)
+    return nvim, emacs
+
+
+def split_condition(file: str) -> bool:
+    if isfile(file):
+        return get_mime_type(file) in {
+            "text/org",
+            "text/x-emacs-lisp",
+            "text/x-scheme",
+        }
     else:
-        return
+        return splitext(file)[1] in {".org", ".el", ".scm", ".ss"}
+
+
+def split_into2(group: list, predicate: Callable):
+    true_group: list = []
+    false_group: list = []
+    for elem in group:
+        (true_group if predicate(elem) else false_group).append(elem)
+    return true_group, false_group
 
 
 def edit(files=argv[1:]):
     if files == []:
         run(["nvim"])
     else:
-        nvim_files = []
-        emacs_files = []
-
-        for file in files:
-            if splitext(file)[1] in {".org", ".el", ".scm"}:
-                emacs_files.append(file)
-            else:
-                nvim_files.append(file)
-
-        nvim = open_with_nvim(nvim_files)
-        emacs = open_with_emacs(emacs_files)
-
-        wait_editor(nvim)
-        wait_editor(emacs)
+        emacs_files, nvim_files = split_into2(files, split_condition)
+        nvim, emacs = open_with(nvim_files, emacs_files)
+        wait_editor(nvim, emacs)
 
 
 if __name__ == "__main__":
