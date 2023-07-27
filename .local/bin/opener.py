@@ -1,1 +1,1 @@
-/home/david/.config/lf/opener.py
+../../.config/lf/opener.py

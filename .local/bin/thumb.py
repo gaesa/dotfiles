@@ -1,1 +1,1 @@
-/home/david/.config/lf/thumb.py
+../../.config/lf/thumb.py
