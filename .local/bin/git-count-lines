@@ -1,44 +1,14 @@
 #!/usr/bin/env python3
-from sys import argv, exit as sys_exit
-from os import getcwd
-from os.path import getsize, islink, join  # , isdir, dirname
+from sys import argv
+from os.path import getsize, join
 from subprocess import run
 from os import getenv
+from my_git import get_tracked_files
 
 
 def count_line(file: str) -> int:
     with open(file, "rb") as f:
         return sum(1 for _ in f)
-
-
-# def find_git_root(dir=getcwd()) -> str | None:
-#     if isdir(join(dir, ".git")):
-#         return dir
-#     elif dir == "/":
-#         return None
-#     else:
-#         return find_git_root(dir=dirname(dir))
-
-
-def get_tracked_files(path: str) -> list[str]:
-    process = run(["/usr/bin/git", "ls-files", path], capture_output=True, text=True)
-    if process.returncode == 0:
-        files = process.stdout.splitlines()
-        return list(filter(lambda file: not islink(file), files))
-    else:
-        sys_exit(process.stderr.rstrip())
-    # The below method is slightly slower than the above
-    # res = find_git_root()
-    # repo_path = environ["GIT_DIR"] if res is None else res
-    # repo = Repo(repo_path)
-    # files: list[str] = []
-    # for entry in repo.commit().tree.traverse():
-    #    files.append(entry.path)  # pyright: ignore [reportGeneralTypeIssues])
-    # filter_files = []
-    # for file in files:
-    #    if isfile(file) and file.startswith(path) and (not islink(file)):
-    #        filter_files.append(file)
-    # return filter_files
 
 
 def get_total_count(files: list[str]) -> tuple[int, str, dict[str, int]]:
@@ -84,8 +54,7 @@ def get_pager():
 
 
 def main() -> None:
-    path = argv[1] if len(argv) > 1 else getcwd()
-    files = get_tracked_files(path)
+    files = get_tracked_files(argv[1]) if len(argv) > 1 else get_tracked_files()
     total_lines, total_size, file_to_lines = get_total_count(files)
     file_to_lines = sort_count(file_to_lines)
 
