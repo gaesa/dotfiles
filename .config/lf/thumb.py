@@ -8,11 +8,9 @@ from os.path import (
     expanduser,
     realpath,
     join,
-    basename,
-    splitext,
     getmtime,
 )
-from os import makedirs, remove, listdir, environ
+from os import makedirs, remove, listdir, environ, chdir, getcwd
 from datetime import datetime
 from sys import exit as sys_exit, argv
 from subprocess import DEVNULL, run
@@ -68,33 +66,31 @@ def within_one_month(old_dt: datetime, new_dt: datetime):
         return False
 
 
-def clean(cache_dir, index):
+def clean(cache_dir: str, index: str):
     # Remove old cache files, including those
     # whose respective media files no longer exist,
     # and delete the corresponding JSON contents
-    def get_old_cache():
-        cache_list = []
-        for obj in listdir(cache_dir):
-            full_path = join(cache_dir, obj)
-            if splitext(obj)[1] == ".jpg" and (
-                not within_one_month(
-                    datetime.fromtimestamp(getmtime(full_path)), datetime.now()
-                )
-            ):
-                cache_list.append(full_path)
-        return cache_list
+    def get_old_cache() -> tuple[str]:
+        def fltr_fun(file: str):
+            return not within_one_month(
+                datetime.fromtimestamp(getmtime(file)), datetime.now()
+            )
 
+        return tuple(filter(fltr_fun, listdir(cache_dir)))
+
+    cwd = getcwd()
+    chdir(cache_dir)
     old_cache_list = get_old_cache()
-    if old_cache_list == []:
-        return
+    if old_cache_list == ():
+        chdir(cwd)
     else:
         with open(index) as f:
             d = json.load(f)
         for cache in old_cache_list:
             remove(cache)
-            cache = basename(cache)
             media = d[1].pop(cache)
             d[0].pop(media)
+        chdir(cwd)
         with open(index, "w") as f:
             json.dump(d, f, indent=2, ensure_ascii=False)
 
@@ -177,8 +173,8 @@ def prepare(cache_dir, index):
     check_index(index)
 
 
-def get_thumb_path(cache_dir, index, media):
-    def upd_index():
+def upd_index_and_get_thumb(index, media):
+    def upd():
         if need_upd_index:
             d[0][media] = thumb
             d[1][thumb] = media
@@ -196,9 +192,8 @@ def get_thumb_path(cache_dir, index, media):
     else:
         need_upd_index = True
         thumb = str(uuid4()) + ".jpg"
-
-    thumb_path = join(cache_dir, thumb)
-    return thumb_path, upd_index
+    upd()
+    return thumb
 
 
 def upd_thumb(media: str, thumb_path: str):
@@ -209,15 +204,16 @@ def upd_thumb(media: str, thumb_path: str):
 
 
 def main(file=argv[1]):
-    cache_dir = expanduser("~/.cache/lf_thumb")
-    index = join(cache_dir, "index.json")
-    prepare(cache_dir, index)
-    clean(cache_dir, index)
+    index_root = expanduser("~/.cache/lf_thumb")
+    cache_root = join(index_root, "img")
+    index = join(index_root, "index.json")
+    prepare(cache_root, index)
+    clean(cache_root, index)
     media = realpath(file, strict=True)
 
-    thumb_path, upd_index = get_thumb_path(cache_dir, index, media)
+    thumb = upd_index_and_get_thumb(index, media)
+    thumb_path = join(cache_root, thumb)
     upd_thumb(media, thumb_path)
-    upd_index()
 
     return thumb_path
 
