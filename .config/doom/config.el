@@ -221,6 +221,8 @@
 (advice-add 'evil-ex-search-word-backward :after #'my/center-line) ;; # -> #zz
 (advice-add 'evil-goto-line :after #'my/center-line) ;; G -> Gzz
 (advice-add 'evil-jump-item :after #'my/center-line) ;; % -> %zz
+(advice-add '+lookup/definition :after #'my/center-line) ;; gd -> gdzz
+(advice-add '+lookup/references :after #'my/center-line) ;; gD -> gDzz
 
 ;; Line wrap
 (+global-word-wrap-mode t)
