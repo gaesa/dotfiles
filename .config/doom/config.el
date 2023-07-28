@@ -95,9 +95,23 @@
 ;;(setq evil-emacs-state-cursor  'hbar) ; _
 ;;(setq etcc-term-type-override 'xterm)
 
+;; Disable using system clipboard as default
+(remove-hook 'tty-setup-hook #'doom-init-clipboard-in-tty-emacs-h)
+(setq select-enable-clipboard nil)
+(defun pop-kill-ring ()
+  (pop kill-ring)
+  (when kill-ring-yank-pointer
+    (setq kill-ring-yank-pointer kill-ring)))
+(defun paste-from-clipboard-insert ()
+  (interactive "*")
+  (clipboard-yank)
+  (pop-kill-ring))
+
 ;; Remap
-(define-key evil-insert-state-map (kbd "C-S-v") #'clipboard-yank)
-(define-key evil-normal-state-map (kbd "C-i") #'better-jumper-jump-forward)
+(define-key evil-insert-state-map (kbd "C-S-v") #'paste-from-clipboard-insert)
+(define-key evil-insert-state-map (kbd "M-w") #'yank)
+(define-key minibuffer-mode-map (kbd "C-S-v") #'paste-from-clipboard-insert)
+(define-key minibuffer-mode-map (kbd "M-w") #'yank)
 (define-key evil-normal-state-map (kbd "j") #'evil-next-visual-line)
 (define-key evil-normal-state-map (kbd "k") #'evil-previous-visual-line)
 (define-key evil-visual-state-map (kbd "j") #'evil-next-visual-line)
@@ -146,23 +160,6 @@
 
 ;; Window
 (add-to-list 'default-frame-alist '(fullscreen . maximized))
-
-;; Make clipboard can be accessed in both terminal and GUI
-(setq-default wl-copy-process nil)
-(when (string-prefix-p "wayland" (getenv "WAYLAND_DISPLAY"))
-  (defun wl-copy-handler (text)
-    (setq wl-copy-process (make-process :name "wl-copy"
-                                        :buffer nil
-                                        :command '("wl-copy" "-f")
-                                        :connection-type 'pipe))
-    (process-send-string wl-copy-process text)
-    (process-send-eof wl-copy-process))
-  (defun wl-paste-handler ()
-    (if (and wl-copy-process (process-live-p wl-copy-process))
-        nil                 ; should return nil if we're the current paste owner
-      (shell-command-to-string "wl-paste -n")))
-  (setq interprogram-cut-function 'wl-copy-handler
-        interprogram-paste-function 'wl-paste-handler))
 
 ;; Input method
 (setq fcitx-remote-command "fcitx5-remote")
