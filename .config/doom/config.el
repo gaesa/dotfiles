@@ -95,17 +95,85 @@
 ;;(setq evil-emacs-state-cursor  'hbar) ; _
 ;;(setq etcc-term-type-override 'xterm)
 
-;; Disable using system clipboard as default
+;; Prevent the system clipboard from being used as the default option
 (remove-hook 'tty-setup-hook #'doom-init-clipboard-in-tty-emacs-h)
-(setq select-enable-clipboard nil)
-(defun pop-kill-ring ()
+(setq select-enable-clipboard nil
+      kill-ring-max 50)
+
+(defun remove-current-kill ()
+  "When interact with clipboard, `current-kill' uses `kill-new' to alter the `kill-ring',
+`remove-current-kill' can fix that."
   (pop kill-ring)
-  (when kill-ring-yank-pointer
-    (setq kill-ring-yank-pointer kill-ring)))
+  (if kill-ring-yank-pointer
+      (setq kill-ring-yank-pointer kill-ring)))
+
+(defun copy-string-to-clipboard (str)
+  (let ((select-enable-clipboard t))
+    (gui-select-text str)))
+
+(defun get-string-from-clipboard ()
+  (gui--selection-value-internal 'CLIPBOARD))
+
+(defun get-current-kill ()
+  (if (null kill-ring)
+      nil
+    (substring-no-properties (car kill-ring))))
+
+(defun send-current-kill-to-clipboard ()
+  (copy-string-to-clipboard
+   (get-current-kill)))
+
 (defun paste-from-clipboard-insert ()
+  "Like `clipboard-yank', but doesn't alter `kill-ring'."
   (interactive "*")
-  (clipboard-yank)
-  (pop-kill-ring))
+  (insert (get-string-from-clipboard)))
+
+;; HACK
+;; See also: https://www.reddit.com/r/emacs/comments/9jbgbz/evil_mode_copy_and_paste_question/
+;; Reason: Evil register ?+ cannot capture non-evil operations like `kill-region',
+;; and it's hard to make it work under both normal mode and visual mode.
+;; TODO: add visual feedback
+(defvar clipboard-enabled nil
+  "Used to track the state of clilpboard.")
+
+(defun my/evil-clipboard (orig-fun &rest args)
+  (defun reset (old-kill)
+    (setq clipboard-enabled nil)
+    (if (and (memq (intern (subr-name orig-fun))
+                   ;; follows the behavior of vim, isolating `kill-ring' from clipboard only when pasting
+                   #'(evil-paste-after
+                      evil-paste-before
+                      evil-paste-before-cursor-after))
+             ;; `evil-paste-after' & `evil-paste-before' would not alter `kill-ring' in this case
+             (not (string= old-kill (get-current-kill))))
+        (remove-current-kill)))
+
+  (if clipboard-enabled
+      (let ((select-enable-clipboard t)
+            (old-kill (get-current-kill)))
+        (apply orig-fun args)
+        (reset old-kill))
+    (apply orig-fun args)))
+
+(advice-add 'evil-paste-after :around #'my/evil-clipboard)
+(advice-add 'evil-paste-before :around #'my/evil-clipboard)
+(advice-add 'evil-paste-before-cursor-after :around #'my/evil-clipboard)
+(advice-add 'evil-yank :around #'my/evil-clipboard)
+(advice-add 'evil-yank-line :around #'my/evil-clipboard)
+(advice-add 'lispyville-yank :around #'my/evil-clipboard)
+(advice-add 'lispyville-yank-line :around #'my/evil-clipboard)
+(advice-add 'evil-delete :around #'my/evil-clipboard)
+(advice-add 'evil-delete-char :around #'my/evil-clipboard)
+(advice-add 'evil-change :around #'my/evil-clipboard)
+(advice-add 'evil-change-line :around #'my/evil-clipboard)
+(advice-add 'lispyville-change :around #'my/evil-clipboard)
+(advice-add 'lispyville-change-line :around #'my/evil-clipboard)
+(advice-add 'evil-collection-magit-yank-whole-line :around #'my/evil-clipboard)
+(advice-add 'magit-copy-buffer-revision :around #'my/evil-clipboard)
+(advice-add 'magit-copy-section-value :around #'my/evil-clipboard)
+
+(map! :leader "y" (lambda () (interactive)
+                    (setq clipboard-enabled t)))
 
 ;; Remap
 (define-key evil-insert-state-map (kbd "C-S-v") #'paste-from-clipboard-insert)
