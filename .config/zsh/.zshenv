@@ -43,10 +43,11 @@ export MAIL="/var/spool/mail/${USER}"
 #}}}
 
 # path+ {{{
+typeset -U path PATH # make entries unique
 add_paths (){
-    local -r paths=("$@") # fucking shell
-    for added_path in $paths; do # fucking shell
-        if [[ -d "$added_path" && ":$PATH:" != *":$added_path:"* ]]; then
+    local -r paths=$1 # fuck shell
+    for added_path in "${(@P)paths}"; do
+        if [[ -d "$added_path" ]] && (( ${paths[(i)$added_path]} > ${#paths} )); then
             path+=("$added_path")
         fi
     done
@@ -57,6 +58,6 @@ local added_paths=(
     '/opt/bin' #add-on application software packages path
     "$XDG_DATA_HOME/cargo/bin"
 )
-add_paths $added_paths # fucking shell
+add_paths added_paths
 unset -f add_paths && unset added_paths
 #}}}
