@@ -11,6 +11,8 @@
 (package! ligature :recipe (:host github :repo "mickeynp/ligature.el"))
 (package! company)
 (package! company-statistics)
+(package! company-box)
+(package! nerd-icons)
 (package! symbol-overlay)
 
 (package! xclip :disable t)

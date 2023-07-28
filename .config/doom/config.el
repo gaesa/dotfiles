@@ -20,6 +20,7 @@
 ;;
 ;; See 'C-h v doom-font' for documentation and more examples of what they
 ;; accept. For example:
+(require 'nerd-icons)
 (setq doom-font (font-spec :family "monospace" :size 25 :height 1.25)
       doom-variable-pitch-font (font-spec :family "sans-serif" :size 25 :height 1.25))
 (set-face-attribute 'italic nil         ;affects M-x function descriptions & org-mode
@@ -349,6 +350,67 @@
 
 (add-hook 'after-init-hook #'global-company-mode)
 (add-hook 'after-init-hook #'company-statistics-mode)
+(require 'company-box)
+(add-hook 'company-mode-hook #'company-box-mode)
+
+(with-eval-after-load 'company-box
+  (setq company-box-enable-icon (boundp 'nerd-icons-font-family)
+        company-box-show-single-candidate t
+        company-box-backends-colors nil
+        company-box-max-candidates 50
+        company-box-doc-enable nil)     ;because of the huge doc window
+  (setq company-frontends (delq 'company-preview-if-just-one-frontend company-frontends))
+
+  (with-no-warnings
+    (define-advice company-box--display (:override (str on-update) display-borders&optimize-performance)
+      "Display borders and optimize performance"
+      (company-box--render-buffer str on-update)
+      (let ((frame (company-box--get-frame))
+            (border-color (face-foreground 'font-lock-comment-face nil t)))
+        (unless frame
+          (setq frame (company-box--make-frame))
+          (company-box--set-frame frame))
+        (company-box--compute-frame-position frame)
+        (company-box--move-selection t)
+        (company-box--update-frame-position frame)
+        (unless (frame-visible-p frame)
+          (make-frame-visible frame))
+        (company-box--update-scrollbar frame t)
+        (set-face-background 'internal-border border-color frame)
+        (when (facep 'child-frame-border)
+          (set-face-background 'child-frame-border border-color frame)))
+      (with-current-buffer (company-box--get-buffer)
+        (company-box--maybe-move-number (or company-box--last-start 1))))
+
+    (defvar company-box-icons-nerd
+      `((Unknown . ,(nerd-icons-codicon "nf-cod-symbol_namespace"))
+        (Text . ,(nerd-icons-codicon "nf-cod-symbol_string"))
+        (Method . ,(nerd-icons-codicon "nf-cod-symbol_method" :face 'nerd-icons-purple))
+        (Function . ,(nerd-icons-codicon "nf-cod-symbol_method" :face 'nerd-icons-purple))
+        (Constructor . ,(nerd-icons-codicon "nf-cod-symbol_method" :face 'nerd-icons-lpurple))
+        (Field . ,(nerd-icons-codicon "nf-cod-symbol_field" :face 'nerd-icons-lblue))
+        (Variable . ,(nerd-icons-codicon "nf-cod-symbol_variable" :face 'nerd-icons-lblue))
+        (Class . ,(nerd-icons-codicon "nf-cod-symbol_class" :face 'nerd-icons-orange))
+        (Interface . ,(nerd-icons-codicon "nf-cod-symbol_interface" :face 'nerd-icons-lblue))
+        (Module . ,(nerd-icons-codicon "nf-cod-symbol_namespace" :face 'nerd-icons-lblue))
+        (Property . ,(nerd-icons-codicon "nf-cod-symbol_property"))
+        (Unit . ,(nerd-icons-codicon "nf-cod-symbol_key"))
+        (Value . ,(nerd-icons-codicon "nf-cod-symbol_numeric" :face 'nerd-icons-lblue))
+        (Enum . ,(nerd-icons-codicon "nf-cod-symbol_enum" :face 'nerd-icons-orange))
+        (Keyword . ,(nerd-icons-codicon "nf-cod-symbol_keyword"))
+        (Snippet . ,(nerd-icons-codicon "nf-cod-symbol_snippet"))
+        (Color . ,(nerd-icons-codicon "nf-cod-symbol_color"))
+        (File . ,(nerd-icons-codicon "nf-cod-symbol_file"))
+        (Reference . ,(nerd-icons-codicon "nf-cod-symbol_misc"))
+        (Folder . ,(nerd-icons-codicon "nf-cod-folder"))
+        (EnumMember . ,(nerd-icons-codicon "nf-cod-symbol_enum_member" :face 'nerd-icons-lblue))
+        (Constant . ,(nerd-icons-codicon "nf-cod-symbol_constant"))
+        (Struct . ,(nerd-icons-codicon "nf-cod-symbol_structure" :face 'nerd-icons-orange))
+        (Event . ,(nerd-icons-codicon "nf-cod-symbol_event" :face 'nerd-icons-orange))
+        (Operator . ,(nerd-icons-codicon "nf-cod-symbol_operator"))
+        (TypeParameter . ,(nerd-icons-codicon "nf-cod-symbol_class"))
+        (Template . ,(nerd-icons-codicon "nf-cod-symbol_snippet"))))
+    (setq company-box-icons-alist 'company-box-icons-nerd)))
 
 ;; Snippets
 (with-eval-after-load 'yasnippet
