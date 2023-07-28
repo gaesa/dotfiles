@@ -504,6 +504,12 @@
 (add-hook 'git-rebase-mode-hook (lambda ()
                                   (setq-local magit-section-disable-line-numbers nil)
                                   (display-line-numbers-mode)))
+;; ssh-agent
+(with-eval-after-load 'magit
+  (push (format "SSH_AUTH_SOCK=%s/ssh-agent.socket"
+                (or (getenv "XDG_RUNTIME_DIR")
+                    (format "/run/user/%s" (user-uid))))
+        magit-git-environment))
 
 ;; Magit/yadm
 (defun find-git-root (dir)
