@@ -17,11 +17,15 @@ def audio_has_cover(audio):
         return False
 
 
-def print_image(image):
-    w = argv[2]
-    h = argv[3]
-    x = argv[4]
-    y = argv[5]
+def print_image(image: str):
+    if len(argv) > 2:
+        w = argv[2]
+        h = argv[3]
+        x = argv[4]
+        y = argv[5]
+        place = ["--place", f"{w}x{h}@{x}x{y}"]
+    else:
+        place = []
     with open("/dev/tty", "w") as tty:
         run(
             [
@@ -31,9 +35,8 @@ def print_image(image):
                 "no",
                 "--transfer-mode",
                 "file",
-                "--place",
-                f"{w}x{h}@{x}x{y}",
-                image,  # pyright: ignore [reportGeneralTypeIssues]
+                *place,
+                image,
             ],
             check=True,
             stdout=tty,
@@ -131,13 +134,13 @@ def fallback_to_non_image(file, mime_type, mime_type_main):
             fallback_to_file_cmd(file)
 
 
-def print_pure_image(file):
+def print_pure_image(file: str):
     print_image(file)
     sys_exit(1)
     # to clear the last displayed image, no idea on why we need to do this
 
 
-def print_cache_image(file):
+def print_cache_image(file: str):
     print_image(thumb.main(file=file))
     sys_exit(1)
 
