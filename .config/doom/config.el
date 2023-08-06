@@ -237,6 +237,98 @@
 ;; Input method
 (setq fcitx-remote-command "fcitx5-remote")
 
+;; Spell
+(setq ispell-check-comments nil)
+(setq spell-fu-idle-delay 0)
+(setq spell-fu-faces-exclude '(font-lock-comment-face))
+;; default path doesn't respect XDG
+;; (setq ispell-personal-dictionary (expand-file-name "~/.config/dict/en"))
+(add-hook 'spell-fu-mode-hook
+  (lambda ()
+    (spell-fu-dictionary-add (spell-fu-get-ispell-dictionary "en"))
+    (spell-fu-dictionary-add
+     (spell-fu-get-personal-dictionary "en-personal" (expand-file-name "~/.config/dict/en")))))
+
+(setq spell-mode-alist '((git-commit-mode . (git-commit-comment-file
+                                             git-commit-comment-action
+                                             git-commit-comment-heading
+                                             git-commit-comment-detached
+                                             git-commit-comment-branch
+                                             git-commit-comment-branch-local
+                                             git-commit-comment-branch-remote))
+                         (org-mode . (org-block-begin-line
+                                      org-block-end-line
+                                      org-code
+                                      org-date
+                                      org-drawer org-document-info-keyword
+                                      org-ellipsis
+                                      org-link
+                                      org-meta-line
+                                      org-properties
+                                      org-properties-value
+                                      org-special-keyword
+                                      org-src
+                                      org-tag
+                                      org-verbatim))))
+(defun mode-to-hook (mode)
+  (intern (concat (symbol-name mode) "-hook")))
+(dolist (mode-to-faces spell-mode-alist)
+  (let ((mode (car mode-to-faces)))
+    (add-hook (mode-to-hook mode)
+              (lambda ()
+                (setq-local spell-fu-faces-exclude
+                            (append spell-fu-faces-exclude
+                                    (alist-get mode spell-mode-alist)))
+                (spell-fu-mode)))))
+
+;; refresh the word list at run-time when ispell updates the personal dictionary
+;; see: https://github.com/emacsmirror/spell-fu#todo
+(defun re-enable-spell (&optional _)
+    (if spell-fu-mode
+        (progn (spell-fu-mode -1)
+               (spell-fu-mode 1))))
+(advice-add 'spell-fu-word-add :after #'re-enable-spell)
+(advice-add 'spell-fu-word-remove :after #'re-enable-spell)
+
+;; disable spell check in insert mode
+(defun alistp (lst)
+  (listp (car lst)))
+(defun any-mode-active? (mode-list)
+  (defun get-mode-choose (lst)
+    (cond ((alistp lst)
+           (lambda (mod-lst) (car (car mod-lst))))
+          ((listp lst)
+           (lambda (mod-lst) (car mod-lst)))
+          (t
+           (error "Not a symbol list or a symbol alist"))))
+  ;; the function in elisp is not a first-class citizen object
+  (fset 'get-mode (get-mode-choose mode-list))
+  (defun iter (mode-list)
+    (cond ((null mode-list) nil)
+          ((let ((mode (get-mode mode-list)))
+             (and (boundp mode) (symbol-value mode))) ;`bound-and-true-p' donot accept symbols
+           t)
+          (t (iter (cdr mode-list)))))
+  (iter mode-list))
+;; fix org-mode check
+(add-hook 'org-mode-hook (lambda () (setq-local org-mode t)))
+(add-hook 'evil-insert-state-entry-hook
+          (lambda () (if (any-mode-active? spell-mode-alist)
+                         (spell-fu-mode -1))))
+(add-hook 'evil-insert-state-exit-hook
+          (lambda () (if (any-mode-active? spell-mode-alist)
+                         (spell-fu-mode 1))))
+
+;; keybindings on spell
+(defalias '+spell/add-word #'spell-fu-word-add)
+(defalias '+spell/remove-word #'spell-fu-word-remove)
+(defalias '+spell/next-error #'spell-fu-goto-next-error)
+(defalias '+spell/previous-error #'spell-fu-goto-previous-error)
+(map! :n "zg" #'+spell/add-word
+      :n "zw" #'+spell/remove-word
+      :m "[s" #'+spell/previous-error
+      :m "]s" #'+spell/next-error)
+
 ;; Ligature
 (ligature-set-ligatures 'prog-mode '("|||>" "<|||" "<==>" "<!--" "####" "~~>" "***" "||=" "||>"
                                        ":::" "::=" "=:=" "===" "==>" "=!=" "=>>" "=<<" "=/=" "!=="

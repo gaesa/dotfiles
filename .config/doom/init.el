@@ -80,9 +80,10 @@
        ;;vterm             ; the best terminal emulation in Emacs
 
        :checkers
-       syntax              ; tasing you for every semicolon you forget
-       ;;(spell +flyspell) ; tasing you for misspelling mispelling
-       ;;grammar           ; tasing grammar mistake every you make
+       syntax              ; grammar check for code
+       ;(spell +hunspell) ; enchant initiation is slow; flyspell is unstable; spell-fu marks every word as incorrect
+       ;https://github.com/doomemacs/doomemacs/issues/4009
+       ;grammar           ; natural language check
 
        :tools
        ;;ansible

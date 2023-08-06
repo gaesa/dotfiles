@@ -14,6 +14,7 @@
 (package! company-box)
 (package! nerd-icons)
 (package! symbol-overlay)
+(package! spell-fu)
 
 (package! xclip :disable t)
 (package! xdotool :disable t)
