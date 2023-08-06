@@ -621,22 +621,25 @@
       nil)))
 (defun geiser-open-repl ()
   (interactive)
-  (if (null (cl-member-if #'geiser-repl? (buffer-list)))
-      (let ((buf (current-buffer)))
+  (let ((buf (current-buffer)))
+    (if (null (cl-member-if #'geiser-repl? (buffer-list)))
         (progn (geiser 'chez)
                (window-resize (selected-window) -10)
-               (switch-to-buffer-other-window buf)))
-    nil))
+               (switch-to-buffer-other-window buf))
+      nil)))
 
 (progn (add-hook 'scheme-mode-hook #'smartparens-strict-mode)
        (add-hook 'scheme-mode-hook #'geiser-mode)
-       (add-hook 'scheme-mode-hook #'geiser-open-repl)
        (add-hook 'scheme-mode-hook #'lispy-mode)
        (add-hook 'geiser-repl-mode-hook #'lispy-mode)
        (add-hook 'emacs-lisp-mode-hook #'smartparens-strict-mode)
        (add-hook 'emacs-lisp-mode-hook #'lispy-mode))
-(setq scheme-program-name "chez")
-(setq geiser-chez-binary "chez")
+
+(setq scheme-program-name "chez"
+      geiser-chez-binary "chez"
+      geiser-repl-window-allow-split nil
+      geiser-mode-start-repl-p t
+      geiser-repl-query-on-kill-p nil)
 ;; (setq geiser-active-implementations '(chez))
 
 (defun conditionally-enable-lispy ()
