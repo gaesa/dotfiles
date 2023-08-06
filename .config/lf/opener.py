@@ -155,7 +155,7 @@ def get_default_desktops(mime_type: str, interactive=False):
                 return [default_desktop]
             else:
                 return default_desktop
-        except KeyboardInterrupt:
+        except (KeyboardInterrupt, EOFError):
             print()
             sys_exit(0)
 
@@ -220,7 +220,7 @@ def open_with(default_desktop, file):
         )
         open(default_desktop[choice], file)
         print()
-    except KeyboardInterrupt:
+    except (KeyboardInterrupt, EOFError):
         print()
         sys_exit(0)
 
