@@ -417,19 +417,28 @@
                    (eq old-tick (buffer-chars-modified-tick)))
           (company-complete-common))))))
 
+  (defun my/company-complete-common-or-cycle-next (&optional arg)
+    "Insert the common part of all candidates, or select the next one.
+       With ARG, move by that many elements."
+    (interactive "p")
+    (when (company-manual-begin)
+      (call-interactively 'company-complete-common)
+      ;; remove `buffer-chars-modified-tick' so `company-select-next' can be run
+      (let ((company-selection-wrap-around t)
+            (current-prefix-arg arg))
+        (call-interactively 'company-select-next))))
+
   (defun my/company-complete-common-or-cycle-previous (&optional arg)
     "Insert the common part of all candidates, or select the previous one.
        With ARG, move by that many elements."
     (interactive "p")
     (when (company-manual-begin)
-      (let ((tick (buffer-chars-modified-tick)))
-        (call-interactively 'company-complete-common)
-        (when (eq tick (buffer-chars-modified-tick))
-          (let ((current-prefix-arg arg))
-            (call-interactively 'company-select-previous))))))
+      (call-interactively 'company-complete-common)
+      (let ((current-prefix-arg arg))
+        (call-interactively 'company-select-previous))))
 
   (define-key company-mode-map (kbd "<tab>") #'my/company-indent-or-complete-common)
-  (define-key company-active-map (kbd "<tab>") #'company-complete-common-or-cycle)
+  (define-key company-active-map (kbd "<tab>") #'my/company-complete-common-or-cycle-next)
   (define-key company-active-map (kbd "<backtab>") #'my/company-complete-common-or-cycle-previous)
   (define-key company-active-map (kbd "M-n") nil)
   (define-key company-active-map (kbd "M-p") nil)
