@@ -398,6 +398,17 @@
                                   (length company--manual-prefix))))
                (>= len company-minimum-prefix-length))))))
 
+
+  (defun blank-char? (char)
+    (let ((blank-char #s(hash-table size 4
+                                    test eq
+                                    data (
+                                          ?\s t
+                                          ?\t t
+                                          ?\r t
+                                          ?\n t))))
+      (not (null (gethash char blank-char)))))
+
   (defun my/company-indent-or-complete-common (arg)
     "Indent the current line or region, or complete the common part."
     (interactive "P")
@@ -407,7 +418,7 @@
      ((memq indent-line-function
             '(indent-relative indent-relative-maybe))
       (company-complete-common))
-     ((or (bolp) (looking-back "\s" 1)) ;New branch
+     ((blank-char? (char-before))       ;New branch
       (indent-for-tab-command arg))
      ((let ((old-point (point))
             (old-tick (buffer-chars-modified-tick))
