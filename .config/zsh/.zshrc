@@ -36,7 +36,7 @@ setopt HIST_VERIFY
 setopt share_history
 setopt correct
 HISTFILE="$XDG_STATE_HOME"/zsh/history
-HISTSIZE=5000
+HISTSIZE=10000
 SAVEHIST=$HISTSIZE
 
 # }}}
