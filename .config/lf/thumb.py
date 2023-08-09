@@ -23,43 +23,44 @@ def within_one_month(old_dt: datetime, new_dt: datetime):
         if d_mon == 0:
             return True
         elif d_mon == 1:
-            return cmp_day()
+            return cmp_day_to_msec()
         else:
             return False
 
-    def cmp_day():
-        def cmp_date(date: str):
+    def cmp_day_to_msec():
+        next_unit_dict = {
+            "day": "hour",
+            "hour": "minute",
+            "minute": "second",
+            "second": "microsecond",
+        }
+
+        def cmp_msec():
+            return not (new_dt.microsecond > old_dt.microsecond)
+
+        def iter(date: str):
             old: int = getattr(old_dt, date)
             new: int = getattr(new_dt, date)
             delta = new - old
             if delta < 0:
                 return True
             elif delta == 0:
-                next_unit_dict = {
-                    "day": "hour",
-                    "hour": "minute",
-                    "minute": "second",
-                    "second": "microsecond",
-                }
                 next_unit = next_unit_dict[date]
                 if next_unit == "microsecond":
                     return cmp_msec()
                 else:
-                    return cmp_date(next_unit)
+                    return iter(next_unit)
             else:
                 return False
 
-        return cmp_date("day")
-
-    def cmp_msec():
-        return not (new_dt.microsecond > old_dt.microsecond)
+        return iter("day")
 
     d_year = new_dt.year - old_dt.year
     if d_year == 0:
         return cmp_mon()
     elif d_year == 1:
         if new_dt.month == 1 and old_dt.month == 12:
-            return cmp_day()
+            return cmp_day_to_msec()
         else:
             return False
     else:
