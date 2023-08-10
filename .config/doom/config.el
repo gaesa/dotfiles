@@ -890,6 +890,9 @@
     (my/lispyville-fix #'lispy-convolute arg))
   (evil-define-key 'normal lispyville-mode-map (kbd "M-C") #'lispyville-convolute))
 
+;; Scratch
+(setq doom-scratch-initial-major-mode t)
+
 ;; Magit
 ;; expand `Recent commits`
 (setf (alist-get 'unpushed magit-section-initial-visibility-alist) 'show)
