@@ -893,14 +893,14 @@
 ;; Magit
 ;; expand `Recent commits`
 (setf (alist-get 'unpushed magit-section-initial-visibility-alist) 'show)
+
+;; Avoid a redundant newline introduced by `open-line' in `git-commit-setup'
 (add-hook 'git-commit-setup-hook (lambda ()
-                                   (save-excursion
-                                     (goto-char (point-min))
-                                     (if (empty-line?)
-                                         (progn
-                                           (forward-line 1)
-                                           (remove-empty-line))
-                                       nil))))
+                                   (undo)
+                                   (setq-local buffer-undo-list nil)
+                                   (set-buffer-modified-p nil)))
+
+;; Display line numbers in `git-rebase-mode'
 (add-hook 'git-rebase-mode-hook (lambda ()
                                   (setq-local magit-section-disable-line-numbers nil)
                                   (display-line-numbers-mode)))
