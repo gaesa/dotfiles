@@ -910,8 +910,7 @@
 ;; ssh-agent
 (with-eval-after-load 'magit
   (push (format "SSH_AUTH_SOCK=%s/ssh-agent.socket"
-                (or (getenv "XDG_RUNTIME_DIR")
-                    (format "/run/user/%s" (user-uid))))
+                (getenv "XDG_RUNTIME_DIR"))
         magit-git-environment))
 
 ;; Magit/yadm

@@ -32,7 +32,7 @@ def check_os():
 def check_paru(sudo_cmd):
     if which("paru") is None:
         run([*sudo_cmd, "pacman", "-Syu", "--needed", "base-devel"], check=True)
-        dir = environ["XDG_RUNTIME_DIR"]
+        dir = environ["TMPDIR"]
         run(
             ["git", "clone", "https://aur.archlinux.org/paru.git"],
             cwd=dir,

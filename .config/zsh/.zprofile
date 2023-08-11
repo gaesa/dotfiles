@@ -27,6 +27,7 @@ typeset -A preserve=(
     "XDG_CACHE_HOME" 1
     "XDG_DATA_HOME" 1
     "XDG_STATE_HOME" 1
+    "TMPDIR" 1
     "DEBUGINFOD_URLS" 1
     "XDG_DATA_DIRS" 1
     "LANG" 1
@@ -66,7 +67,7 @@ export QT_IM_MODULE='fcitx'
 export XMODIFIERS='@im=fcitx'
 export SDL_IM_MODULE='fcitx'
 export GLFW_IM_MODULE='ibus'
-export FCITX_SOCKET="$XDG_RUNTIME_DIR"
+export FCITX_SOCKET="$TMPDIR"
 #}}}
 
 # Hardware {{{
@@ -74,7 +75,7 @@ export LIBVA_DRIVER_NAME='iHD'
 #}}}
 
 # Podman {{{
-export DOCKER_HOST="unix://$XDG_RUNTIME_DIR/podman/podman.sock"
+export DOCKER_HOST="unix://$TMPDIR/podman/podman.sock"
 export DOCKER_BUILDKIT=0
 #}}}
 

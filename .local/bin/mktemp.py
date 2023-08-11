@@ -10,7 +10,7 @@ def mktemp(prefix=""):
         name = f"{prefix}-{str(uuid4())}"
     else:
         name = str(uuid4())
-    dir = getenv("XDG_RUNTIME_DIR", "/tmp")
+    dir = getenv("TMPDIR", "/tmp")
     path = join(dir, name)
     open(path, "w").close()
 

@@ -14,7 +14,7 @@ set -euo pipefail
         --ro-bind "$PWD" "$PWD" \
         --dev-bind /dev/tty /dev/tty \
         --dev-bind /dev/null /dev/null \
-        --dev-bind /tmp /tmp \
+        --dev-bind "$TMPDIR" "$TMPDIR" \
         --bind ~/.cache/lf_thumb ~/.cache/lf_thumb \
         --bind ~/.config/lf/__pycache__ ~/.config/lf/__pycache__ \
         --unshare-all \

@@ -33,7 +33,7 @@ cmd mkdir ${{
 }}
 cmd trash &{{
     if [[ "$XDG_CURRENT_DESKTOP" == "KDE" ]]; then
-        kioclient5 move $fx trash:/ &>>"$XDG_RUNTIME_DIR/trash.log"
+        kioclient5 move $fx trash:/ &>>"$TMPDIR/trash.log"
     else
         trash-put $fx
     fi

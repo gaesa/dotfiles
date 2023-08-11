@@ -1,9 +1,0 @@
-#!/usr/bin/env python3
-from mktemp import mktemp
-from sys import argv
-
-if len(argv) > 1:
-    prefix = " ".join(argv[1:])
-    print(mktemp(prefix=prefix))
-else:
-    print(mktemp())
