@@ -27,6 +27,7 @@ typeset -A preserve=(
     "XDG_CACHE_HOME" 1
     "XDG_DATA_HOME" 1
     "XDG_STATE_HOME" 1
+    "TMPDIR" 1
     "DEBUGINFOD_URLS" 1
     "XDG_DATA_DIRS" 1
     "LANG" 1
@@ -47,7 +48,7 @@ unset preserve array elem
 #}}}
 
 # Podman {{{
-export DOCKER_HOST="unix://$XDG_RUNTIME_DIR/podman/podman.sock"
+export DOCKER_HOST="unix://$TMPDIR/podman/podman.sock"
 export DOCKER_BUILDKIT=0
 #}}}
 
