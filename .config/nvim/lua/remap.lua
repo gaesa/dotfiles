@@ -28,6 +28,7 @@ map({ "n", "x", "o" }, "H", "g^")
 map({ "n", "x", "o" }, "L", "g$")
 map({ "n", "x", "o" }, "gT", "H")
 map({ "n", "x", "o" }, "gB", "L")
+map({ "n", "x", "o" }, "<A-d>", "%zz")
 
 -- Emacs-like keybinding
 local function get_cur_pos()
