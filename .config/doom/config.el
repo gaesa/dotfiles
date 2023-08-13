@@ -23,10 +23,10 @@
 (require 'nerd-icons)
 (setq doom-font (font-spec :family "monospace" :size 25 :height 1.25)
       doom-variable-pitch-font (font-spec :family "sans-serif" :size 25 :height 1.25))
-(set-face-attribute 'italic nil         ;affects M-x function descriptions & org-mode
-                     :slant 'italic
-                     :underline nil
-                     :family "JetBrains Mono")
+(set-face-attribute 'italic nil    ;affects M-x function descriptions & org-mode
+                    :slant 'italic
+                    :underline nil
+                    :family "JetBrains Mono")
 (custom-set-faces!                      ;affects comments in source codes
   '(font-lock-comment-face :slant italic :underline nil :family "JetBrains Mono"))
 
