@@ -935,16 +935,6 @@
 ;; (add-hook 'find-file-hook (lambda () (my/git-dir-hook)))
 ;; triggered only once after a file is loaded into the buffer
 
-;; DONT WORK:
-;; Disable lispy-comment for specific files
-;; (defun my/disable-lispy-comment ()
-;;   (when (string= (buffer-file-name) (expand-file-name "~/.config/doom/init.el"))
-;;     (define-key lispy-mode-map (kbd ";") nil)))
-;; (add-hook 'find-file-hook #'my/disable-lispy-comment)
-;; (eval-after-load "lispy"
-;;   `(progn
-;;      (define-key lispy-mode-map (kbd ";") nil)))
-
 ;; Whenever you reconfigure a package, make sure to wrap your config in an
 ;; `after!' block, otherwise Doom's defaults may override your settings. E.g.
 ;;
