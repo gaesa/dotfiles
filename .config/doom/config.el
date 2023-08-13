@@ -46,7 +46,86 @@
 ;; available. You can either set `doom-theme' or manually load a theme with the
 ;; `load-theme' function. This is the default:
 ;;(setq doom-theme 'doom-one)
-(add-to-list 'custom-theme-load-path "~/.config/emacs/everforest-theme")
+(defun hash-table-keys-to-string (procedure hash-table separator)
+  (mapconcat procedure
+             (hash-table-keys hash-table) ;faster than using `concat` in a loop
+             separator))
+
+(defun object-to-string (object)
+  (format "%s" object))
+
+(defun string-translate (str table)
+  (replace-regexp-in-string
+   (hash-table-keys-to-string (lambda (x) (regexp-quote (object-to-string x)))
+                              table
+                              "\\|")
+   (lambda (match) (gethash match table))
+   str))
+
+(defun rstrip (str)
+  (replace-regexp-in-string "[ \t\n\r]+$" "" str))
+
+(defun safe-subseq (list start end)
+  (seq-take (seq-drop list start) (- end start)))
+
+(cl-defun run-process-with-filter (command &key filter name)
+  "Run a process with the specified filter function.
+
+NAME is the name of the process.
+COMMAND is a list containing the program to run and its arguments.
+FILTER is the process filter function to use."
+  (with-temp-buffer
+    (let* ((name (if (null name)
+                     (mapconcat #'identity
+                                (safe-subseq command 0 2)
+                                " ")
+                   name))
+           (filter (if (null filter)
+                       (lambda (process output)
+                         (message "%s"
+                                  (string-translate
+                                   (rstrip output)
+                                   #s(hash-table
+                                      size 2
+                                      test equal
+                                      data ("\r" "\n"
+                                            "\^[[K" "")))))
+                     filter))
+           (process (apply #'start-process
+                           name
+                           (current-buffer)
+                           (car command)
+                           (cdr command))))
+      (set-process-filter process filter)
+      (while (process-live-p process)
+        (accept-process-output process)))))
+
+(defun extend (&rest lists)
+  (let ((lst (car lists))
+        (tail (cdr lists)))
+    (apply #'nconc lst tail)
+    lst))
+
+(defun safe-trash (file)
+  (when (file-exists-p file)
+    (move-file-to-trash file)))
+
+(defun valid-repo? (directory)
+  (and (file-directory-p (expand-file-name ".git" directory))
+       (= 0 (let ((default-directory directory))
+              (call-process "/usr/bin/git" nil nil nil "status")))))
+
+(let ((path (expand-file-name "~/.config/doom/everforest-theme/"))
+      (repo-url "https://www.github.com/gaesa/emacs-everforest-theme")
+      (branch "fork"))
+  (if (valid-repo? path)
+      (add-to-list 'custom-theme-load-path path)
+    (safe-trash path)
+    (message "%s" "Running (git clone) to fetch the custom theme")
+    (run-process-with-filter (extend '("/usr/bin/git" "clone")
+                                     (list "--branch" branch) ;there is no `lexical-boundp'
+                                     (list repo-url path)))
+    (add-to-list 'custom-theme-load-path path)))
 
 (defun switch-theme-light ()
   (load-theme 'everforest-hard-light t)
