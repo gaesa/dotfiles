@@ -582,6 +582,11 @@ FILTER is the process filter function to use."
 (require 'company-box)
 (add-hook 'company-mode-hook #'company-box-mode)
 
+;; fix for `company-files'
+(add-hook 'evil-insert-state-exit-hook (lambda ()
+                                         (if (company--active-p)
+                                             (company-abort))))
+
 (with-eval-after-load 'company-box
   (setq company-box-enable-icon (boundp 'nerd-icons-font-family)
         company-box-show-single-candidate t
