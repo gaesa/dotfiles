@@ -178,7 +178,8 @@ FILTER is the process filter function to use."
 ;; Prevent the system clipboard from being used as the default option
 (remove-hook 'tty-setup-hook #'doom-init-clipboard-in-tty-emacs-h)
 (setq select-enable-clipboard nil
-      kill-ring-max 50)
+      kill-ring-max 50
+      evil-visual-update-x-selection-p t)
 
 (defun remove-current-kill ()
   "When interact with clipboard, `current-kill' uses `kill-new' to alter the `kill-ring',
