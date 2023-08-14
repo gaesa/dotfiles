@@ -133,14 +133,17 @@
 ;; See also: https://www.reddit.com/r/emacs/comments/9jbgbz/evil_mode_copy_and_paste_question/
 ;; Reason: Evil register ?+ cannot capture non-evil operations like `kill-region',
 ;; and it's hard to make it work under both normal mode and visual mode.
-;; TODO: add visual feedback
 (defvar clipboard-enabled nil
   "Used to track the state of clilpboard.")
+
+(defun closure-p (var)
+    (and (consp var)
+         (eq (car var) 'closure)))
 
 (defun my/evil-clipboard (orig-fun &rest args)
   (defun reset (old-kill)
     (setq clipboard-enabled nil)
-    (if (and (not (consp orig-fun))     ;`lispy-kill-at-point-fix'
+    (if (and (not (closure-p orig-fun))     ;`lispy-kill-at-point-fix'
              ;; follows the behavior of vim, isolating `kill-ring' from clipboard only when pasting
              (memq (intern (subr-name orig-fun))
                    #'(evil-paste-after
@@ -157,26 +160,56 @@
         (reset old-kill))
     (apply orig-fun args)))
 
-(advice-add 'evil-paste-after :around #'my/evil-clipboard)
-(advice-add 'evil-paste-before :around #'my/evil-clipboard)
-(advice-add 'evil-paste-before-cursor-after :around #'my/evil-clipboard)
-(advice-add 'evil-yank :around #'my/evil-clipboard)
-(advice-add 'evil-yank-line :around #'my/evil-clipboard)
-(advice-add 'lispyville-yank :around #'my/evil-clipboard)
-(advice-add 'lispyville-yank-line :around #'my/evil-clipboard)
-(advice-add 'lispy-kill-at-point-fix :around #'my/evil-clipboard) ;closure
-(advice-add 'evil-delete :around #'my/evil-clipboard)
-(advice-add 'evil-delete-char :around #'my/evil-clipboard)
-(advice-add 'evil-change :around #'my/evil-clipboard)
-(advice-add 'evil-change-line :around #'my/evil-clipboard)
-(advice-add 'lispyville-change :around #'my/evil-clipboard)
-(advice-add 'lispyville-change-line :around #'my/evil-clipboard)
-(advice-add 'evil-collection-magit-yank-whole-line :around #'my/evil-clipboard)
-(advice-add 'magit-copy-buffer-revision :around #'my/evil-clipboard)
-(advice-add 'magit-copy-section-value :around #'my/evil-clipboard)
+(defvar clipboard-command-list
+  '(evil-paste-after
+    evil-paste-before
+    evil-paste-before-cursor-after
+
+    evil-yank
+    evil-yank-line
+    lispyville-yank
+    lispyville-yank-line
+    lispy-kill-at-point-fix             ;closure
+
+    evil-delete
+    evil-delete-line
+    lispyville-delete
+    lispyville-delete-line
+
+    evil-delete-char
+    evil-delete-backward-char
+    lispyville-delete-char-or-splice
+    lispyville-delete-char-or-splice-backwards
+
+    evil-change
+    evil-change-line
+    lispyville-change
+    lispyville-change-line
+
+    evil-collection-magit-yank-whole-line
+    magit-copy-buffer-revision
+    magit-copy-section-value))
+
+(mapcar (lambda (func) (advice-add func :around #'my/evil-clipboard))
+        clipboard-command-list)
 
 (map! :leader "y" (lambda () (interactive)
                     (setq clipboard-enabled t)))
+
+(defvar last-position (point)
+  "Holds the cursor position from the last run of post-command-hooks.")
+(defvar cursor-move-hook nil)
+
+(defun my/cursor-move-callback ()
+  (if (not (= (point) last-position))
+      (progn (setq last-position (point))
+             (run-hooks 'cursor-move-hook))))
+
+(add-hook 'post-command-hook #'my/cursor-move-callback)
+
+(add-hook 'cursor-move-hook (lambda ()
+                              (if clipboard-enabled
+                                  (setq clipboard-enabled nil))))
 
 ;; Remap
 (define-key evil-insert-state-map (kbd "C-S-v") #'paste-from-clipboard-insert)
