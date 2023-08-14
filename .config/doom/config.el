@@ -943,6 +943,14 @@ FILTER is the process filter function to use."
     (interactive "P")
     (my/lispyville-fix #'lispy-copy-at-point arg))
   (evil-define-key 'normal lispyville-mode-map (kbd "C-y") #'lispyville-copy-at-point)
+  (define-key evil-motion-state-map (kbd "C-y")
+              (lambda () (interactive)
+                (if helpful-mode
+                    (call-interactively #'lispyville-copy-at-point)
+                  (call-interactively #'evil-scroll-line-up))))
+  (defvar helpful-mode nil)
+  (make-variable-buffer-local 'helpful-mode)
+  (add-hook 'helpful-mode-hook (lambda () (setq-local helpful-mode t)))
 
   (defun lispville-splice (arg)
     (interactive "p")
