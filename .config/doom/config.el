@@ -140,8 +140,9 @@
 (defun my/evil-clipboard (orig-fun &rest args)
   (defun reset (old-kill)
     (setq clipboard-enabled nil)
-    (if (and (memq (intern (subr-name orig-fun))
-                   ;; follows the behavior of vim, isolating `kill-ring' from clipboard only when pasting
+    (if (and (not (consp orig-fun))     ;`lispy-kill-at-point-fix'
+             ;; follows the behavior of vim, isolating `kill-ring' from clipboard only when pasting
+             (memq (intern (subr-name orig-fun))
                    #'(evil-paste-after
                       evil-paste-before
                       evil-paste-before-cursor-after))
@@ -163,6 +164,7 @@
 (advice-add 'evil-yank-line :around #'my/evil-clipboard)
 (advice-add 'lispyville-yank :around #'my/evil-clipboard)
 (advice-add 'lispyville-yank-line :around #'my/evil-clipboard)
+(advice-add 'lispy-kill-at-point-fix :around #'my/evil-clipboard) ;closure
 (advice-add 'evil-delete :around #'my/evil-clipboard)
 (advice-add 'evil-delete-char :around #'my/evil-clipboard)
 (advice-add 'evil-change :around #'my/evil-clipboard)
@@ -201,6 +203,9 @@
 (define-key evil-insert-state-map (kbd "M-o") #'evil-open-below)
 (define-key evil-insert-state-map (kbd "M-O") #'evil-open-above)
 (define-key evil-insert-state-map (kbd "C-k") #'kill-line)
+(define-key evil-motion-state-map (kbd "M-d") #'evil-jump-item)
+(define-key evil-normal-state-map (kbd "M-d") #'evil-jump-item)
+(define-key evil-visual-state-map (kbd "M-d") #'evil-jump-item)
 (define-key evil-normal-state-map (kbd "C-n") nil)
 (define-key evil-normal-state-map (kbd "C-p") nil)
 (define-key evil-insert-state-map (kbd "C-n") nil)
@@ -620,7 +625,7 @@
 (global-set-key (kbd "<f8>") #'symbol-overlay-remove-all)
 ;; (add-hook 'find-file-hook #'symbol-overlay-mode)
 
-;; Scheme & other lisp
+;; Structure editing
 (defun geiser-repl? (buf)
   (let ((str (buffer-name buf)))
     (and (length> str 17)
@@ -648,11 +653,9 @@
                (switch-to-buffer-other-window buf))
       nil)))
 
-(progn (add-hook 'scheme-mode-hook #'smartparens-strict-mode)
-       (add-hook 'scheme-mode-hook #'geiser-mode)
+(progn (add-hook 'scheme-mode-hook #'geiser-mode)
        (add-hook 'scheme-mode-hook #'lispy-mode)
        (add-hook 'geiser-repl-mode-hook #'lispy-mode)
-       (add-hook 'emacs-lisp-mode-hook #'smartparens-strict-mode)
        (add-hook 'emacs-lisp-mode-hook #'lispy-mode))
 
 (setq scheme-program-name "chez"
@@ -666,6 +669,193 @@
   (when (eq this-command 'eval-expression)
     (lispy-mode 1)))
 (add-hook 'minibuffer-setup-hook #'conditionally-enable-lispy)
+
+(defun closed-pair-p (char)
+  (let ((closed-pairs
+         #s(hash-table
+            size 3
+            test eq
+            data (
+                  ?\) t
+                  ?\] t
+                  ?\} t))))
+    (gethash char closed-pairs)))
+
+(defun opened-pair-p (char)
+  (let ((opened-pairs
+         #s(hash-table
+            size 3
+            test eq
+            data (
+                  ?\( t
+                  ?\[ t
+                  ?\{ t))))
+    (gethash char opened-pairs)))
+
+(define-advice eros-eval-last-sexp (:around (orig-fun &rest args) support-next-sexp)
+  (if (opened-pair-p (char-after))
+      (save-excursion
+        (forward-sexp)
+        (apply orig-fun args))
+    (apply orig-fun args)))
+
+(with-eval-after-load 'geiser
+  (advice-remove 'geiser-eval-last-sexp #'evil-collection-geiser-last-sexp)
+  (define-advice geiser-eval-last-sexp (:around (orig-fun &rest args) support-next-sexp)
+    (cond ((opened-pair-p (char-after))
+           (save-excursion
+             (forward-sexp)
+             (apply orig-fun args)))
+          ((or (evil-normal-state-p) (evil-motion-state-p))
+           (save-excursion
+             (forward-char)
+             (apply orig-fun args)))
+          (t (apply orig-fun args)))))
+
+(with-eval-after-load 'lispy
+  (define-advice lispy-raise-some (:override () consistent-right)
+    (let ((pt (point)))
+      (cond ((region-active-p))
+            ((lispy-left-p)
+             (if (null (lispy--out-forward 1))
+                 (progn
+                   (goto-char pt)
+                   (lispy-complain "Not enough depth to raise"))
+               (backward-char 1)
+               (set-mark (point))
+               (goto-char pt)))
+            ((lispy-right-p)
+             (if (null (lispy--out-forward 1))
+                 (progn
+                   (goto-char pt)
+                   (lispy-complain "Not enough depth to raise"))
+               (backward-list)
+               (forward-char 1)
+               (down-list 1)            ;more proper way
+               (forward-char -1)
+               (set-mark (point))
+               (goto-char pt)))
+            (t
+             (error "Unexpected")))
+      (lispy-raise 1)
+      (deactivate-mark)))
+
+  (define-advice lispy-kill-at-point (:override (&optional dont-kill) support-dont-kill -1)
+    (if (region-active-p)
+        (lispy--maybe-safe-kill-region (region-beginning)
+                                       (region-end))
+      (let ((bnd (or (lispy--bounds-comment)
+                     (lispy--bounds-string)
+                     (lispy--bounds-list)
+                     (and (derived-mode-p 'text-mode)
+                          (cons (save-excursion
+                                  (1+ (re-search-backward "[ \t\n]" nil t)))
+                                (save-excursion
+                                  (1- (re-search-forward "[ \t\n]" nil t))))))))
+        (if (or buffer-read-only dont-kill) ;support copy
+            (kill-new (buffer-substring
+                       (car bnd) (cdr bnd)))
+          (kill-region (car bnd) (cdr bnd))))))
+
+  (define-advice sp-kill-sexp (:around (orig-fun &optional arg dont-kill) auto-dont-kill -1)
+    (if buffer-read-only
+        (funcall orig-fun arg t)
+      (funcall orig-fun arg dont-kill)))
+
+  (defun lispy-kill-at-point-fix (&optional arg dont-kill)
+    "Kill any atoms or lists beside cursor"
+    (interactive "P")
+    (let ((left (char-before))
+          (right (char-after)))
+      (cond ((eq left ?\")          ;when the cursor is at the right of a string
+             (save-excursion
+               (forward-char -1)        ;properly mark strings
+               (lispy-kill-at-point dont-kill)))
+            ((or (closed-pair-p left)   ;kill the inner nearest list
+                 (opened-pair-p right)  ;preserve quotes '
+                 (let ((lst (syntax-ppss)))
+                   (or (nth 3 lst)      ;kill whole strings
+                       (nth 4 lst))))   ;kill whole comments
+             (lispy-kill-at-point dont-kill))
+            ((or (eq right ? )          ;kill the nearest atom in a list
+                 (closed-pair-p right)) ;left atoms or lists take precedence in closed )) places
+             (save-excursion
+               (forward-char -1)
+               (sp-kill-sexp arg dont-kill)))
+            (t
+             (sp-kill-sexp arg dont-kill))))) ;properly kill non-string atoms in a list
+  (evil-define-key 'insert lispy-mode-map (kbd "C-,") #'lispy-kill-at-point-fix)
+
+  (defun lispy-copy-at-point (&optional arg)
+    (interactive "P")
+    (lispy-kill-at-point-fix arg t))
+  (evil-define-key 'insert lispy-mode-map (kbd "C-y") #'lispy-copy-at-point)
+
+  ;; `lispy-delete'
+  (define-key evil-insert-state-map (kbd "C-d") nil)
+
+  ;; fix C-k
+  (evil-define-key 'insert lispy-mode-map (kbd "C-k") #'lispy-kill))
+
+(with-eval-after-load 'lispyville
+  ;; Key themes
+  (lispyville-set-key-theme
+   '((operators normal)
+     c-w
+     c-u
+     prettify
+     (atom-movement normal visual)
+     commentary
+     slurp/barf-lispy
+     additional
+     additional-insert))
+
+  ;; `lispy' functions in normal mode
+  (defun my/lispyville-fix (f &rest args)
+    "Avoid unexpected results caused by different cursor position in normal mode"
+    (if (closed-pair-p (char-after))
+        (save-excursion
+          (forward-char 1)
+          (apply f args))
+      (apply f args)))
+
+  (defun lispyville-raise ()
+    (interactive)
+    (my/lispyville-fix #'lispy-raise-sexp))
+  (evil-define-key 'normal lispyville-mode-map (kbd "M-r") #'lispyville-raise)
+
+  (defun lispyville-raise-some ()
+    (interactive)
+    (my/lispyville-fix #'lispy-raise-some))
+  (evil-define-key 'normal lispyville-mode-map (kbd "M-R") #'lispyville-raise-some)
+
+  (defun lispyville-kill-at-point (&optional arg dont-kill)
+    (interactive "*P")
+    (my/lispyville-fix #'lispy-kill-at-point-fix arg dont-kill))
+  (evil-define-key 'normal lispyville-mode-map (kbd "C-,") #'lispyville-kill-at-point)
+
+  (defun lispyville-copy-at-point (&optional arg)
+    (interactive "P")
+    (my/lispyville-fix #'lispy-copy-at-point arg))
+  (evil-define-key 'normal lispyville-mode-map (kbd "C-y") #'lispyville-copy-at-point)
+
+  (defun lispville-splice (arg)
+    (interactive "p")
+    (my/lispyville-fix #'lispy-splice arg))
+  (evil-define-key 'normal lispyville-mode-map (kbd "M-s") #'lispville-splice)
+
+  (defun lispyville-clone (arg)
+    (interactive "p")
+    (my/lispyville-fix #'lispy-clone arg)
+    (if (closed-pair-p (char-after))
+        (progn (forward-char)           ;fix movement
+               (forward-sexp))))
+  (evil-define-key 'normal lispyville-mode-map (kbd "M-c") #'lispyville-clone)
+
+  (defun lispyville-convolute (arg)
+    (interactive "p")
+    (my/lispyville-fix #'lispy-convolute arg))
+  (evil-define-key 'normal lispyville-mode-map (kbd "M-C") #'lispyville-convolute))
 
 ;; Magit
 ;; expand `Recent commits`
