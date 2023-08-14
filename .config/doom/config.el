@@ -987,6 +987,14 @@ FILTER is the process filter function to use."
 (add-hook 'git-rebase-mode-hook (lambda ()
                                   (setq-local magit-section-disable-line-numbers nil)
                                   (display-line-numbers-mode)))
+
+;; Make 'gg' work under `git-rebase-mode'
+;; Note: 1. Need to wait for `git-rebase-mode-map'
+;;       2. `evil-motion-state-map' makes no sense here
+(add-hook 'git-rebase-mode-hook (lambda ()
+                                  (evil-define-key 'normal 'local
+                                    (kbd "g g") #'evil-goto-first-line)))
+
 ;; ssh-agent
 (with-eval-after-load 'magit
   (push (format "SSH_AUTH_SOCK=%s/ssh-agent.socket"
