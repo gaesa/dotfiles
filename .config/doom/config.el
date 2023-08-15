@@ -355,7 +355,19 @@ FILTER is the process filter function to use."
 (add-to-list 'default-frame-alist '(fullscreen . maximized))
 
 ;; Input method
-(setq fcitx-remote-command "fcitx5-remote")
+(use-package! fcitx
+  :after evil
+  :config
+  (when (setq fcitx-remote-command
+              (or (executable-find "fcitx5-remote")
+                  (executable-find "fcitx-remote")))
+    (fcitx-evil-turn-on)))
+
+(use-package! pangu-spacing
+  :hook (text-mode . pangu-spacing-mode)
+  :config
+  ;; Always insert `real' space in org-mode.
+  (setq-hook! 'org-mode-hook pangu-spacing-real-insert-separtor t))
 
 ;; Spell
 (setq ispell-check-comments nil)

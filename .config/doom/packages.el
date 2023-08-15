@@ -16,6 +16,8 @@
 (package! symbol-overlay)
 (package! spell-fu)
 (package! affe)
+(package! fcitx)
+(package! pangu-spacing)
 
 (package! xclip :disable t)
 (package! xdotool :disable t)
