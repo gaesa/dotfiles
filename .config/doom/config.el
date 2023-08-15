@@ -323,6 +323,8 @@ FILTER is the process filter function to use."
 (define-key evil-normal-state-map (kbd "C-p") nil)
 (define-key evil-insert-state-map (kbd "C-n") nil)
 (define-key evil-insert-state-map (kbd "C-p") nil)
+(setq affe-find-command (remove ?\' (getenv "FZF_DEFAULT_COMMAND")))
+(define-key doom-leader-map (kbd "f F") #'affe-find)
 
 (defun my/center-line (&rest _)
   (evil-scroll-line-to-center nil))

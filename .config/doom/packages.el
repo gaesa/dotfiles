@@ -15,6 +15,7 @@
 (package! nerd-icons)
 (package! symbol-overlay)
 (package! spell-fu)
+(package! affe)
 
 (package! xclip :disable t)
 (package! xdotool :disable t)
