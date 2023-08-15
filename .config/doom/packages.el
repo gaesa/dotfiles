@@ -18,6 +18,7 @@
 (package! affe)
 (package! fcitx)
 (package! pangu-spacing)
+(package! dashboard)
 
 (package! xclip :disable t)
 (package! xdotool :disable t)

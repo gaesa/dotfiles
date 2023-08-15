@@ -354,6 +354,29 @@ FILTER is the process filter function to use."
 ;; Window
 (add-to-list 'default-frame-alist '(fullscreen . maximized))
 
+;; Dashboard
+(setq doom-fallback-buffer-name "*dashboard*")
+(use-package! dashboard
+  :init
+  (setq dashboard-display-icons-p t
+        dashboard-icon-type 'nerd-icons
+        dashboard-set-heading-icons t
+        dashboard-set-file-icons t
+        dashboard-center-content t
+        dashboard-path-style 'truncate-middle
+        dashboard-startup-banner (let ((file (expand-file-name "~/.local/share/icons-user/centaur.png")))
+                                   (if (file-exists-p file)
+                                       file
+                                     'official))
+        dashboard-set-footer nil
+        dashboard-items '((recents . 5)
+                          (agenda . 5))
+        initial-buffer-choice (lambda () (get-buffer-create "*dashboard*")))
+  :config
+  (dashboard-setup-startup-hook)
+  (evil-define-key 'normal dashboard-mode-map
+    (kbd "q") #'evil-quit))
+
 ;; Input method
 (use-package! fcitx
   :after evil
