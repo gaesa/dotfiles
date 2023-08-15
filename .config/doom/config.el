@@ -517,8 +517,7 @@ FILTER is the process filter function to use."
                  (expand-file-name "~/.local/share/sounds/tuturu.mp3")))
 (advice-add 'alert :before #'play-alert-sound)
 
-(add-hook 'org-mode-hook #'org-modern-mode)
-(add-hook 'org-agenda-finalize-hook #'org-modern-agenda)
+(with-eval-after-load 'org (global-org-modern-mode))
 
 ;; Company
 (with-eval-after-load 'company
