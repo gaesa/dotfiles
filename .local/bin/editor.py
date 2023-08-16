@@ -31,7 +31,7 @@ def open_with_emacs(files):
             [
                 "emacsclient",
                 "--alternate-editor=",
-                "-nc",
+                "-c",
                 "--eval",
                 sexp,
             ],
