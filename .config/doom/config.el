@@ -532,24 +532,26 @@ FILTER is the process filter function to use."
         company-dabbrev-code-other-buffers t
         company-dabbrev-downcase nil
         company-dabbrev-code-ignore-case t
-        company-dabbrev-ignore-case t
-        company-ignore-prefix #s(hash-table size 2
-                                            test eq
-                                            data (
-                                                  ?? t
-                                                  ?_ t)))
+        company-dabbrev-ignore-case t)
+  (defvar company-ignore-prefix #s(hash-table
+                                   size 2
+                                   test eq
+                                   data (
+                                         ?? t
+                                         ?_ t
+                                         ?  t)))
+
   (define-advice company--good-prefix-p (:override (prefix) support-ingore-prefix)
     (and (stringp (company--prefix-str prefix)) ;excludes 'stop
+         (not (string= prefix ""))
          (let ((len (length prefix)))
-           (if (and (> len 1)
-                    (gethash (aref prefix 0) company-ignore-prefix))
-               nil
-             (if company--manual-prefix
-                 (or (not company-abort-manual-when-too-short)
-                     ;; Must not be less than minimum or initial length.
-                     (>= len (min company-minimum-prefix-length
-                                  (length company--manual-prefix))))
-               (>= len company-minimum-prefix-length))))))
+           (cond ((gethash (aref prefix 0) company-ignore-prefix) nil)
+                 (company--manual-prefix
+                  (or (not company-abort-manual-when-too-short)
+                      ;; Must not be less than minimum or initial length.
+                      (>= len (min company-minimum-prefix-length
+                                   (length company--manual-prefix)))))
+                 (t (>= len company-minimum-prefix-length))))))
 
   (defun blank-char-p (char)
     (let ((blank-char
