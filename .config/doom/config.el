@@ -503,21 +503,22 @@ FILTER is the process filter function to use."
 ;; Org-mode
 ;; If you use `org' and don't want your org files in the default location below,
 ;; change `org-directory'. It must be set before org loads!
-(setq org-directory "~/org/")
-(setq org-hide-emphasis-markers t)
-(setq alert-default-style 'libnotify)
-(setq org-wild-notifier-notification-icon (expand-file-name "~/.local/share/icons-user/Org-mode-unicorn.png"))
-(setq alert-fade-time 0)
-(org-wild-notifier-mode)
-(defun play-alert-sound (&rest _)
-  (start-process "play-alert-sound"
-                 nil                    ;buffer
-                 "mpv"
-                 "--profile=bg"
-                 (expand-file-name "~/.local/share/sounds/tuturu.mp3")))
-(advice-add 'alert :before #'play-alert-sound)
+(setq org-directory "~/org"
+      org-hide-emphasis-markers t)
 
-(with-eval-after-load 'org (global-org-modern-mode))
+(with-eval-after-load 'org
+  (global-org-modern-mode)
+
+  (setq alert-default-style 'libnotify
+        org-wild-notifier-notification-icon (expand-file-name "~/.local/share/icons-user/Org-mode-unicorn.png")
+        alert-fade-time 0)
+  (org-wild-notifier-mode)
+  (define-advice alert (:before (&rest _) support-sound)
+    (start-process "play-alert-sound"
+                   nil                  ;buffer
+                   "mpv"
+                   "--profile=bg"
+                   (expand-file-name "~/.local/share/sounds/tuturu.mp3"))))
 
 ;; Company
 (with-eval-after-load 'company
