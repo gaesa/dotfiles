@@ -1015,7 +1015,8 @@ FILTER is the process filter function to use."
 
 ;; Magit
 ;; expand `Recent commits`
-(setf (alist-get 'unpushed magit-section-initial-visibility-alist) 'show)
+(with-eval-after-load 'magit
+  (setf (alist-get 'unpushed magit-section-initial-visibility-alist) 'show))
 
 ;; Avoid a redundant newline introduced by `open-line' in `git-commit-setup'
 (add-hook 'git-commit-setup-hook (lambda ()
