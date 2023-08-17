@@ -411,7 +411,8 @@ FILTER is the process filter function to use."
                                              git-commit-comment-branch
                                              git-commit-comment-branch-local
                                              git-commit-comment-branch-remote))
-                         (org-mode . (org-block-begin-line
+                         (org-mode . (org-block
+                                      org-block-begin-line
                                       org-block-end-line
                                       org-code
                                       org-date
