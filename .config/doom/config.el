@@ -1021,7 +1021,7 @@ FILTER is the process filter function to use."
 
 ;; Avoid a redundant newline introduced by `open-line' in `git-commit-setup'
 (add-hook 'git-commit-setup-hook (lambda ()
-                                   (undo)
+                                   (ignore-error user-error (undo))
                                    (setq-local buffer-undo-list nil)
                                    (set-buffer-modified-p nil)))
 
