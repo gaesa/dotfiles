@@ -398,10 +398,12 @@ FILTER is the process filter function to use."
 (setq ispell-check-comments nil
       spell-fu-idle-delay 0
       spell-fu-faces-exclude '(font-lock-comment-face)
-      ispell-personal-dictionary spell-dict-location)
+      ispell-personal-dictionary spell-dict-location
+      ispell-program-name "/usr/bin/hunspell")
 
 (add-hook 'spell-fu-mode-hook
           (lambda ()
+            (setq-local spell-fu-dictionaries nil) ;clear the default
             (spell-fu-dictionary-add (spell-fu-get-ispell-dictionary "en"))
             (spell-fu-dictionary-add
              (spell-fu-get-personal-dictionary "en-personal" spell-dict-location))))
