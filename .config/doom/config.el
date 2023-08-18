@@ -393,39 +393,41 @@ FILTER is the process filter function to use."
   (setq-hook! 'org-mode-hook pangu-spacing-real-insert-separtor t))
 
 ;; Spell
-(setq ispell-check-comments nil)
-(setq spell-fu-idle-delay 0)
-(setq spell-fu-faces-exclude '(font-lock-comment-face))
 ;; default path doesn't respect XDG
-;; (setq ispell-personal-dictionary (expand-file-name "~/.config/dict/en"))
-(add-hook 'spell-fu-mode-hook
-  (lambda ()
-    (spell-fu-dictionary-add (spell-fu-get-ispell-dictionary "en"))
-    (spell-fu-dictionary-add
-     (spell-fu-get-personal-dictionary "en-personal" (expand-file-name "~/.config/dict/en")))))
+(defvar spell-dict-location (expand-file-name "~/.config/dict/en"))
+(setq ispell-check-comments nil
+      spell-fu-idle-delay 0
+      spell-fu-faces-exclude '(font-lock-comment-face)
+      ispell-personal-dictionary spell-dict-location)
 
-(setq spell-mode-alist '((git-commit-mode . (git-commit-comment-file
-                                             git-commit-comment-action
-                                             git-commit-comment-heading
-                                             git-commit-comment-detached
-                                             git-commit-comment-branch
-                                             git-commit-comment-branch-local
-                                             git-commit-comment-branch-remote))
-                         (org-mode . (org-block
-                                      org-block-begin-line
-                                      org-block-end-line
-                                      org-code
-                                      org-date
-                                      org-drawer org-document-info-keyword
-                                      org-ellipsis
-                                      org-link
-                                      org-meta-line
-                                      org-properties
-                                      org-properties-value
-                                      org-special-keyword
-                                      org-src
-                                      org-tag
-                                      org-verbatim))))
+(add-hook 'spell-fu-mode-hook
+          (lambda ()
+            (spell-fu-dictionary-add (spell-fu-get-ispell-dictionary "en"))
+            (spell-fu-dictionary-add
+             (spell-fu-get-personal-dictionary "en-personal" spell-dict-location))))
+
+(defvar spell-mode-alist '((git-commit-mode . (git-commit-comment-file
+                                               git-commit-comment-action
+                                               git-commit-comment-heading
+                                               git-commit-comment-detached
+                                               git-commit-comment-branch
+                                               git-commit-comment-branch-local
+                                               git-commit-comment-branch-remote))
+                           (org-mode . (org-block
+                                        org-block-begin-line
+                                        org-block-end-line
+                                        org-code
+                                        org-date
+                                        org-drawer org-document-info-keyword
+                                        org-ellipsis
+                                        org-link
+                                        org-meta-line
+                                        org-properties
+                                        org-properties-value
+                                        org-special-keyword
+                                        org-src
+                                        org-tag
+                                        org-verbatim))))
 (defun mode-to-hook (mode)
   (intern (concat (symbol-name mode) "-hook")))
 (dolist (mode-to-faces spell-mode-alist)
