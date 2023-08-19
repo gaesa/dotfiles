@@ -3,6 +3,9 @@ local map = vim.keymap.set
 -- Builtin file explorer
 map({ "n" }, "<leader>fm", vim.cmd.Ex)
 
+-- Window
+map({ "n" }, "<leader>w", "<C-w>")
+
 -- Intuitively move cursor
 map({ "x" }, "J", ":m '>+1<CR>gv=gvzz")
 map({ "x" }, "K", ":m '<-2<CR>gv=gvzz")
