@@ -6,6 +6,13 @@ from pynvim import attach
 from sys import argv
 
 
+def is_socket(file):
+    try:
+        return S_ISSOCK(os_stat(file).st_mode)
+    except FileNotFoundError:
+        return False
+
+
 def get_nvim_socket_list():
     dir_path = environ["XDG_RUNTIME_DIR"]
     prefix = "nvim."
@@ -13,7 +20,7 @@ def get_nvim_socket_list():
     socket_list = []
     for obj in listdir(dir_path):
         full_path = join(dir_path, obj)
-        if S_ISSOCK(os_stat(full_path).st_mode) and obj.startswith(prefix):
+        if is_socket(full_path) and obj.startswith(prefix):
             socket_list.append(full_path)
     return socket_list
 
