@@ -1,6 +1,4 @@
 local function load_theme(color)
-    vim.opt.background = color
-
     local function set_theme(theme)
         vim.opt.termguicolors = true
         vim.cmd([[let g:everforest_better_performance = 1]])
@@ -18,12 +16,6 @@ local function load_theme(color)
             vim.cmd.colorscheme(theme)
             vim.opt.cursorline = true
         end
-
-        if vim.wo.diff then
-            vim.opt.cursorline = false
-        else
-            return
-        end
     end
 
     local function set_fallback_theme()
@@ -37,6 +29,11 @@ local function load_theme(color)
         vim.cmd.colorscheme(theme)
     end
 
+    local function hack_cursorline()
+        vim.opt.cursorline = not vim.wo.diff
+    end
+
+    vim.opt.background = color
     local theme = "everforest"
     local colorpath = vim.fn.stdpath("data") .. "/lazy/" .. theme
     if vim.loop.fs_stat(colorpath) then
@@ -44,6 +41,7 @@ local function load_theme(color)
     else
         set_fallback_theme()
     end
+    hack_cursorline()
 end
 
 local function auto_switch_theme()
