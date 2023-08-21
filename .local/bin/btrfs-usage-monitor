@@ -29,7 +29,7 @@ def get_data(fs: FileSystem):
 
 
 def need_alert(space: SpaceInfo):
-    return space.used_bytes / space.total_bytes > 0.8
+    return space.used_bytes / space.total_bytes > 0.85
 
 
 def main(mount_point: str = "/"):
