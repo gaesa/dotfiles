@@ -516,7 +516,13 @@ FILTER is the process filter function to use."
 
   (setq alert-default-style 'libnotify
         org-wild-notifier-notification-icon (expand-file-name "~/.local/share/icons-user/Org-mode-unicorn.png")
-        alert-fade-time 0)
+        alert-fade-time 0
+        org-babel-load-languages (cons '(scheme . t) org-babel-load-languages))
+  (advice-remove 'org-babel-do-load-languages #'ignore)
+  (org-babel-do-load-languages
+   'org-babel-load-languages
+   org-babel-load-languages)
+
   (org-wild-notifier-mode)
   (define-advice alert (:before (&rest _) support-sound)
     (start-process "play-alert-sound"
