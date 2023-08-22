@@ -933,9 +933,7 @@ FILTER is the process filter function to use."
                (lispy-kill-at-point dont-kill)))
             ((or (closed-pair-p left)   ;kill the inner nearest list
                  (opened-pair-p right)  ;preserve quotes '
-                 (let ((lst (syntax-ppss)))
-                   (or (nth 3 lst)      ;kill whole strings
-                       (nth 4 lst))))   ;kill whole comments
+                 (cursor-in-string-or-comment-p))
              (lispy-kill-at-point dont-kill))
             ((or (eq right ? )          ;kill the nearest atom in a list
                  (closed-pair-p right)) ;left atoms or lists take precedence in closed )) places
@@ -955,7 +953,39 @@ FILTER is the process filter function to use."
   (define-key evil-insert-state-map (kbd "C-d") nil)
 
   ;; fix C-k
-  (evil-define-key 'insert lispy-mode-map (kbd "C-k") #'lispy-kill))
+  (evil-define-key 'insert lispy-mode-map (kbd "C-k") #'lispy-kill)
+
+  (defun cursor-in-string-or-comment-p ()
+    (let ((parse-state (syntax-ppss)))
+      (or (nth 3 parse-state)
+          (nth 4 parse-state))))
+
+  ;; fix backslash
+  (defun after-backslash? ()
+    (defun iter (n)
+      (if (eq (char-before) ?\\)
+          (save-excursion
+            (forward-char -1)
+            (iter (1+ n)))
+        n))
+    (cl-oddp (iter 0)))
+
+  ;; fix [] in strings and comments
+  (defun lispy-square-bracket (char)
+    (interactive "*")
+    (if (or (cursor-in-string-or-comment-p)
+            (after-backslash?))
+        (insert char)
+      (let ((table #s(hash-table
+                      size 2
+                      test equal
+                      data ("[" #'lispy-backward
+                            "]" #'lispy-forward))))
+        (call-interactively (cadr (gethash char table)))))) ;extract funtion from ('function . 'the-name) for #s syntax
+  (define-key lispy-mode-map-lispy (kbd "[")
+              (lambda () (interactive) (lispy-square-bracket "[")))
+  (define-key lispy-mode-map-lispy (kbd "]")
+              (lambda () (interactive) (lispy-square-bracket "]"))))
 
 (with-eval-after-load 'lispyville
   ;; Key themes
