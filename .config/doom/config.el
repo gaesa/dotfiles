@@ -1027,6 +1027,15 @@ FILTER is the process filter function to use."
 
 ;; Scratch
 (setq doom-scratch-initial-major-mode t)
+(add-variable-watcher 'doom-scratch-buffers
+                      (lambda (symbol newval operation where)
+                        (mapcar
+                         (lambda (buf)
+                           (if (not (null (buffer-name buf)))
+                               (with-current-buffer buf
+                                 (if (not lexical-binding)
+                                     (setq-local lexical-binding t)))))
+                         newval)))
 
 ;; Magit
 ;; expand `Recent commits`
