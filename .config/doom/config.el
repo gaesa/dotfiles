@@ -470,8 +470,12 @@ FILTER is the process filter function to use."
            t)
           (t (iter (cdr mode-list)))))
   (iter mode-list))
-;; fix org-mode check
+
+(defvar org-mode nil
+  "fix org-mode check")
+(make-variable-buffer-local 'org-mode)
 (add-hook 'org-mode-hook (lambda () (setq-local org-mode t)))
+
 (add-hook 'evil-insert-state-entry-hook
           (lambda () (if (any-mode-active? spell-mode-alist)
                          (spell-fu-mode -1))))
