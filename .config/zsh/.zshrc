@@ -1,14 +1,11 @@
 # vim:foldmethod=marker:foldlevel=0
 
 # Initialization {{{
-
 umask 077
 
 # Disable Ctrl-S in interactive shells
-#if [[ -t 0 && $- = *i* ]]; then
-    setopt noflowcontrol
-    stty -ixon
-#fi
+setopt NOFLOWCONTROL
+stty -ixon
 
 # Enable Powerlevel10k instant prompt. Should stay close to the top of ~/.zshrc.
 # Initialization code that may require console input (password prompts, [y/n]
@@ -20,37 +17,33 @@ fi
 # Create directories if necessary
 [[ ! -d "$XDG_STATE_HOME/zsh" ]] && mkdir -p "$XDG_STATE_HOME/zsh"
 [[ ! -d "$XDG_CACHE_HOME/zsh" ]] && mkdir -p "$XDG_CACHE_HOME/zsh"
-[[ ! -d "$XDG_CONFIG_HOME/zsh" ]] && mkdir -p "$XDG_CONFIG_HOME/zsh"
-
+[[ ! -d "$ZDOTDIR" ]] && mkdir -p "$ZDOTDIR"
 # }}}
 
 # History {{{
-
 # Remove older command from the history if a duplicate is to be added.
 setopt HIST_FIND_NO_DUPS
 setopt HIST_IGNORE_ALL_DUPS
 setopt HIST_IGNORE_SPACE
 setopt HIST_REDUCE_BLANKS
 setopt HIST_VERIFY
+
 # Share history in multiple shells
-setopt share_history
-setopt correct
-HISTFILE="$XDG_STATE_HOME"/zsh/history
+setopt SHARE_HISTORY
+setopt CORRECT
+HISTFILE="$XDG_STATE_HOME/zsh/history"
 HISTSIZE=2000
 SAVEHIST=$HISTSIZE
-
 # }}}
 
 # Completion {{{
-setopt autocd       # Automatically cd into typed directory.
-setopt interactive_comments
+setopt AUTOCD       # Automatically cd into typed directory.
+setopt INTERACTIVE_COMMENTS
 autoload -Uz compinit
-compinit -d "$XDG_CACHE_HOME"/zsh/zcompdump
+compinit -d "$XDG_CACHE_HOME/zsh/zcompdump"
 # Allow different columns of completion menu to have different widths
-setopt list_packed
-#setopt glob_complete
-setopt menu_complete # Not flexible but there is no need for clearing zsh completion after typing a character
-# setopt complete_aliases
+setopt LIST_PACKED
+setopt MENU_COMPLETE # not flexible but there is no need for clearing zsh completion after typing a character
 # Prevents aliases on the command line from being internally substituted before completion is attempted
 # See also: https://unix.stackexchange.com/questions/250314/whats-the-intended-use-case-for-complete-aliases-in-zsh
 zstyle ':completion:*' menu select
@@ -67,7 +60,7 @@ zstyle ':completion:*:processes' sort false
 zstyle ':completion:*' use-cache on
 zstyle ':completion:*' cache-path "$XDG_CACHE_HOME"/zsh/zcompcache
 zmodload zsh/complist
-setopt globdots # Include hidden files
+setopt GLOBDOTS # Include hidden files
 # Use Shift-Tab to access previous completion entries
 bindkey -M menuselect '^[[Z' reverse-menu-complete
 # Use Esc to cancel completion
@@ -78,7 +71,6 @@ compdef "_files _directories" trash
 
 # Get files completion from specific path
 compdef "_files -W $HOME/.local/bin" srp
-
 # }}}
 
 # Input {{{
@@ -120,7 +112,7 @@ function zle-keymap-select() {
 zle -N zle-keymap-select
 zle-line-init() {
     zle -K viins # initiate `vi insert` as keymap (can be removed if `bindkey -V` has been set elsewhere)
-    echo -ne "\e[6 q"
+    echo -ne '\e[6 q'
 }
 zle -N zle-line-init
 echo -ne '\e[6 q' # Use beam shape cursor on startup.
@@ -141,11 +133,9 @@ WORDCHARS='*?[]~=&;!#$%^(){}<>'
 exit_zsh() { exit }
 zle -N exit_zsh
 bindkey '^D' exit_zsh
-
 # }}}
 
 # Plugins {{{
-
 # Fzf {{{
 
 export FZF_DEFAULT_OPTS=''
@@ -166,13 +156,12 @@ _fzf_compgen_path() {
 
 # The default key binding ctrl-r is bad because it is occupied by redo in zsh's vi mode
 # source /usr/share/fzf/key-bindings.zsh
-source "$ZDOTDIR"/plugins/fzf/key-bindings.zsh
-source /usr/share/fzf/completion.zsh
-
+source "$ZDOTDIR/plugins/fzf/key-bindings.zsh"
+source '/usr/share/fzf/completion.zsh'
 # }}}
 
 # "command not found" handler
-source /usr/share/doc/pkgfile/command-not-found.zsh
+source '/usr/share/doc/pkgfile/command-not-found.zsh'
 
 # zoxide
 eval "$(zoxide init zsh)"
@@ -183,12 +172,12 @@ eval "$(zoxide init zsh)"
 # in order to be able to wrap all of them.
 # It must be sourced (and register its hook) after anything else
 # that adds hooks that modify the command-line buffer.
-source /usr/share/zsh/plugins/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
+source '/usr/share/zsh/plugins/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh'
 
 # zsh-history-substring-search
 # See why this plugin is placed after zsh-syntax-highlighting:
 # https://github.com/zsh-users/zsh-history-substring-search
-source /usr/share/zsh/plugins/zsh-history-substring-search/zsh-history-substring-search.zsh
+source '/usr/share/zsh/plugins/zsh-history-substring-search/zsh-history-substring-search.zsh'
 bindkey '^[[A' history-substring-search-up
 bindkey '^P' history-substring-search-up
 bindkey '^[[B' history-substring-search-down
@@ -200,26 +189,22 @@ bindkey -M vicmd 'j' history-substring-search-down
 ZSH_AUTOSUGGEST_MANUAL_REBIND=1
 ZSH_AUTOSUGGEST_STRATEGY=(history completion)
 ZSH_AUTOSUGGEST_BUFFER_MAX_SIZE=20
-ZSH_AUTOSUGGEST_HIGHLIGHT_STYLE="fg=#7A8478"
-source /usr/share/zsh/plugins/zsh-autosuggestions/zsh-autosuggestions.zsh
+ZSH_AUTOSUGGEST_HIGHLIGHT_STYLE='fg=#7A8478'
+source '/usr/share/zsh/plugins/zsh-autosuggestions/zsh-autosuggestions.zsh'
 
 # zsh-theme-powerlevel10k
-source /usr/share/zsh-theme-powerlevel10k/powerlevel10k.zsh-theme
+source '/usr/share/zsh-theme-powerlevel10k/powerlevel10k.zsh-theme'
 # To customize prompt, run `p10k configure` or edit ~/.config/zsh/.p10k.zsh.
-if [[ "$TERM" != "linux" ]]; then
-    [[ ! -f ~/.config/zsh/p10k.zsh ]] || source ~/.config/zsh/p10k.zsh
+if [[ "$TERM" != 'linux' ]]; then
+    [[ -f "$ZDOTDIR/p10k.zsh" ]] && source "$ZDOTDIR/p10k.zsh"
 else
-    [[ ! -f ~/.config/zsh/p10k_tty.zsh ]] || source ~/.config/zsh/p10k_tty.zsh
+    [[ -f "$ZDOTDIR/p10k_tty.zsh" ]] && source "$ZDOTDIR/p10k_tty.zsh"
 fi
-
 # }}}
 
 # User files {{{
-
-# Load aliases and functions if existent.
-[ -f "${XDG_CONFIG_HOME:-$HOME/.config}/zsh/privaterc" ] && source "${XDG_CONFIG_HOME:-$HOME/.config}/zsh/privaterc"
-[ -f "${XDG_CONFIG_HOME:-$HOME/.config}/zsh/hookrc" ] && source "${XDG_CONFIG_HOME:-$HOME/.config}/zsh/hookrc"
-[ -f "${XDG_CONFIG_HOME:-$HOME/.config}/zsh/aliasrc" ] && source "${XDG_CONFIG_HOME:-$HOME/.config}/zsh/aliasrc"
-[ -f "${XDG_CONFIG_HOME:-$HOME/.config}/zsh/functionrc" ] && source "${XDG_CONFIG_HOME:-$HOME/.config}/zsh/functionrc"
-
+[[ -f "$ZDOTDIR/privaterc" ]] && source "$ZDOTDIR/privaterc"
+[[ -f "$ZDOTDIR/hookrc" ]] && source "$ZDOTDIR/hookrc"
+[[ -f "$ZDOTDIR/aliasrc" ]] && source "$ZDOTDIR/aliasrc"
+[[ -f "$ZDOTDIR/functionrc" ]] && source "$ZDOTDIR/functionrc"
 # }}}

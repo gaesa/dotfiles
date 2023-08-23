@@ -24,7 +24,7 @@ export CUDA_CACHE_PATH="$XDG_CACHE_HOME/nv"
 export ANDROID_HOME="$XDG_DATA_HOME/android"
 export WGETRC="$XDG_CONFIG_HOME/wget/wgetrc"
 export RIPGREP_CONFIG_PATH="$XDG_CONFIG_HOME/ripgreprc"
-#}}}
+# }}}
 
 # Terminal {{{
 export EDITOR='nvim'
@@ -32,16 +32,16 @@ export PAGER='less'
 # Note: The `SYSTEMD_LESS` cannot override the options
 # passed to 'less' if the `LESS` is set by the `lesskey` file.
 export MANPAGER='nvim +Man!'
-#}}}
+# }}}
 
 # Start ssh-agent with systemd user {{{
 export SSH_AUTH_SOCK="$XDG_RUNTIME_DIR/ssh-agent.socket"
-#}}}
+# }}}
 
 # Fix MAIL when using 'sudo su' {{{
 export MAIL="/var/spool/mail/${USER}"
-#}}}
-#}}}
+# }}}
+# }}}
 
 # path+ {{{
 typeset -U path PATH # make entries unique
@@ -61,4 +61,4 @@ local added_paths=(
 )
 add_paths added_paths
 unset -f add_paths && unset added_paths
-#}}}
+# }}}

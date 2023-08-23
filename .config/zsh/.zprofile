@@ -45,9 +45,9 @@ for elem in "${(@)array}"; do
     fi
 done
 unset preserve array elem
-#}}}
+# }}}
 
 # Podman {{{
 export DOCKER_HOST="unix://$TMPDIR/podman/podman.sock"
 export DOCKER_BUILDKIT=0
-#}}}
+# }}}
