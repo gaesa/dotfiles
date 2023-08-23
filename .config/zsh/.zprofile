@@ -45,12 +45,12 @@ for elem in "${(@)array}"; do
     fi
 done
 unset preserve array elem
-#}}}
+# }}}
 
 # Gui programs {{{
 export GTK2_RC_FILES="$XDG_CONFIG_HOME/gtk-2.0/gtkrc"
 export TEXMACS_HOME_PATH="$XDG_STATE_HOME/texmacs"
-#}}}
+# }}}
 
 # Wayland {{{
 export CLUTTER_BACKEND='wayland'
@@ -59,7 +59,7 @@ export QT_QPA_PLATFORM='wayland;xcb'
 export MOZ_ENABLE_WAYLAND=1
 export GTK_USE_PORTAL=1
 export QT_WAYLAND_FORCE_DPI=120
-#}}}
+# }}}
 
 # Input method {{{
 export GTK_IM_MODULE='fcitx'
@@ -68,24 +68,24 @@ export XMODIFIERS='@im=fcitx'
 export SDL_IM_MODULE='fcitx'
 export GLFW_IM_MODULE='ibus'
 export FCITX_SOCKET="$TMPDIR"
-#}}}
+# }}}
 
 # Hardware {{{
 export LIBVA_DRIVER_NAME='iHD'
-#}}}
+# }}}
 
 # Podman {{{
 export DOCKER_HOST="unix://$TMPDIR/podman/podman.sock"
 export DOCKER_BUILDKIT=0
-#}}}
+# }}}
 
 # Make the user instance of systemd and dbus daemon inherit above environment variables {{{
 dbus-update-activation-environment --systemd --all
-#}}}
+# }}}
 #env >/tmp/env-post.log
 
 # Start KDE from TTY {{{
 if [[ -z "$WAYLAND_DISPLAY" ]] && [[ "$(tty)" = "/dev/tty1" ]]; then
     exec startplasma-wayland &>"$XDG_CACHE_HOME/startup.log"
 fi
-#}}}
+# }}}
