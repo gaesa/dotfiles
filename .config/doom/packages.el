@@ -12,7 +12,6 @@
 (package! company)
 (package! company-statistics)
 (package! company-box)
-(package! nerd-icons)
 (package! symbol-overlay)
 (package! spell-fu)
 (package! affe)
