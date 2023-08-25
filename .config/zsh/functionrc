@@ -18,7 +18,7 @@ function private_mode() {
 bindkey -s '^[p' 'private_mode\n'
 
 function lfz() {
-    local -r tmp="$(mktemp lfz)"
+    local -r tmp="$(mktemp -t lfz.XXXXXXXXXX)"
     command lf -last-dir-path="${tmp}" "$@"
     if [[ -f "${tmp}" ]]; then
         local -r dir="$(cat "${tmp}")"
