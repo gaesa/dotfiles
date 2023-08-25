@@ -100,7 +100,7 @@ def gen_thumb(media, thumb_path):
     def gen_for_video():
         run(
             [
-                "ffmpegthumbnailer",
+                "/usr/bin/ffmpegthumbnailer",
                 "-i",
                 media,
                 "-o",
@@ -117,7 +117,7 @@ def gen_thumb(media, thumb_path):
     def gen_for_audio():
         run(
             [
-                "ffmpeg",
+                "/usr/bin/ffmpeg",
                 "-i",
                 media,
                 "-an",
@@ -131,8 +131,24 @@ def gen_thumb(media, thumb_path):
 
     def gen_for_pdf():
         run(
-            ["pdftoppm", "-singlefile", "-jpeg", media, thumb_path[:-4]],
-            # remove `.jpg`
+            [
+                "/usr/bin/pdftoppm",
+                "-singlefile",
+                "-jpeg",
+                media,
+                thumb_path[:-4],  # remove `.jpg`
+            ],
+            check=True,
+            stdout=DEVNULL,
+        )
+
+    def gen_for_epub():
+        run(
+            [
+                "/usr/bin/ebook-meta",
+                media,
+                f"--get-cover={thumb_path}",
+            ],
             check=True,
             stdout=DEVNULL,
         )
@@ -151,6 +167,8 @@ def gen_thumb(media, thumb_path):
         gen_for_audio()
     elif mime_type == "application/pdf":
         gen_for_pdf()
+    elif mime_type == "application/epub+zip":
+        gen_for_epub()
     else:
         exit_with_msg()
 

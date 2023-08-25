@@ -94,7 +94,6 @@ def create_switch_case(file):
         ] = lambda: run(["odt2txt", file], check=True)
         switch[
             "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
-            "application/epub+zip",
         ] = lambda: run(["pandoc", "-s", "-t", "gfm", "--", file], check=True)
 
     def create_other_case():
@@ -163,6 +162,8 @@ def fallback(file, mime_type, mime_type_main):
         else:
             run(["mediainfo", "--", file], check=True)
     elif mime_type == "application/pdf":
+        print_cache_image(file)
+    elif mime_type == "application/epub+zip":
         print_cache_image(file)
     else:
         fallback_to_non_image(file, mime_type, mime_type_main)
