@@ -352,6 +352,7 @@ FILTER is the process filter function to use."
 
 ;; Window
 (add-to-list 'default-frame-alist '(fullscreen . maximized))
+(setq mouse-autoselect-window t)        ;focus follow mouse
 
 ;; Dashboard
 (setq doom-fallback-buffer-name "*dashboard*")
