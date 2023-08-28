@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 from os import environ, listdir, stat as os_stat, remove
-from os.path import expanduser, join
+from os.path import expanduser, isdir, join
 from stat import S_ISSOCK
 from pynvim import attach
 from sys import argv
@@ -15,14 +15,16 @@ def is_socket(file):
 
 def get_nvim_socket_list():
     dir_path = environ["XDG_RUNTIME_DIR"]
-    prefix = "nvim."
-
-    socket_list = []
-    for obj in listdir(dir_path):
-        full_path = join(dir_path, obj)
-        if is_socket(full_path) and obj.startswith(prefix):
-            socket_list.append(full_path)
-    return socket_list
+    if isdir(dir_path):
+        prefix = "nvim."
+        socket_list = []
+        for obj in listdir(dir_path):
+            full_path = join(dir_path, obj)
+            if is_socket(full_path) and obj.startswith(prefix):
+                socket_list.append(full_path)
+        return socket_list
+    else:
+        raise SystemExit(0)
 
 
 def main():
