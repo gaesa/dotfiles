@@ -1,3 +1,11 @@
+-- Builtin file explorer
+vim.g.netrw_browse_split = 0
+vim.g.netrw_banner = 0
+vim.g.netrw_winsize = 25
+
+-- Mapping
+vim.g.mapleader = " "
+
 -- Hide intro message
 vim.opt.shortmess:append("I")
 
