@@ -160,7 +160,45 @@ map({ "n" }, "<leader>j", "<cmd>lnext<CR>zz")
 map({ "n" }, "<leader>k", "<cmd>lprev<CR>zz")
 
 -- Substitude
-map({ "n" }, "<leader>s", [[:%s/\<<C-r><C-w>\>/<C-r><C-w>/gI<Left><Left><Left>]])
+local function replace(original)
+    local function escape_string(s)
+        return vim.fn.escape(s, "/.*[]")
+    end
+    local function rstrip(s)
+        return string.gsub(s, "%s+$", "")
+    end
+    local function startswith(s, prefix)
+        return string.find(s, prefix, 1, true) == 1
+    end
+    local function iif(predicate, consequent, alternative)
+        if predicate then
+            return consequent()
+        else
+            return alternative()
+        end
+    end
+
+    local replacement = vim.fn.input("Replace with: ")
+    if replacement == "" then
+        return
+    else
+        vim.cmd("%s/" .. rstrip(escape_string(original)) .. "/" .. iif(
+            startswith(replacement, "''") or startswith(replacement, '""'), --
+            function()
+                return string.sub(replacement, 3)
+            end,
+            function()
+                return replacement
+            end
+        ))
+    end
+end
+map({ "n" }, "<leader>sr", function()
+    replace(vim.fn.expand("<cword>"))
+end)
+map({ "x" }, "<leader>sr", function()
+    replace(vim.fn.getreg("*")) --The visual selection is synchronized to the primary clipboard
+end)
 
 -- Manual
 map({ "n" }, "<leader>so", function()
