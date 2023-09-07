@@ -149,7 +149,7 @@ end)
 map({ "n" }, "<leader>bn", function()
     vim.cmd.bnext()
 end)
-map({ "n" }, "<leader>bN", function()
+map({ "n" }, "<leader>bp", function()
     vim.cmd.bprev()
 end)
 
