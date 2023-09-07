@@ -1,7 +1,7 @@
 local api = vim.api
 local autocmd = api.nvim_create_autocmd
 local del_autocmd = api.nvim_del_autocmd
-local group = api.nvim_create_augroup("default.conf", { clear = true })
+local group = api.nvim_create_augroup("config", { clear = true })
 
 -- Toggle absolute and relative numbering by insert/normal mode
 autocmd({ "InsertEnter" }, {
