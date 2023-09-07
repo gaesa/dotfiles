@@ -1,0 +1,7 @@
+# -*- mode: snippet -*-
+# name: test conventional commit
+# key: test
+# --
+test(${1:scope}): ${2:title}
+
+$0

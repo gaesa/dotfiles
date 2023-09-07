@@ -1,0 +1,7 @@
+# -*- mode: snippet -*-
+# name: docs conventional commit
+# key: docs
+# --
+docs(${1:scope}): ${2:title}
+
+$0

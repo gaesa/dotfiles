@@ -1,0 +1,7 @@
+# -*- mode: snippet -*-
+# name: perf conventional commit
+# key: perf
+# --
+perf(${1:scope}): ${2:title}
+
+$0
