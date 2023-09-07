@@ -166,7 +166,7 @@ def open(default_desktop, file):
     default_program = default_desktop[:-8]  # remove `.desktop`
     if default_program in {"nvim", "mpv"}:
         # ignore Exec entry & show output in terminal
-        run([default_program, file], check=True)
+        run([default_program, file])
     else:
 
         def choose_desktop():
