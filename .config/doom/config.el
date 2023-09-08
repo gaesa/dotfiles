@@ -126,37 +126,79 @@ FILTER is the process filter function to use."
                                      (list repo-url path)))
     (add-to-list 'custom-theme-load-path path)))
 
-(defun switch-theme-light ()
-  (load-theme 'everforest-hard-light t)
-  (enable-theme 'everforest-hard-light))
-(defun switch-theme-dark ()
-  (load-theme 'everforest-hard-dark t)
-  (enable-theme 'everforest-hard-dark))
-(defun switch-theme (&optional color)
-  (if (null color)
-      (let* ((current-time (decode-time))
-             (hour (nth 2 current-time)))
-        (if (and (>= hour 6) (< hour 18))
-            (switch-theme-light)
-          (switch-theme-dark)))
-    (let ((colors #s(hash-table size 2
-                                test equal
-                                data (
-                                      "light" t
-                                      "dark" t))))
-      (if (gethash color colors)
-          (funcall (intern (format "switch-theme-%s" color)))
-        (error "Invalid color: %s" color)))))
+(defun switch-theme (color)
+  (let ((colors #s(hash-table
+                   size 2
+                   test equal
+                   data (
+                         "light" t
+                         "dark" t))))
+    (if (gethash color colors)
+        (let ((desired-theme (intern (format "everforest-hard-%s" color)))
+              (current-theme (if (null custom-enabled-themes)
+                                 '()
+                               (car custom-enabled-themes))))
+          (if (not (eq current-theme desired-theme))
+              (load-theme desired-theme t)
+            '()))
+      (error "Invalid color: %s" color))))
 
-(add-hook 'after-init-hook #'switch-theme)
-;': refer symbols as itself instead of the stored value
-;This is a symbol list instead of a function call: '()
-;#': like `'`, but it is only used for function reference
+(defun get-local-time ()
+  (let ((current-time-structure (decode-time (current-time))))
+    (list (nth 2 current-time-structure) (nth 1 current-time-structure))))
 
-(run-at-time "06:00" (* 24 60 60) (lambda () (switch-theme "light")))
-(run-at-time "18:00" (* 24 60 60) (lambda () (switch-theme "dark")))
-;Sexps starting with lambda are treated as function objects themselves,
-;as only function definitions exist here, and no function calls are present.
+(defun between-times (date time-range)
+  (let ((time-range-structure (mapcar (lambda (time)
+                                        (mapcar #'string-to-number
+                                                (split-string time ":")))
+                                      time-range)))
+    (cl-multiple-value-bind (start end) time-range-structure
+      (and (not (time-less-p date start))
+           (time-less-p date end)))))
+
+(defun light-theme-time? (time-range)
+  (between-times (get-local-time) time-range))
+
+(defun switch-theme-if-needed (&optional time-range)
+  (defun switch (time-range)
+    (let ((desired-theme (if (light-theme-time? time-range)
+                             "light"
+                           "dark")))
+      (switch-theme desired-theme)))
+  (if (null time-range)
+      (switch '("06:00" "18:00"))
+    (switch time-range)))
+
+(defun for-each (procedure sequence)
+  (let* ((len-args (cdr (func-arity procedure)))
+         (procedure (if (< len-args 2)
+                        (lambda (element index)
+                          (funcall procedure element))
+                      procedure)))
+    (defun iter-list (value n lst)
+      (if (null lst)
+          value
+        (iter-list (funcall procedure (car lst) n)
+                   (1+ n)
+                   (cdr lst))))
+    (defun iter-vector (value n len)
+      (if (= n len)
+          value
+        (iter-vector (funcall procedure (aref sequence n) n)
+                     (1+ n)
+                     len)))
+    (if (listp sequence)
+        (iter-list '() 0 sequence)
+      (iter-vector [] 0 (length sequence)))))
+
+(let ((interval (* 24 60 60))
+      (times '("06:00" "18:00"))
+      (theme-table ["light" "dark"]))
+  (add-hook 'after-init-hook (lambda () (switch-theme-if-needed times)))
+  (for-each (lambda (time index)
+              (run-at-time time interval
+                           (lambda () (switch-theme (aref theme-table index)))))
+            times))
 
 ;; Line number
 (setq display-line-numbers-type 'relative)
