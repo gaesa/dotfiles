@@ -104,7 +104,7 @@ map O open-with
 
 map r rename
 map i rename
-map R $rn "$PWD" #bulkrename
+map R $brn "$PWD" #bulk rename
 map I :rename; cmd-home
 map A :rename; cmd-end
 map c :rename; cmd-delete-home

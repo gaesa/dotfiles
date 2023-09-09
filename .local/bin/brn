@@ -1,0 +1,76 @@
+#!/usr/bin/env python3
+from sys import exit as sys_exit, argv
+from subprocess import run
+from os.path import isdir, join
+from shutil import move
+from os import getenv, listdir, remove
+from mktemp import mktemp
+
+
+def sorted_name_list(root, names):
+    dirs = []
+    files = []
+    for name in names:
+        if isdir(join(root, name)):
+            dirs.append(name)
+        else:
+            files.append(name)
+    return sorted(files) + sorted(dirs)
+
+
+def save_name_list(name_list, name_record):
+    with open(name_record, "w") as f:
+        f.write("\n".join(name_list))
+
+
+def rename_edit(name_record):
+    editor = getenv("EDITOR", "nvim")
+    run([editor, name_record], check=True)
+
+
+def rename_move(dir, name_list, name_record):
+    with open(name_record, "r") as f:
+        lines = f.read().splitlines()
+    if len(lines) == len(name_list):
+        for i in range(len(lines)):
+            if lines[i] != name_list[i]:
+                src_path = join(dir, name_list[i])
+                if lines[i] == "":
+                    run(["trash", src_path], check=True)
+                else:
+                    if lines[i][0] in {" ", "-"} and lines[i][1:] == name_list[i]:
+                        run(["trash", src_path], check=True)
+                    else:
+                        move(src_path, join(dir, lines[i]))
+    else:
+        remove(name_record)
+        mes = (
+            "WARNING: Some lines have been deleted, "
+            "this operation is not allowed\n"
+            "But don't panic, your files are safe "
+            "and haven't been modified\n"
+            "Please try again with this in mind"
+        )
+        sys_exit(mes)
+
+
+def main():
+    if len(argv) < 2:
+        print("No directory is given")
+    else:
+        for path in argv[1:]:
+            if isdir(path):
+                name_list = sorted_name_list(path, listdir(path))
+                name_record = mktemp(prefix="rename")
+                save_name_list(name_list, name_record)
+
+                rename_edit(name_record)
+                rename_move(path, name_list, name_record)
+
+                remove(name_record)
+            else:
+                print(f"The given directory '{path}' doesn't exist")
+
+
+if __name__ == "__main__":
+    main()
