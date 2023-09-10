@@ -71,7 +71,7 @@ def clean(cache_dir: str, index: str):
     # Remove old cache files, including those
     # whose respective media files no longer exist,
     # and delete the corresponding JSON contents
-    def get_old_cache() -> tuple[str]:
+    def get_old_cache() -> tuple[str, ...]:
         def fltr_fun(file: str):
             return not within_one_month(
                 datetime.fromtimestamp(getmtime(file)), datetime.now()
