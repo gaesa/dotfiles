@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-from sys import argv, exit as sys_exit
+from sys import argv
 from opener import get_mime_type
 from subprocess import run
 import thumb
@@ -135,13 +135,12 @@ def fallback_to_non_image(file, mime_type, mime_type_main):
 
 def print_pure_image(file: str):
     print_image(file)
-    sys_exit(1)
-    # to clear the last displayed image, no idea on why we need to do this
+    raise SystemExit(1)
 
 
 def print_cache_image(file: str):
     print_image(thumb.main(file=file))
-    sys_exit(1)
+    raise SystemExit(1)
 
 
 def get_mime_type_main(mime_type):
