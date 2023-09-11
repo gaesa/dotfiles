@@ -1158,7 +1158,7 @@
         ((string= dir "/") nil)
         (t (find-git-root (directory-file-name
                            (file-name-directory dir))))))
-(defun my/git-dir-hook ()
+(defun my/git-dir-hook (&rest _)
   (with-eval-after-load 'magit
     (let* ((myconf-path (expand-file-name "~/.local/share/yadm/repo.git"))
            (git-arg (format "--git-dir=%s" myconf-path)))
@@ -1170,9 +1170,9 @@
         (if (member git-arg magit-git-global-arguments)
             (setq magit-git-global-arguments (remove git-arg magit-git-global-arguments))
           nil)))))
-(add-hook 'window-buffer-change-functions (lambda (_) (my/git-dir-hook)))
-;; (add-hook 'find-file-hook (lambda () (my/git-dir-hook)))
-;; triggered only once after a file is loaded into the buffer
+
+(add-hook 'window-configuration-change-hook #'my/git-dir-hook)
+(add-hook 'window-buffer-change-functions #'my/git-dir-hook)
 
 ;; Whenever you reconfigure a package, make sure to wrap your config in an
 ;; `after!' block, otherwise Doom's defaults may override your settings. E.g.
