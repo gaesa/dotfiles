@@ -1124,9 +1124,9 @@
                          newval)))
 
 ;; Magit
-;; expand `Recent commits`
 (with-eval-after-load 'magit
-  (setf (alist-get 'unpushed magit-section-initial-visibility-alist) 'show))
+  (setf (alist-get 'unpushed magit-section-initial-visibility-alist) 'show) ;expand `Recent commits`
+  (advice-remove 'magit-status-here #'doom-recenter-a)) ;fix cursor hop
 
 ;; Avoid a redundant newline introduced by `open-line' in `git-commit-setup'
 (add-hook 'git-commit-setup-hook (lambda ()
