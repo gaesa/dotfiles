@@ -1,8 +1,7 @@
 #!/usr/bin/env python3
 from sys import argv
 from subprocess import run, Popen, DEVNULL
-from os.path import isfile, splitext
-from opener import get_mime_type
+from os.path import splitext
 from my_seq import for_each, split
 
 
@@ -54,14 +53,7 @@ def open_with(nvim_files, emacs_files):
 
 
 def split_cond(file: str) -> bool:
-    if isfile(file):
-        return get_mime_type(file) in {
-            "text/org",
-            "text/x-emacs-lisp",
-            "text/x-scheme",
-        }
-    else:
-        return splitext(file)[1] in {".org", ".el", ".scm", ".ss"}
+    return splitext(file)[1] in {".org", ".el", ".scm", ".ss", ".rkt"}
 
 
 def edit(files=argv[1:]):
