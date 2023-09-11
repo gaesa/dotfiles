@@ -47,19 +47,6 @@ return {
                 callback = fix_indent,
                 group = vim.api.nvim_create_augroup("plugins.nvim-treesitter@fix-indent", {}),
             })
-
-            local function fix_fold()
-                if vim.wo.diff then
-                    return
-                else
-                    vim.opt.foldmethod = "expr"
-                    vim.opt.foldexpr = "nvim_treesitter#foldexpr()"
-                end
-            end
-            vim.api.nvim_create_autocmd({ "BufEnter" }, {
-                callback = fix_fold,
-                group = vim.api.nvim_create_augroup("plugins.nvim-treesitter@fix_fold", {}),
-            })
         end,
     },
 }
