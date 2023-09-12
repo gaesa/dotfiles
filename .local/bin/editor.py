@@ -18,7 +18,10 @@ def open_with_emacs(files):
         return
     else:
         len_files = len(files)
-        sexp = f'(progn (find-file "{files[0]}") '
+        sexp = (
+            "(progn (call-interactively #'+workspace/delete)"
+            f'      (find-file "{files[0]}") '
+        )
         if len_files == 1:
             sexp += ")"
         else:
@@ -28,11 +31,11 @@ def open_with_emacs(files):
             sexp += "(other-window 1))"
         p = Popen(
             [
-                "emacsclient",
-                "--alternate-editor=",
+                "/usr/bin/emacsclient",
                 "-c",
                 "--eval",
                 sexp,
+                "--alternate-editor=",
             ],
             stdout=DEVNULL,
         )
@@ -58,7 +61,7 @@ def split_cond(file: str) -> bool:
 
 def edit(files=argv[1:]):
     if files == []:
-        run(["nvim"])
+        run(["/usr/bin/nvim"])
     else:
         emacs_files, nvim_files = split(split_cond, files)
         nvim, emacs = open_with(nvim_files, emacs_files)
