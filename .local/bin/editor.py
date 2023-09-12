@@ -2,7 +2,7 @@
 from sys import argv
 from subprocess import run, Popen, DEVNULL
 from os.path import isfile, splitext
-from typing import Callable
+from typing import Callable, Iterable
 from opener import get_mime_type
 
 
@@ -65,7 +65,7 @@ def split_condition(file: str) -> bool:
         return splitext(file)[1] in {".org", ".el", ".scm", ".ss"}
 
 
-def split_into2(group: list, predicate: Callable):
+def split_into2(group: Iterable, predicate: Callable) -> tuple[list, list]:
     true_group: list = []
     false_group: list = []
     for elem in group:
