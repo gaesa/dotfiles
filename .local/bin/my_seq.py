@@ -18,6 +18,14 @@ def for_each(apply: Callable, seq: Iterable) -> None:
         apply(ele)
 
 
+def split(predicate: Callable, group: Iterable) -> tuple[list, list]:
+    true_group, false_group = [], []
+    for_each(
+        lambda ele: (true_group if predicate(ele) else false_group).append(ele), group
+    )
+    return true_group, false_group
+
+
 def fallback(seq: Iterable):
     """Returns the first non-empty or non-None element in a sequence, although it's not lazy enough"""
 
