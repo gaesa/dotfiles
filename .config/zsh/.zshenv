@@ -37,6 +37,14 @@ export MANPAGER='nvim +Man!'
 # Start ssh-agent with systemd user {{{
 export SSH_AUTH_SOCK="$XDG_RUNTIME_DIR/ssh-agent.socket"
 # }}}
+
+# Python {{{
+if [[ -v PATHONPATH ]]; then
+    export PYTHONPATH="$PATHONPATH:$HOME/.local/bin"
+else
+    export PYTHONPATH="$HOME/.local/bin"
+fi
+# }}}
 # }}}
 
 # path+ {{{

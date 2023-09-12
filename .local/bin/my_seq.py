@@ -1,4 +1,5 @@
 from collections.abc import Sequence
+from functools import reduce  # fold-left
 from typing import Callable, Iterable
 
 
@@ -10,6 +11,10 @@ def append(lst: list, elem) -> list:
     """
     lst.append(elem)
     return lst
+
+
+def flatmap(apply: Callable, lst: list) -> list:
+    return reduce(lambda x, y: x + y, map(apply, lst))
 
 
 def for_each(apply: Callable, seq: Iterable) -> None:
