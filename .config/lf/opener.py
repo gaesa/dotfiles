@@ -2,8 +2,8 @@
 # like `xdg-open`, but supports `open-with` and
 # running in terminal directly
 from subprocess import DEVNULL, Popen, run
-from sys import argv, exit as sys_exit
-from os.path import expanduser, isfile, splitext
+from sys import argv
+from os.path import expanduser, isfile, join, splitext, basename
 from os import environ
 from configparser import ConfigParser, SectionProxy
 
@@ -157,7 +157,7 @@ def get_default_desktops(mime_type: str, interactive=False):
                 return default_desktop
         except (KeyboardInterrupt, EOFError):
             print()
-            sys_exit(0)
+            raise SystemExit(0)
 
     return extract_desktops()
 
@@ -166,7 +166,7 @@ def open(default_desktop, file):
     default_program = default_desktop[:-8]  # remove `.desktop`
     if default_program in {"nvim", "mpv"}:
         # ignore Exec entry & show output in terminal
-        run([default_program, file])
+        run([join("/usr/bin", default_program), file])
     else:
 
         def choose_desktop():
@@ -222,7 +222,7 @@ def open_with(default_desktop, file):
         print()
     except (KeyboardInterrupt, EOFError):
         print()
-        sys_exit(0)
+        raise SystemExit(0)
 
 
 def main():
@@ -236,6 +236,8 @@ def main():
     mime_type = get_mime_type(file)
     if mime_type == "application/x-executable":
         run([file], check=True)
+    elif mime_type == "text/plain" and basename(file) == "playlist":
+        run(["/usr/bin/mpv", f"--playlist={file}"])
     else:
         default_desktops = get_default_desktops(mime_type, interactive=interactive)
         if interactive:
