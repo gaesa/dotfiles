@@ -1,8 +1,9 @@
-# vim:foldmethod=marker:foldlevel=0
+# vim:foldmethod=marker:foldlevel=1
 umask 077
 
 #env >/tmp/env-pre.log
 # Clean env {{{
+# {{{ preserved env
 typeset -A preserve=(
     "HOME" 1
     "USER" 1
@@ -36,6 +37,7 @@ typeset -A preserve=(
     "NIX_PROFILES" 1
     "NIX_SSL_CERT_FILE" 1
 )
+# }}}
 
 array=("${(f)$(/usr/bin/env)}")
 for elem in "${(@)array}"; do
@@ -47,36 +49,45 @@ done
 unset preserve array elem
 # }}}
 
-# Gui programs {{{
-export GTK2_RC_FILES="$XDG_CONFIG_HOME/gtk-2.0/gtkrc"
-export TEXMACS_HOME_PATH="$XDG_STATE_HOME/texmacs"
-# }}}
+# Set env in batch {{{
+typeset -A my_env=(
+    # Gui programs {{{
+    'GTK2_RC_FILES' "$XDG_CONFIG_HOME/gtk-2.0/gtkrc"
+    'TEXMACS_HOME_PATH' "$XDG_STATE_HOME/texmacs"
+    # }}}
 
-# Wayland {{{
-export CLUTTER_BACKEND='wayland'
-export GDK_BACKEND='wayland,x11'
-export QT_QPA_PLATFORM='wayland;xcb'
-export MOZ_ENABLE_WAYLAND=1
-export GTK_USE_PORTAL=1
-export QT_WAYLAND_FORCE_DPI=120
-# }}}
+    # Wayland {{{
+    'CLUTTER_BACKEND' 'wayland'
+    'GDK_BACKEND' 'wayland,x11'
+    'QT_QPA_PLATFORM' 'wayland;xcb'
+    'MOZ_ENABLE_WAYLAND' 1
+    'GTK_USE_PORTAL' 1
+    'QT_WAYLAND_FORCE_DPI' 120
+    # }}}
 
-# Input method {{{
-export GTK_IM_MODULE='fcitx'
-export QT_IM_MODULE='fcitx'
-export XMODIFIERS='@im=fcitx'
-export SDL_IM_MODULE='fcitx'
-export GLFW_IM_MODULE='ibus'
-export FCITX_SOCKET="$TMPDIR"
-# }}}
+    # Input method {{{
+    'GTK_IM_MODULE' 'fcitx'
+    'QT_IM_MODULE' 'fcitx'
+    'XMODIFIERS' '@im=fcitx'
+    'SDL_IM_MODULE' 'fcitx'
+    'GLFW_IM_MODULE' 'ibus'
+    'FCITX_SOCKET' "$TMPDIR"
+    # }}}
 
-# Hardware {{{
-export LIBVA_DRIVER_NAME='iHD'
-# }}}
+    # Hardware {{{
+    'LIBVA_DRIVER_NAME' 'iHD'
+    # }}}
 
-# Podman {{{
-export DOCKER_HOST="unix://$TMPDIR/podman/podman.sock"
-export DOCKER_BUILDKIT=0
+    # Podman {{{
+    'DOCKER_HOST' "unix://$TMPDIR/podman/podman.sock"
+    'DOCKER_BUILDKIT' 0
+    # }}}
+)
+
+for key val in "${(@kv)my_env}"; do
+    export "$key"="$val"
+done
+unset my_env key val
 # }}}
 
 # Make the user instance of systemd and dbus daemon inherit above environment variables {{{
