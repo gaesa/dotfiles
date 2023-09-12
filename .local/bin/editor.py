@@ -2,8 +2,8 @@
 from sys import argv
 from subprocess import run, Popen, DEVNULL
 from os.path import isfile, splitext
-from typing import Callable, Iterable
 from opener import get_mime_type
+from my_seq import for_each, split
 
 
 def open_with_nvim(files):
@@ -41,11 +41,10 @@ def open_with_emacs(files):
 
 
 def wait_editor(*editors: Popen[bytes] | None):
-    for editor in editors:
-        if editor is not None:
-            editor.wait()
-        else:
-            continue
+    for_each(
+        lambda editor: editor.wait(),
+        filter(lambda editor: editor is not None, editors),
+    )
 
 
 def open_with(nvim_files, emacs_files):
@@ -54,7 +53,7 @@ def open_with(nvim_files, emacs_files):
     return nvim, emacs
 
 
-def split_condition(file: str) -> bool:
+def split_cond(file: str) -> bool:
     if isfile(file):
         return get_mime_type(file) in {
             "text/org",
@@ -65,19 +64,11 @@ def split_condition(file: str) -> bool:
         return splitext(file)[1] in {".org", ".el", ".scm", ".ss"}
 
 
-def split_into2(group: Iterable, predicate: Callable) -> tuple[list, list]:
-    true_group: list = []
-    false_group: list = []
-    for elem in group:
-        (true_group if predicate(elem) else false_group).append(elem)
-    return true_group, false_group
-
-
 def edit(files=argv[1:]):
     if files == []:
         run(["nvim"])
     else:
-        emacs_files, nvim_files = split_into2(files, split_condition)
+        emacs_files, nvim_files = split(split_cond, files)
         nvim, emacs = open_with(nvim_files, emacs_files)
         wait_editor(nvim, emacs)
 
