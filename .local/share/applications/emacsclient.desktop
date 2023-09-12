@@ -2,7 +2,7 @@
 Name=Emacs (Client)
 GenericName=Text Editor
 Comment=Edit text
-Exec=emacsclient -c --eval "(call-interactively #'+workspace/delete)" --alternate-editor= %F
+Exec=emacs.py %F
 Icon=emacs
 Type=Application
 Terminal=false
