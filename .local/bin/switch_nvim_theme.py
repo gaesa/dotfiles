@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
-from os import environ, listdir, stat as os_stat, remove
-from os.path import isdir, join
+from os import environ, stat as os_stat, remove, listdir, chdir
+from os.path import isdir
 from stat import S_ISSOCK
 from pynvim import attach
 from sys import argv
@@ -14,23 +14,21 @@ def is_socket(file: str):
         return False
 
 
-def get_nvim_socket_list() -> Iterator[str]:
-    dir = environ["XDG_RUNTIME_DIR"]
-    if isdir(dir):
+def get_nvim_socket_list(XDG_RUNTIME_DIR) -> Iterator[str]:
+    if isdir(XDG_RUNTIME_DIR):
         prefix = "nvim."
-        return filter(
-            is_socket,
-            map(
-                lambda file: join(dir, file),
-                (filter(lambda file: file.startswith(prefix), listdir(dir))),
+        return (
+            filter(
+                lambda file: file.startswith(prefix) and is_socket(file),
+                listdir(),
             ),
-        )
+        )[0]
     else:
         raise SystemExit(0)
 
 
-def load_theme(color):
-    for path in get_nvim_socket_list():
+def load_theme(color, socket_list: Iterator[str]):
+    for path in socket_list:
         try:
             with attach("socket", path=path) as nvim:
                 nvim.vars["mycolor"] = color
@@ -47,12 +45,16 @@ def load_theme(color):
 
 
 def main():
+    XDG_RUNTIME_DIR = environ["XDG_RUNTIME_DIR"]
+    chdir(XDG_RUNTIME_DIR)
+    socket_list = get_nvim_socket_list(XDG_RUNTIME_DIR)
+
     if len(argv) < 2:
-        load_theme(False)  # to reset `mycolor` variable
+        load_theme(False, socket_list)  # to reset `mycolor` variable
     else:
         color = argv[1]
         if color in {"light", "dark"}:
-            load_theme(color)
+            load_theme(color, socket_list)
         else:
             return
 
