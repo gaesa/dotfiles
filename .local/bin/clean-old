@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 from os.path import expanduser, isdir, join
 from subprocess import run
+from clean_thumb import main as clean_thumb
 
 
 def clean(path_time):
@@ -25,7 +26,7 @@ def clean(path_time):
             continue
 
 
-def main():
+def clean_batch():
     HOME = expanduser("~")
     recent_documents_path = join(HOME, ".local/share/RecentDocuments")
     watch_later_path = join(HOME, ".config/mpv/watch_later")
@@ -46,6 +47,11 @@ def main():
     }
 
     clean(path_time)
+
+
+def main():
+    clean_batch()
+    clean_thumb()
     run(["trash-empty", "-f", "7"], check=True)
 
 
