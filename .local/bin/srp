@@ -2,90 +2,104 @@
 # A stupid script that avoids repeatedly typing the script path
 # Depends On: fd, ripgrep, trash-cli, shellcheck, neovim
 
-from sys import argv, exit as sys_exit, modules
+from sys import argv, modules
 from subprocess import run
 from os.path import basename, join, isfile, expanduser
-from os import chmod, stat
-from stat import S_IMODE
-from inspect import isfunction, getmodule, currentframe
+from my_fn import is_global_user_fn
+from my_seq import for_each
 
 
-def get_full_path(param_list, path):
-    full_path = []
-    for item in param_list:
-        file = join(path, item)
-        full_path.append(file)
-    return full_path
+def ensure_length(length: int, mes: str):
+    def decorator(old_fn):
+        def new_fn(*args, **kwargs):
+            lst = args[0] if len(args) > 0 else argv
+            if len(lst) < length:
+                raise SystemExit(mes)
+            else:
+                old_fn(*args, **kwargs)
+
+        return new_fn
+
+    return decorator
 
 
-def ls(param_list, path):
-    if param_list == []:
-        run(["ls", "-F", "--color=auto", "--group-directories-first", path])
-    else:
-        files = get_full_path(param_list, path)
-        run(["ls", "-F", "--color=auto", "--group-directories-first", *files])
+ensure_one_parameter = ensure_length(1, "Missing one argument")
+ensure_two_parameters = ensure_length(2, "Missing two arguments")
 
 
-def cat(param_list, path):
-    def print_necessary_separator():
-        if i != len_param_list - 1:
-            print("-" * 50, sep="")
-            print("\n")
+def get_full_path(param_list: list[str], dir: str):
+    return map(lambda item: join(dir, item), param_list)
+
+
+def ls(param_list, dir):
+    obj = [dir] if param_list == [] else get_full_path(param_list, dir)
+    run(["ls", "-F", "--color=auto", "--group-directories-first", *obj])
+
+
+def cat(param_list, dir):
+    def cat(file: str):
+        with open(file, "r") as f:
+            print(f.read(), end="")
+
+    def print_separator(i):
+        if i != length - 1:
+            print("-" * 50, end="\n" * 3)
         else:
             return
 
-    len_param_list = len(param_list)
-    i = 0
-    for file in get_full_path(param_list, path):
-        run(["cat", file])
-        print_necessary_separator()
-        i += 1
+    def apply(enum: tuple):
+        (i, file) = enum
+        cat(file)
+        print_separator(i)
+
+    length = len(param_list)
+    for_each(apply, enumerate(get_full_path(param_list, dir)))
 
 
-def ensure_one_parameter(param_list):
-    if len(param_list) < 1:
-        sys_exit("Missing argument")
-    else:
-        return
-
-
-def fd(param_list, path):
-    ensure_one_parameter(param_list)
+@ensure_one_parameter
+def fd(param_list, dir):
     pattern = " ".join(param_list)
-    run(["fd", "-t", "f", pattern, path, "-x", "printf", r"%s\n", r"{/}"], check=True)
+    run(["fd", "-t", "f", pattern, dir, "-x", "printf", r"%s\n", r"{/}"], check=True)
 
 
 # grep (rg) function
-def rg(param_list, path):
-    # if no object is found, 'rg' would return an error, but 'none' is not equal to 'error'
-    # see also:
-    # https://www.infoq.com/presentations/Null-References-The-Billion-Dollar-Mistake-Tony-Hoare/
-    ensure_one_parameter(param_list)
+@ensure_one_parameter
+def rg(param_list, dir):
+    # if no object is found, 'rg' would return an error,
+    # but 'none' is not equal to 'error'
+    # see also: https://www.infoq.com/presentations/Null-References-The-Billion-Dollar-Mistake-Tony-Hoare/
     pattern = " ".join(param_list)
-    run(["rg", "--smart-case", pattern, path])
+    run(["rg", "--smart-case", pattern, dir])
 
 
 # trash function
-def tr(param_list, path):
-    for file in get_full_path(param_list, path):
-        run(["trash", file], check=True)
+@ensure_one_parameter
+def tr(param_list, dir):
+    return for_each(
+        lambda file: run(["trash", file], check=True),
+        get_full_path(param_list, dir),
+    )
 
 
-def mv(param_list, path):
-    file1 = join(path, param_list[0])
-    file2 = join(path, param_list[1])
+def get_two_file(param_list, dir):
+    return join(dir, param_list[0]), join(dir, param_list[1])
+
+
+@ensure_two_parameters
+def mv(param_list, dir):
+    file1, file2 = get_two_file(param_list, dir)
     run(["mv", "-i", file1, file2], check=True)
 
 
-def cp(param_list, path):
-    file1 = join(path, param_list[0])
-    file2 = join(path, param_list[1])
+@ensure_two_parameters
+def cp(param_list, dir):
+    file1, file2 = get_two_file(param_list, dir)
     run(["cp", "-i", file1, file2], check=True)
 
 
-def d(param_list, path):
-    file1 = join(path, param_list[0])
-    file2 = join(path, param_list[1])
+@ensure_two_parameters
+def d(param_list, dir):
+    file1, file2 = get_two_file(param_list, dir)
     run(["nvim", "-d", file1, file2])
 
 
@@ -93,78 +107,64 @@ diff = d  # function alias
 
 
 # line count function
-def lc(param_list, path):
-    files = get_full_path(param_list, path)
+@ensure_one_parameter
+def lc(param_list, dir):
+    files = get_full_path(param_list, dir)
     run(["wc", "-l", *files])
 
 
-def shck(param_list, path):
-    for file in get_full_path(param_list, path):
-        run(["shellcheck", "-x", "-o", "all", file])
+@ensure_one_parameter
+def shck(param_list, dir):
+    return for_each(
+        lambda file: run(["shellcheck", "-x", "-o", "all", file]),
+        get_full_path(param_list, dir),
+    )
 
 
 # build a list then expand it to neovim
-def edit(param_list, path):
-    files = get_full_path(param_list, path)
-
+def edit(param_list, dir):
     import editor
+    from stat import S_IMODE
+    from os import chmod, stat
 
+    files = tuple(  # iterate over elements multiple times
+        get_full_path(param_list, dir)
+    )
     editor.edit(files=files)
 
-    def check_update_permission():
-        for file in files:
-            if isfile(file):
-                permission = oct(S_IMODE(stat(file).st_mode))
-                if permission != 0o744:
-                    chmod(file, 0o744)
+    def update_permission(permission):
+        def get_permission(file):
+            return oct(S_IMODE(stat(file).st_mode))
 
-    check_update_permission()
+        for_each(
+            lambda file: chmod(file, permission),
+            filter(
+                lambda file: isfile(file) and get_permission(file) != permission, files
+            ),
+        )
 
-
-def is_user_func(name):
-    if not name.isidentifier():
-        return False
-    else:
-        built_in_functions = set(dir(__builtins__))
-
-        frame = currentframe()
-        if frame is None:
-            return False
-        else:
-            frame_back = frame.f_back
-            if frame_back is None:
-                return False
-            else:
-                local_namespace = frame_back.f_locals
-
-        obj = local_namespace.get(name) or globals().get(name)
-
-        if obj is not None:
-            module = getmodule(obj)
-            if (
-                isfunction(obj)
-                and name not in built_in_functions
-                and module == modules["__main__"]
-            ):
-                return True
-            else:
-                return False
-        else:
-            return False
+    update_permission(0o744)
 
 
+@ensure_length(2, f"Missing argument for `{basename(__file__)}`")
 def main():
-    path = expanduser("~/.local/bin")
-
-    if len(argv) < 2:
-        sys_exit(f"Missing argument for `{basename(__file__)}`")
+    dir = expanduser("~/.local/bin")
+    fn_name = argv[1]
+    if is_global_user_fn(fn_name) and (
+        fn_name
+        not in {
+            "get_full_path",
+            "edit",
+            "main",
+            "ensure_length",
+            "ensure_one_parameter",
+            "ensure_two_parameters",
+            "get_two_file",
+        }
+    ):
+        getattr(modules[__name__], fn_name)(argv[2:], dir)
     else:
-        if is_user_func(argv[1]) and (
-            argv[1] not in {"get_full_path", "edit", "is_user_func"}
-        ):
-            getattr(modules[__name__], argv[1])(argv[2:], path)
-        else:
-            edit(argv[1:], path)
+        edit(argv[1:], dir)
 
 
 if __name__ == "__main__":
