@@ -49,9 +49,18 @@ done
 unset array elem
 # }}}
 
-# Podman {{{
-export DOCKER_HOST="unix://$TMPDIR/podman/podman.sock"
-export DOCKER_BUILDKIT=0
+# Set env in batch {{{
+typeset -A my_env=(
+    # Podman {{{
+    'DOCKER_HOST' "unix://$TMPDIR/podman/podman.sock"
+    'DOCKER_BUILDKIT' 0
+    # }}}
+)
+
+for key val in "${(@kv)my_env}"; do
+    export "$key"="$val"
+done
+unset my_env key val
 # }}}
 
 # Make the user instance of systemd inherit above environment variables {{{

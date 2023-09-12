@@ -1,41 +1,56 @@
-# vim:fileencoding=utf-8:foldmethod=marker
+# vim:foldmethod=marker:foldlevel=1
 
-# XDG & ZDOT & TMPDIR {{{
+# Set env in batch {{{
+# Evaluation dependencies {{{
 export XDG_CONFIG_HOME="$HOME/.config"
-export ZDOTDIR="$XDG_CONFIG_HOME/zsh"
-export XDG_CACHE_HOME="$HOME/.cache"
-export XDG_DATA_HOME="$HOME/.local/share"
-export XDG_STATE_HOME="$HOME/.local/state"
 export XDG_RUNTIME_DIR="/run/user/$UID"
-export TMPDIR="$XDG_RUNTIME_DIR"
+# }}}
+typeset -A my_env=(
+    # XDG & ZDOT & TMPDIR {{{
+    'ZDOTDIR' "$XDG_CONFIG_HOME/zsh"
+    'XDG_CACHE_HOME' "$HOME/.cache"
+    'XDG_DATA_HOME' "$HOME/.local/share"
+    'XDG_STATE_HOME' "$HOME/.local/state"
+    'TMPDIR' "$XDG_RUNTIME_DIR"
+    # }}}
 
-# Clean up my home {{{
-export TERMINFO="$XDG_DATA_HOME/terminfo"
-export TERMINFO_DIRS="$XDG_DATA_HOME/terminfo:/usr/share/terminfo"
-export GOPATH="$XDG_DATA_HOME/go"
-export CARGO_HOME="$XDG_DATA_HOME/cargo"
-export RUSTUP_HOME="$XDG_DATA_HOME/rustup"
-export NPM_CONFIG_USERCONFIG="$XDG_CONFIG_HOME/npm/npmrc"
-export _JAVA_OPTIONS="-Djava.util.prefs.userRoot=$XDG_CONFIG_HOME/java"
-export GNUPGHOME="$XDG_DATA_HOME/gnupg"
-export ncmpcpp_directory="$XDG_CONFIG_HOME/ncmpcpp"
-export W3M_DIR="$XDG_STATE_HOME/w3m"
-export CUDA_CACHE_PATH="$XDG_CACHE_HOME/nv"
-export ANDROID_HOME="$XDG_DATA_HOME/android"
-export WGETRC="$XDG_CONFIG_HOME/wget/wgetrc"
-export RIPGREP_CONFIG_PATH="$XDG_CONFIG_HOME/ripgreprc"
+    # Clean up my home {{{
+    'TERMINFO' "$XDG_DATA_HOME/terminfo"
+    'TERMINFO_DIRS' "$XDG_DATA_HOME/terminfo:/usr/share/terminfo"
+    'GOPATH' "$XDG_DATA_HOME/go"
+    'CARGO_HOME' "$XDG_DATA_HOME/cargo"
+    'RUSTUP_HOME' "$XDG_DATA_HOME/rustup"
+    'NPM_CONFIG_USERCONFIG' "$XDG_CONFIG_HOME/npm/npmrc"
+    '_JAVA_OPTIONS' "-Djava.util.prefs.userRoot=$XDG_CONFIG_HOME/java"
+    'GNUPGHOME' "$XDG_DATA_HOME/gnupg"
+    'ncmpcpp_directory' "$XDG_CONFIG_HOME/ncmpcpp"
+    'W3M_DIR' "$XDG_STATE_HOME/w3m"
+    'CUDA_CACHE_PATH' "$XDG_CACHE_HOME/nv"
+    'ANDROID_HOME' "$XDG_DATA_HOME/android"
+    'WGETRC' "$XDG_CONFIG_HOME/wget/wgetrc"
+    'RIPGREP_CONFIG_PATH' "$XDG_CONFIG_HOME/ripgreprc"
+    # }}}
+
+    # Terminal {{{
+    'EDITOR' 'nvim'
+    'PAGER' 'less'
+    # Note: The `SYSTEMD_LESS` cannot override the options
+    # passed to 'less' if the `LESS` is set by the `lesskey` file.
+    'MANPAGER' 'nvim +Man!'
+    # }}}
+
+    # Start ssh-agent with systemd user {{{
+    'SSH_AUTH_SOCK' "$XDG_RUNTIME_DIR/ssh-agent.socket"
+    # }}}
+)
+for key val in "${(@kv)my_env}"; do
+    export "$key"="$val"
+done
+unset my_env key val
 # }}}
 
-# Terminal {{{
-export EDITOR='nvim'
-export PAGER='less'
-# Note: The `SYSTEMD_LESS` cannot override the options
-# passed to 'less' if the `LESS` is set by the `lesskey` file.
-export MANPAGER='nvim +Man!'
-# }}}
-
-# Start ssh-agent with systemd user {{{
-export SSH_AUTH_SOCK="$XDG_RUNTIME_DIR/ssh-agent.socket"
+# Clean up home by alias {{{
+alias chez="chez --eehistory $XDG_STATE_HOME/chez/history"
 # }}}
 
 # Python {{{
@@ -44,7 +59,6 @@ if [[ -v PATHONPATH ]]; then
 else
     export PYTHONPATH="$HOME/.local/bin"
 fi
-# }}}
 # }}}
 
 # path+ {{{
@@ -56,6 +70,7 @@ add_paths (){
             path+=("$added_path")
         fi
     done
+    unset added_path
 }
 local added_paths=(
     "$HOME/.local/bin" #scripts path
