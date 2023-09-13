@@ -1184,6 +1184,9 @@
 (add-hook 'window-configuration-change-hook #'my/git-dir-hook)
 (add-hook 'window-buffer-change-functions #'my/git-dir-hook)
 
+;; Project
+(setq projectile-project-search-path '(("~/dm/pj" . 1)))
+
 ;; Whenever you reconfigure a package, make sure to wrap your config in an
 ;; `after!' block, otherwise Doom's defaults may override your settings. E.g.
 ;;
