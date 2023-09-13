@@ -24,6 +24,7 @@
 (package! xprop :disable t)
 (package! xwininfo :disable t)
 (package! flycheck :disable t)
+(package! solaire-mode :disable t)
 
 (unpin! org-roam company-org-roam)
 

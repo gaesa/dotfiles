@@ -128,6 +128,12 @@
        (= 0 (let ((default-directory directory))
               (call-process "/usr/bin/git" nil nil nil "status")))))
 
+(setq custom-theme-load-path
+      (cl-remove-if (lambda (s)
+                      (and (stringp s) (s-suffix? "doom-themes/" s)))
+                    custom-theme-load-path))
+(remove-hook 'after-init-hook #'doom-init-theme-h)
+
 (let ((path (expand-file-name "~/.config/doom/everforest-theme/"))
       (repo-url "https://www.github.com/gaesa/emacs-everforest-theme")
       (branch "fork"))
