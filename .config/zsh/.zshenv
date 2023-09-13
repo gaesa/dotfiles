@@ -29,6 +29,7 @@ typeset -A my_env=(
     'ANDROID_HOME' "$XDG_DATA_HOME/android"
     'WGETRC' "$XDG_CONFIG_HOME/wget/wgetrc"
     'RIPGREP_CONFIG_PATH' "$XDG_CONFIG_HOME/ripgreprc"
+    'TEXMACS_HOME_PATH' "$XDG_STATE_HOME/texmacs"
     # }}}
 
     # Terminal {{{
@@ -64,6 +65,18 @@ fi
 
 # path+ {{{
 typeset -U path PATH # make entries unique
+
+# initialize {{{
+path=()
+if [[ -d "$HOME/.nix-profile/bin" ]]; then
+    path+=("$HOME/.nix-profile/bin")
+fi
+if [[ -d '/nix/var/nix/profiles/default/bin' ]]; then
+    path+=('/nix/var/nix/profiles/default/bin')
+fi
+path+=("$HOME/.local/bin" '/usr/local/bin' '/usr/bin')
+# }}}
+
 add_paths (){
     local -r paths=$1 # fuck shell
     for added_path in "${(@P)paths}"; do
@@ -74,7 +87,6 @@ add_paths (){
     unset added_path
 }
 local added_paths=(
-    "$HOME/.local/bin" #scripts path
     '.' #current directory
     '/opt/bin' #add-on application software packages path
     "$XDG_CONFIG_HOME/emacs/bin" #doom emacs

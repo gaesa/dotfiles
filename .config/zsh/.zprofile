@@ -3,7 +3,7 @@ umask 077
 
 #env >/tmp/env-pre.log
 # Clean env {{{
-# {{{ preserved env
+# preserved env {{{
 typeset -A preserve=(
     "HOME" 1
     "USER" 1
@@ -20,9 +20,6 @@ typeset -A preserve=(
     "XDG_SESSION_CLASS" 1
     "XDG_SEAT" 1
     "XDG_VTNR" 1
-    "SHLVL" 1
-    "PWD" 1
-    "OLDPWD" 1
     "XDG_CONFIG_HOME" 1
     "ZDOTDIR" 1 #affects ttys other than `/dev/tty1`
     "XDG_CACHE_HOME" 1
@@ -49,11 +46,21 @@ done
 unset preserve array elem
 # }}}
 
+# set path {{{
+path=()
+if [[ -d "$HOME/.nix-profile/bin" ]]; then
+    path+=("$HOME/.nix-profile/bin")
+fi
+if [[ -d '/nix/var/nix/profiles/default/bin' ]]; then
+    path+=('/nix/var/nix/profiles/default/bin')
+fi
+path+=('/usr/local/bin' '/usr/bin' "$HOME/.local/bin")
+# }}}
+
 # Set env in batch {{{
 typeset -A my_env=(
     # Gui programs {{{
     'GTK2_RC_FILES' "$XDG_CONFIG_HOME/gtk-2.0/gtkrc"
-    'TEXMACS_HOME_PATH' "$XDG_STATE_HOME/texmacs"
     # }}}
 
     # Wayland {{{
@@ -76,11 +83,6 @@ typeset -A my_env=(
 
     # Hardware {{{
     'LIBVA_DRIVER_NAME' 'iHD'
-    # }}}
-
-    # Podman {{{
-    'DOCKER_HOST' "unix://$TMPDIR/podman/podman.sock"
-    'DOCKER_BUILDKIT' 0
     # }}}
 )
 
