@@ -63,6 +63,18 @@ fi
 
 # path+ {{{
 typeset -U path PATH # make entries unique
+
+# initialize {{{
+path=()
+if [[ -d "$HOME/.nix-profile/bin" ]]; then
+    path+=("$HOME/.nix-profile/bin")
+fi
+if [[ -d '/nix/var/nix/profiles/default/bin' ]]; then
+    path+=('/nix/var/nix/profiles/default/bin')
+fi
+path+=("$HOME/.local/bin" '/usr/local/bin' '/usr/bin')
+# }}}
+
 add_paths (){
     local -r paths=$1 # fuck shell
     for added_path in "${(@P)paths}"; do
@@ -73,7 +85,6 @@ add_paths (){
     unset added_path
 }
 local added_paths=(
-    "$HOME/.local/bin" #scripts path
     '.' #current directory
     '/opt/bin' #add-on application software packages path
     "$XDG_DATA_HOME/cargo/bin"

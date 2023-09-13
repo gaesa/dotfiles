@@ -20,9 +20,6 @@ typeset -A preserve=(
     "XDG_SESSION_CLASS" 1
     "XDG_SEAT" 1
     "XDG_VTNR" 1
-    "SHLVL" 1
-    "PWD" 1
-    "OLDPWD" 1
     "XDG_CONFIG_HOME" 1
     "ZDOTDIR" 1 #affects ttys other than `/dev/tty1`
     "XDG_CACHE_HOME" 1
@@ -49,18 +46,15 @@ done
 unset array elem
 # }}}
 
-# Set env in batch {{{
-typeset -A my_env=(
-    # Podman {{{
-    'DOCKER_HOST' "unix://$TMPDIR/podman/podman.sock"
-    'DOCKER_BUILDKIT' 0
-    # }}}
-)
-
-for key val in "${(@kv)my_env}"; do
-    export "$key"="$val"
-done
-unset my_env key val
+# set path {{{
+path=()
+if [[ -d "$HOME/.nix-profile/bin" ]]; then
+    path+=("$HOME/.nix-profile/bin")
+fi
+if [[ -d '/nix/var/nix/profiles/default/bin' ]]; then
+    path+=('/nix/var/nix/profiles/default/bin')
+fi
+path+=('/usr/local/bin' '/usr/bin' "$HOME/.local/bin")
 # }}}
 
 # Make the user instance of systemd inherit above environment variables {{{
