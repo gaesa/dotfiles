@@ -44,7 +44,6 @@ def get_default_desktops(mime_type: str, interactive=False):
         f"/etc/xdg/{XDG_CURRENT_DESKTOP}-mimeapps.list",
         "/etc/xdg/mimeapps.list",
         "/usr/local/share/applications/mimeapps.list",
-        "/usr/share/applications/mimeinfo.cache",
     ]
 
     def extract_desktops():
