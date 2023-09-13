@@ -61,43 +61,57 @@
    (lambda (match) (gethash match table))
    str))
 
-(defun rstrip (str)
-  (replace-regexp-in-string "[ \t\n\r]+$" "" str))
-
 (defun safe-subseq (list start end)
   (seq-take (seq-drop list start) (- end start)))
 
-(cl-defun run-process-with-filter (command &key filter name)
-  "Run a process with the specified filter function.
+(require 's)
 
-NAME is the name of the process.
-COMMAND is a list containing the program to run and its arguments.
-FILTER is the process filter function to use."
+(cl-defun run-process (command &key filter sentinel name)
+  "Return the exit code and output of a given process."
   (with-temp-buffer
     (let* ((name (if (null name)
-                     (mapconcat #'identity
+                     (mapconcat #'s-trim-right
                                 (safe-subseq command 0 2)
                                 " ")
                    name))
            (filter (if (null filter)
                        (lambda (process output)
-                         (message "%s"
-                                  (string-translate
-                                   (rstrip output)
-                                   #s(hash-table
-                                      size 2
-                                      test equal
-                                      data ("\r" "\n"
-                                            "\^[[K" "")))))
+                         (insert output))
                      filter))
-           (process (apply #'start-process
-                           name
-                           (current-buffer)
-                           (car command)
-                           (cdr command))))
-      (set-process-filter process filter)
+           (sentinel (if (null sentinel)
+                         #'ignore
+                       sentinel))
+           (process (funcall #'make-process
+                             :name name
+                             :buffer (current-buffer)
+                             :command command
+                             :noquery t
+                             :filter filter
+                             :sentinel sentinel)))
       (while (process-live-p process)
-        (accept-process-output process)))))
+        (accept-process-output process))
+      (cons (process-exit-status process) (buffer-string)))))
+
+(cl-defun run-process-with-message (command &key filter sentinel name)
+  (apply #'run-process
+         command
+         :filter (if (null filter)
+                     (lambda (process output)
+                       (message "%s"
+                                (string-translate
+                                 (s-trim-right output)
+                                 #s(hash-table
+                                    size 2
+                                    test equal
+                                    data ("\r" "\n"
+                                          "\^[[K" "")))))
+                  filter)
+         (append (if (null sentinel)
+                     '()
+                   (list ':sentinel sentinel))
+                 (if (null name)
+                     '()
+                   (list ':name name)))))
 
 (defun extend (&rest lists)
   (let ((lst (car lists))
@@ -121,9 +135,9 @@ FILTER is the process filter function to use."
       (add-to-list 'custom-theme-load-path path)
     (safe-trash path)
     (message "%s" "Running (git clone) to fetch the custom theme")
-    (run-process-with-filter (extend '("/usr/bin/git" "clone")
-                                     (list "--branch" branch) ;there is no `lexical-boundp'
-                                     (list repo-url path)))
+    (run-process-with-message (extend '("/usr/bin/git" "clone")
+                                      (list "--branch" branch) ;there is no `lexical-boundp'
+                                      (list repo-url path)))
     (add-to-list 'custom-theme-load-path path)))
 
 (defun switch-theme (color)
