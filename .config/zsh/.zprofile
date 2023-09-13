@@ -51,3 +51,8 @@ unset preserve array elem
 export DOCKER_HOST="unix://$TMPDIR/podman/podman.sock"
 export DOCKER_BUILDKIT=0
 # }}}
+
+# Make the user instance of systemd inherit above environment variables {{{
+[[ -v DBUS_SESSION_BUS_ADDRESS ]] && systemctl --user import-environment
+# }}}
+#env >/tmp/env-post.log
