@@ -28,6 +28,13 @@ def get_nvim_socket_list(XDG_RUNTIME_DIR) -> Iterator[str]:
 
 
 def load_theme(color, socket_list: Iterator[str]):
+    def clean(exception: OSError, code_range: set[int | None]):
+        code = exception.errno
+        if code in code_range:
+            remove(path)
+        else:
+            raise
+
     for path in socket_list:
         try:
             with attach("socket", path=path) as nvim:
@@ -36,12 +43,10 @@ def load_theme(color, socket_list: Iterator[str]):
                 nvim.lua.vim.cmd({"cmd": "source", "args": args})
         # neovim may exit unexpectedly
         # but to tell if `OSError` is caused by that is hard
+        except ConnectionRefusedError as e:
+            clean(e, {111})
         except OSError as e:
-            code = e.errno
-            if code in {22, None}:
-                remove(path)
-            else:
-                raise
+            clean(e, {22, None})
 
 
 def main():
