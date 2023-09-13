@@ -4,7 +4,7 @@
 umask 077
 
 # Disable Ctrl-S in interactive shells
-setopt noflowcontrol
+setopt NOFLOWCONTROL
 stty -ixon
 
 # Enable Powerlevel10k instant prompt. Should stay close to the top of ~/.zshrc.
@@ -43,9 +43,7 @@ autoload -Uz compinit
 compinit -d "$XDG_CACHE_HOME/zsh/zcompdump"
 # Allow different columns of completion menu to have different widths
 setopt LIST_PACKED
-#setopt glob_complete
 setopt MENU_COMPLETE # not flexible but there is no need for clearing zsh completion after typing a character
-# setopt complete_aliases
 # Prevents aliases on the command line from being internally substituted before completion is attempted
 # See also: https://unix.stackexchange.com/questions/250314/whats-the-intended-use-case-for-complete-aliases-in-zsh
 zstyle ':completion:*' menu select
@@ -62,7 +60,7 @@ zstyle ':completion:*:processes' sort false
 zstyle ':completion:*' use-cache on
 zstyle ':completion:*' cache-path "$XDG_CACHE_HOME"/zsh/zcompcache
 zmodload zsh/complist
-setopt globdots # Include hidden files
+setopt GLOBDOTS # Include hidden files
 # Use Shift-Tab to access previous completion entries
 bindkey -M menuselect '^[[Z' reverse-menu-complete
 # Use Esc to cancel completion
