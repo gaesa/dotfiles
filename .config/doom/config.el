@@ -819,7 +819,9 @@
     (format "#%02x%02x%02x" (funcall calculate r) (funcall calculate g) (funcall calculate b))))
 (defun set-color-for-highlight-indent-guides (val)
   (set-face-foreground 'highlight-indent-guides-character-face
-                       (lighten-hex (face-attribute 'font-lock-comment-face :foreground) val)))
+                       (let ((comment-face (face-attribute 'font-lock-comment-face :foreground)))
+                         (unless (eq comment-face 'unspecified)
+                           (lighten-hex comment-face val)))))
 (with-eval-after-load 'highlight-indent-guides
   (let* ((current-time (decode-time))
          (hour (nth 2 current-time))
