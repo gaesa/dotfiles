@@ -912,6 +912,8 @@
   (if (opened-pair-p (char-after))
       (save-excursion
         (forward-sexp)
+        (if (closed-pair-p (char-after))
+            (forward-char -1))
         (apply orig-fun args))
     (apply orig-fun args)))
 
