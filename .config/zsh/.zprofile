@@ -1,8 +1,9 @@
-# vim:foldmethod=marker:foldlevel=0
+# vim:foldmethod=marker:foldlevel=1
 umask 077
 
 #env >/tmp/env-pre.log
 # Clean env {{{
+# preserved env {{{
 typeset -A preserve=(
     "HOME" 1
     "USER" 1
@@ -36,6 +37,7 @@ typeset -A preserve=(
     "NIX_PROFILES" 1
     "NIX_SSL_CERT_FILE" 1
 )
+# }}}
 
 array=("${(f)$(/usr/bin/env)}")
 for elem in "${(@)array}"; do
@@ -44,7 +46,7 @@ for elem in "${(@)array}"; do
         unset "${elem}"
     fi
 done
-unset preserve array elem
+unset array elem
 # }}}
 
 # Podman {{{
@@ -53,6 +55,7 @@ export DOCKER_BUILDKIT=0
 # }}}
 
 # Make the user instance of systemd inherit above environment variables {{{
-[[ -v DBUS_SESSION_BUS_ADDRESS ]] && systemctl --user import-environment
+[[ -v DBUS_SESSION_BUS_ADDRESS ]] && systemctl --user import-environment "${(@k)preserve}" DOCKER_HOST DOCKER_BUILDKIT
+unset preserve
 # }}}
 #env >/tmp/env-post.log
