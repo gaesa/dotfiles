@@ -55,7 +55,7 @@ export DOCKER_BUILDKIT=0
 # }}}
 
 # Make the user instance of systemd inherit above environment variables {{{
-[[ -v DBUS_SESSION_BUS_ADDRESS ]] && systemctl --user import-environment "${(@k)preserve}" DOCKER_HOST DOCKER_BUILDKIT
+[[ -v DBUS_SESSION_BUS_ADDRESS ]] && systemctl --user import-environment "${(@k)preserve}" DOCKER_HOST DOCKER_BUILDKIT 2>/dev/null
 unset preserve
 # }}}
 #env >/tmp/env-post.log
