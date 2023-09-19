@@ -3,7 +3,8 @@ from sys import argv
 from subprocess import run
 
 
-def edit(files: list[str] | tuple[str, ...] = argv[1:]):
+def edit(files: list[str] | tuple[str, ...] | None = None):
+    files = argv[1:] if files is None else files
     if files == []:
         run(["/usr/bin/nvim"])
     else:
