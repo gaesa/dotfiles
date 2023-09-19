@@ -119,7 +119,7 @@ def fallback_to_file_cmd(file):
     res = run(  # to correct the strange print order
         ["file", "-Lb", file], check=True, capture_output=True, text=True
     ).stdout
-    print(res)
+    print(res, end="")
 
 
 def fallback_to_non_image(file, mime_type, mime_type_main):
