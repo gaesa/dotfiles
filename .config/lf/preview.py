@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 from sys import argv
+from typing import Callable
 from opener import get_mime_type
 from subprocess import run
 import thumb
@@ -44,8 +45,13 @@ def print_image(image: str):
 
 
 class Switch:
-    def __init__(self):
-        self.table = {}
+    def __init__(
+        self,
+        cases: dict | None = None,
+        default: Callable = lambda *_, **__: None,  # pyright: ignore ["__" is not accessed]
+    ):
+        self.table = dict() if cases is None else cases
+        self.default = default
 
     def __getitem__(self, key):
         return self.table[key]
@@ -57,8 +63,11 @@ class Switch:
             for key in keys:
                 self.table[key] = val
 
-    def __call__(self, key):
-        self.table[key]()
+    def __call__(self, key, var):
+        if key in self.table:
+            self.table[key]()
+        else:
+            self.default(var)
 
 
 def create_switch_case(file):
@@ -107,7 +116,13 @@ def create_switch_case(file):
             "application/xml", "application/json", "application/x-shellscript"
         ] = lambda: run(["bat", "--color=always", "-pp", "--", file], check=True)
 
-    switch = Switch()
+    def default(mime_type_main: str):
+        if mime_type_main == "text":
+            run(["bat", "--color=always", "-pp", "--", file], check=True)
+        else:
+            fallback_to_file_cmd(file)
+
+    switch = Switch(default=default)
     create_archive_case()
     create_document_case()
     create_other_case()
@@ -124,13 +139,7 @@ def fallback_to_file_cmd(file):
 
 def fallback_to_non_image(file, mime_type, mime_type_main):
     switch = create_switch_case(file)
-    if mime_type in switch.table:
-        switch(mime_type)
-    else:
-        if mime_type_main == "text":
-            run(["bat", "--color=always", "-pp", "--", file], check=True)
-        else:
-            fallback_to_file_cmd(file)
+    switch(mime_type, mime_type_main)
 
 
 def print_pure_image(file: str):
