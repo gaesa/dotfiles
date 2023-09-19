@@ -103,9 +103,9 @@ def create_switch_case(file):
         switch["text/html", "application/xhtml+xml"] = lambda: run(
             ["w3m", "-dump", file], check=True
         )
-        switch["application/xml", "application/json"] = lambda: run(
-            ["bat", "--color=always", "-pp", "--", file], check=True
-        )
+        switch[
+            "application/xml", "application/json", "application/x-shellscript"
+        ] = lambda: run(["bat", "--color=always", "-pp", "--", file], check=True)
 
     switch = Switch()
     create_archive_case()
