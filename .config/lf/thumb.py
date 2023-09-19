@@ -140,13 +140,15 @@ def upd_thumb(media: str, thumb_path: str):
         gen_thumb(media, thumb_path)
 
 
-def main(file=argv[1]):
+def main(file: str | None = None):
+    file = argv[1] if file is None else file
+
     index_root = expanduser("~/.cache/lf_thumb")
     cache_root = join(index_root, "img")
     index = join(index_root, "index.json")
     prepare(cache_root, index)
-    media = realpath(file, strict=True)
 
+    media = realpath(file, strict=True)
     thumb = upd_index_and_get_thumb(index, media)
     thumb_path = join(cache_root, thumb)
     upd_thumb(media, thumb_path)
