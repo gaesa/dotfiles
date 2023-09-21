@@ -28,7 +28,7 @@ load_theme() {
         else
             cp "${target_theme}" "${current_theme}"
             # The process 'kitty +kitten ssh' shouldn't be sent USRSIG1
-            pkill -USR1 -xf /usr/bin/kitty
+            pkill -USR1 -xf "$(which kitty)"
             unset -f load_kitty_theme
         fi
     }
