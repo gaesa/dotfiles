@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 from subprocess import run
 from os import getenv, makedirs
-from os.path import expanduser, join, isdir
+from os.path import expanduser, join, isdir, realpath
 from sys import argv
 from typing import Literal
 from my_seq import flatmap
@@ -58,6 +58,7 @@ def get_cmd(CURRENT_FILE: str, HOME: str, TMPDIR: str) -> list[str]:
 def main():
     TMPDIR = getenv("TMPDIR", "/tmp")
     with open(join(TMPDIR, "lf.log"), "w") as log_file:
+        argv[1] = realpath(argv[1], strict=True)
         process = run(
             get_cmd(argv[1], expanduser("~"), TMPDIR),
             stderr=log_file,

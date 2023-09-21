@@ -5,7 +5,6 @@ from os.path import (
     isfile,
     isdir,
     expanduser,
-    realpath,
     join,
 )
 from os import makedirs, environ
@@ -148,10 +147,9 @@ def main(file: str | None = None):
     index = join(index_root, "index.json")
     prepare(cache_root, index)
 
-    media = realpath(file, strict=True)
-    thumb = upd_index_and_get_thumb(index, media)
+    thumb = upd_index_and_get_thumb(index, file)
     thumb_path = join(cache_root, thumb)
-    upd_thumb(media, thumb_path)
+    upd_thumb(file, thumb_path)
 
     return thumb_path
 
