@@ -20,9 +20,9 @@ local function mixindent()
     local space_indent_cnt = vim.fn.searchcount({ pattern = space_pat, max_count = 1e3 }).total
     local tab_indent_cnt = vim.fn.searchcount({ pattern = tab_pat, max_count = 1e3 }).total
     if space_indent_cnt > tab_indent_cnt then
-        return "mix-indent-file:" .. tab_indent
+        return "mix-indent:" .. tab_indent
     else
-        return "mix-indent-file:" .. space_indent
+        return "mix-indent:" .. space_indent
     end
 end
 
