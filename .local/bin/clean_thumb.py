@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 from datetime import datetime
 from os import remove, listdir
-from os.path import getmtime, expanduser, isfile, join
+from os.path import getmtime, expanduser, isdir, isfile, join
 from my_os import json_read, json_write
 from my_seq import for_each
 from my_os import run_chdir
@@ -123,8 +123,12 @@ def main():
     index_root = expanduser("~/.cache/lf_thumb")
     cache_root = join(index_root, "img")
     index = join(index_root, "index.json")
-    clean_old(cache_root, index)
-    clean_index(cache_root, index)
+
+    if isdir(cache_root) and isfile(index):
+        clean_old(cache_root, index)
+        clean_index(cache_root, index)
+    else:
+        return
 
 
 if __name__ == "__main__":
