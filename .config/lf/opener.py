@@ -8,29 +8,29 @@ from os import environ
 from configparser import ConfigParser, SectionProxy
 
 
-def get_mime_type(file):
+def get_mime_type(file: str) -> str:
     # `xdg-mime query filetype` are better than
     # `file -Lb --mime_type` & `mimetypes.guess_type()`
-    # although they are all not perfect
-    # such as: `.md` (with CJK character), `.ts`,
+    # although both of them are not perfect
+    # problematic extensions:
+    # `.md` (with CJK character), `.ts`,
     # `.m4a`, `.tm`, `.xopp`, `.org`, `.scm`
     extension = splitext(file)[1]
-    if extension in {".ts", ".bak"}:
-        mime_type = run(
+    return (
+        run(
             ["file", "-Lb", "--mime-type", file],
             check=True,
             capture_output=True,
             text=True,
         ).stdout.rstrip()
-        return mime_type
-    else:
-        mime_type = run(
+        if extension in {".ts", ".bak"}
+        else run(
             ["xdg-mime", "query", "filetype", file],
             check=True,
             capture_output=True,
             text=True,
         ).stdout.rstrip()
-        return mime_type
+    )
 
 
 def get_default_desktops(mime_type: str, interactive=False):
