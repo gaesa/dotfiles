@@ -29,7 +29,7 @@ def clean(path_time):
 def clean_batch():
     HOME = expanduser("~")
     recent_documents_path = join(HOME, ".local/share/RecentDocuments")
-    watch_later_path = join(HOME, ".config/mpv/watch_later")
+    watch_later_path = join(HOME, ".local/share/mpv/watch_later")
     neovim_swap_path = join(HOME, ".local/state/nvim/swap")
     neovim_undo_path = join(HOME, ".local/state/nvim/undo")
     okular_docdate_path = join(HOME, ".local/share/okular/docdate")
