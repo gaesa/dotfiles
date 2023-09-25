@@ -204,6 +204,7 @@ end)
 map({ "n" }, "<leader>so", function()
     local input = vim.fn.input("Search option: ")
     vim.fn.search([[^\s*]] .. input, "wz")
+    vim.cmd.normal({ args = { "^" }, bang = true })
 end)
 
 -- FZF
