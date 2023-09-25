@@ -7,7 +7,7 @@ from typing import Literal
 from my_seq import flatmap
 
 
-def get_cmd(CURRENT_FILE: str, HOME: str, TMPDIR: str) -> list[str]:
+def get_cmd(CURRENT_FILE: str, HOME: str) -> list[str]:
     opt_table: dict[Literal["ro", "dev"] | None, str] = {
         "ro": "--ro-bind",
         "dev": "--dev-bind",
@@ -45,7 +45,7 @@ def get_cmd(CURRENT_FILE: str, HOME: str, TMPDIR: str) -> list[str]:
                 CURRENT_FILE,
             ],
         ),
-        *bind("dev", ["/dev/tty", "/dev/null", TMPDIR]),
+        *bind("dev", ["/dev/tty", "/dev/null", "/dev/shm"]),
         *bind_thumb(),
         *bind_pycache(),
         "--unshare-all",
@@ -60,7 +60,7 @@ def main():
     with open(join(TMPDIR, "lf.log"), "w") as log_file:
         argv[1] = realpath(argv[1], strict=True)
         process = run(
-            get_cmd(argv[1], expanduser("~"), TMPDIR),
+            get_cmd(argv[1], expanduser("~")),
             stderr=log_file,
         )
     raise SystemExit(process.returncode)

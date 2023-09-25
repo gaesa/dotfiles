@@ -11,7 +11,7 @@ def main():
                 "--stdin",
                 "no",
                 "--transfer-mode",
-                "file",
+                "memory",
                 "--clear",
             ],
             check=True,

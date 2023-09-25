@@ -35,7 +35,7 @@ def print_image(image: str):
                 "--stdin",
                 "no",
                 "--transfer-mode",
-                "file",
+                "memory",
                 *place,
                 image,
             ],
