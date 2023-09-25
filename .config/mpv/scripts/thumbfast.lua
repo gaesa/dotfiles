@@ -251,19 +251,25 @@ local TMPDIR = os.getenv("TMPDIR")
 local function init_option(opt_name, windows_name, non_windows_name)
     if options[opt_name] == "" then
         if os_name == "windows" then
-            options[opt_name] = windows_name
+            if type(windows_name) == "function" then
+                options[opt_name] = windows_name()
+            else
+                options[opt_name] = windows_name
+            end
         else
             if TMPDIR == nil then
-                options[opt_name] = "/tmp/" .. non_windows_name
+                options[opt_name] = mp.utils.join_path("/tmp", non_windows_name)
             else
-                options[opt_name] = TMPDIR .. "/" .. non_windows_name
+                options[opt_name] = mp.utils.join_path(TMPDIR, non_windows_name)
             end
         end
     end
 end
 
 init_option("socket", "thumbfast", "thumbfast")
-init_option("thumbfast", (os.getenv("TEMP") or "") .. "\\thumbfast.out", "thumbfast")
+init_option("thumbnail", function()
+    return mp.utils.join_path(os.getenv("TEMP"), "thumbfast.out")
+end, "thumbfast.out")
 
 local unique = mp.utils.getpid()
 
