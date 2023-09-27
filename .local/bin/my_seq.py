@@ -1,6 +1,6 @@
 from collections.abc import Sequence
 from functools import reduce  # fold-left
-from typing import Callable, Iterable
+from typing import Callable, Iterable, Any
 
 
 def append(lst: list, elem) -> list:
@@ -13,8 +13,8 @@ def append(lst: list, elem) -> list:
     return lst
 
 
-def flatmap(apply: Callable, lst: list) -> list:
-    return reduce(lambda x, y: x + y, map(apply, lst))
+def flatmap(apply: Callable, seq: list | tuple) -> list | tuple:
+    return reduce(lambda x, y: x + y, map(apply, seq))
 
 
 def for_each(apply: Callable, seq: Iterable) -> None:
@@ -31,16 +31,18 @@ def split(predicate: Callable, group: Iterable) -> tuple[list, list]:
     return true_group, false_group
 
 
-def fallback(seq: Iterable):
-    """Returns the first non-empty or non-None element in a sequence, although it's not lazy enough"""
+def fallback(*args: Callable[[], Any]) -> Any:
+    """Returns the first non-empty or non-None element in a sequence, the laziness is implemented by function"""
 
     def is_seq(var):
         return isinstance(var, Sequence)
 
     def cond(var):
-        seq_cond = is_seq(var)
-        return len(var) != 0 if seq_cond else var is not None
+        return len(var) != 0 if is_seq(var) else var is not None
 
-    for item in seq:
-        if cond(item):
-            return item
+    for arg in args:
+        value = arg()
+        if cond(value):
+            return value
+        else:
+            continue
