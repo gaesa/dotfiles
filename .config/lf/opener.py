@@ -4,7 +4,7 @@
 from subprocess import DEVNULL, Popen, run
 from sys import argv
 from os.path import expanduser, isfile, join, splitext, basename
-from os import environ
+from os import environ, getenv
 from configparser import ConfigParser, SectionProxy
 
 
@@ -33,18 +33,73 @@ def get_mime_type(file: str) -> str:
     )
 
 
+def get_list_of_mimeapps(
+    XDG_CONFIG_HOME: str,
+    XDG_CURRENT_DESKTOP: tuple[str, ...],
+    XDG_CONFIG_DIRS: list[str],
+    XDG_DATA_DIRS: list[str],
+) -> tuple[tuple[str, ...], tuple[str, ...]]:
+    from my_seq import flatmap
+
+    return (
+        (
+            *map(
+                lambda desktop: join(XDG_CONFIG_HOME, f"{desktop}-mimeapps.list"),
+                XDG_CURRENT_DESKTOP,
+            ),
+            join(XDG_CONFIG_HOME, "mimeapps.list"),
+        ),
+        (
+            *flatmap(
+                lambda cfg_dir: tuple(
+                    map(
+                        lambda desktop: join(cfg_dir, f"{desktop}-mimeapps.list"),
+                        XDG_CURRENT_DESKTOP,
+                    )
+                ),
+                XDG_CONFIG_DIRS,
+            ),
+            *map(
+                lambda cfg_dir: join(cfg_dir, "mimeapps.list"),
+                XDG_CONFIG_DIRS,
+            ),
+            *flatmap(
+                lambda data_dir: tuple(
+                    map(
+                        lambda desktop: join(
+                            data_dir, f"applications/{desktop}-mimeapps.list"
+                        ),
+                        XDG_CURRENT_DESKTOP,
+                    )
+                ),
+                XDG_DATA_DIRS,
+            ),
+            *map(
+                lambda data_dir: join(data_dir, "applications/mimeapps.list"),
+                XDG_DATA_DIRS,
+            ),
+        ),
+    )
+
+
 def get_default_desktops(mime_type: str, interactive=False):
+    from my_seq import fallback as first_valid
+
     config = ConfigParser()
     config.optionxform = (  # pyright: ignore [reportGeneralTypeIssues]
         str  # to make keys case-sensitive
     )
-    XDG_CURRENT_DESKTOP = environ["XDG_CURRENT_DESKTOP"]
-    mime_configs = [
-        expanduser("~/.config/mimeapps.list"),
-        f"/etc/xdg/{XDG_CURRENT_DESKTOP}-mimeapps.list",
-        "/etc/xdg/mimeapps.list",
-        "/usr/local/share/applications/mimeapps.list",
-    ]
+    XDG_CURRENT_DESKTOP = tuple(
+        map(str.lower, environ["XDG_CURRENT_DESKTOP"].split(":"))
+    )
+    XDG_CONFIG_HOME: str = first_valid(
+        lambda: getenv("XDG_CONFIG_HOME"), lambda: expanduser("~/.config")
+    )
+    XDG_CONFIG_DIRS = environ["XDG_CONFIG_DIRS"].split(":")
+    XDG_DATA_DIRS = environ["XDG_DATA_DIRS"].split(":")
+    user_configs, system_configs = get_list_of_mimeapps(
+        XDG_CONFIG_HOME, XDG_CURRENT_DESKTOP, XDG_CONFIG_DIRS, XDG_DATA_DIRS
+    )
 
     def extract_desktops():
         def get_desktop_name_decide():
@@ -70,7 +125,7 @@ def get_default_desktops(mime_type: str, interactive=False):
         get_desktop_name = get_desktop_name_decide()
 
         def extract_from_system_config():
-            for mime_config in mime_configs[1:]:
+            for mime_config in system_configs:
                 if isfile(mime_config):
                     config.read(mime_config)
                     mime_section = config["MIME Cache"]
@@ -93,15 +148,16 @@ def get_default_desktops(mime_type: str, interactive=False):
                 else:
                     return extract_from_added_assoc()
 
-            mime_user_config = mime_configs[0]
-            if isfile(mime_user_config):
-                config.read(mime_user_config)
-                if interactive:
-                    return extract_from_added_assoc()
+            for user_config in user_configs:
+                if isfile(user_config):
+                    config.read(user_config)
+                    return (
+                        extract_from_added_assoc()
+                        if interactive
+                        else extract_from_default_apps()
+                    )
                 else:
-                    return extract_from_default_apps()
-            else:
-                return extract_from_system_config()
+                    return extract_from_system_config()
 
         return extract_from_user_config()
 
@@ -124,7 +180,7 @@ def get_default_desktops(mime_type: str, interactive=False):
                 start = i + 21
             return desktop_names
 
-        if XDG_CURRENT_DESKTOP == "KDE":
+        if XDG_CURRENT_DESKTOP[0] == "kde":
             info = run(
                 ["ktraderclient5", "--mimetype", mime_type],
                 check=True,
