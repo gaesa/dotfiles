@@ -114,11 +114,11 @@ def create_switch_case(file):
         )
         switch[
             "application/xml", "application/json", "application/x-shellscript"
-        ] = lambda: run(["bat", "--color=always", "-pp", "--", file], check=True)
+        ] = lambda: preview_text(file)
 
     def default(mime_type_main: str):
         if mime_type_main == "text":
-            run(["bat", "--color=always", "-pp", "--", file], check=True)
+            preview_text(file)
         else:
             fallback_to_file_cmd(file)
 
@@ -127,6 +127,22 @@ def create_switch_case(file):
     create_document_case()
     create_other_case()
     return switch
+
+
+def preview_text(file):
+    # `lf` can't show output for a line of long string
+    # See: https://github.com/gokcehan/lf/pull/1447
+    line_length_limit = 200
+    s = run(
+        ["bat", "--color=always", "-pp", "--", file],
+        check=True,
+        text=True,
+        capture_output=True,
+    ).stdout.rstrip()
+    if "\n" not in s and len(s) > line_length_limit:
+        print(s[:line_length_limit])
+    else:
+        print(s)
 
 
 def fallback_to_file_cmd(file):
