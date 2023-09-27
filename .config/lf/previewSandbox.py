@@ -14,16 +14,18 @@ def get_cmd(CURRENT_FILE: str, HOME: str) -> list[str]:
         None: "--bind",
     }
 
-    def bind(opt_abbr: Literal["ro", "dev"] | None, dirs: list[str]) -> list[str]:
+    def bind(
+        opt_abbr: Literal["ro", "dev"] | None, dirs: list[str]
+    ) -> list[str] | tuple[str, ...]:
         opt = [opt_table[opt_abbr]]
         return flatmap(lambda dir: opt + [dir] * 2, dirs)
 
-    def bind_thumb() -> list[str]:
+    def bind_thumb() -> list[str] | tuple[str, ...]:
         path = join(HOME, ".cache/lf_thumb")
         None if isdir(path) else makedirs(path)
         return bind(None, [path])
 
-    def bind_pycache() -> list[str]:
+    def bind_pycache() -> list[str] | tuple[str, ...]:
         dir = join(HOME, ".config/lf/__pycache__")
         return bind(None, [dir]) if isdir(dir) else []
 
