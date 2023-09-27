@@ -103,24 +103,15 @@ def get_default_desktops(mime_type: str, interactive=False):
 
     def extract_desktops():
         def get_desktop_name_decide():
-            def gen_list(mime_section: SectionProxy, mime_type: str) -> list[str]:
+            def get_all(mime_section: SectionProxy, mime_type: str) -> list[str]:
                 desktop = mime_section[mime_type]
-                if desktop[-1] == ";":
-                    default_desktops = desktop[:-1].split(";")
-                else:
-                    default_desktops = desktop.split(";")
-                return default_desktops
+                return desktop.rstrip(";").split(";")
 
-            def gen_str(mime_section: SectionProxy, mime_type: str) -> str:
+            def get_first(mime_section: SectionProxy, mime_type: str) -> str:
                 desktop = mime_section[mime_type]
-                index = desktop.find(";")
-                default_desktop = desktop[:index]
-                return default_desktop
+                return desktop[: desktop.find(";")]
 
-            if interactive:
-                return gen_list
-            else:
-                return gen_str
+            return get_all if interactive else get_first
 
         get_desktop_name = get_desktop_name_decide()
 
@@ -190,10 +181,7 @@ def get_default_desktops(mime_type: str, interactive=False):
 
             desktop_names = parse_desktop_names()
             if desktop_names != []:
-                if interactive:
-                    return desktop_names
-                else:
-                    return desktop_names[0]
+                return desktop_names if interactive else desktop_names[0]
             else:
                 return fallback_to_choice()
         else:
@@ -206,10 +194,7 @@ def get_default_desktops(mime_type: str, interactive=False):
             )
             if not default_desktop.endswith(".desktop"):
                 default_desktop += ".desktop"
-            if interactive:
-                return [default_desktop]
-            else:
-                return default_desktop
+            return [default_desktop] if interactive else default_desktop
         except (KeyboardInterrupt, EOFError):
             print()
             raise SystemExit(0)
@@ -217,8 +202,8 @@ def get_default_desktops(mime_type: str, interactive=False):
     return extract_desktops()
 
 
-def open(default_desktop, file):
-    default_program = default_desktop[:-8]  # remove `.desktop`
+def open(default_desktop: str, file: str):
+    default_program = default_desktop[: -len(".desktop")]
     if default_program in {"nvim", "mpv"}:
         # ignore Exec entry & show output in terminal
         run([join("/usr/bin", default_program), file])
@@ -295,10 +280,9 @@ def main():
         run(["/usr/bin/mpv", f"--playlist={file}"])
     else:
         default_desktops = get_default_desktops(mime_type, interactive=interactive)
-        if interactive:
-            open_with(default_desktops, file)
-        else:
-            open(default_desktops, file)
+        open_with(default_desktops, file) if interactive else open(
+            default_desktops, file  # pyright: ignore [reportGeneralTypeIssues]
+        )
 
 
 if __name__ == "__main__":
