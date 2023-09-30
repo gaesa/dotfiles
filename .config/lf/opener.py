@@ -19,7 +19,7 @@ def get_mime_type(file: str) -> tuple[str, str]:
 
     file_args = ["file", "-Lb", "--mime-type", file]
     xdg_args = ["xdg-mime", "query", "filetype", file]
-    args = file_args if extension in {".ts", ".bak"} else xdg_args
+    args = file_args if extension in {".ts", ".bak", ".txt", ".TXT"} else xdg_args
 
     string = run(args, capture_output=True, text=True, check=True).stdout.rstrip()
     mime_type = tuple(string.split("/", 1))
