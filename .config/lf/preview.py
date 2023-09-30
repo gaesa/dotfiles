@@ -65,7 +65,7 @@ class Switch:
 
     def __call__(self, key, var):
         if key in self.table:
-            self.table[key]()
+            self.table[key](key)
         else:
             self.default(var)
 
@@ -88,11 +88,20 @@ def create_switch_case(file):
             ("application", "x-xpinstall"),
             ("application", "x-compress"),
             ("application", "zip"),
-        ] = lambda: run(["atool", "--list", "--", file], check=True)
-        switch[("application", "vnd.rar")] = lambda: run(
+        ] = lambda mime_type: run(
+            [
+                "atool",
+                "--list",
+                *(["-F", "zip"] if mime_type[1] == "zip" else []),
+                "--",
+                file,
+            ],
+            check=True,
+        )
+        switch[("application", "vnd.rar")] = lambda _: run(
             ["unrar", "lt", "-p-", "--", file], check=True
         )
-        switch[("application", "x-7z-compressed")] = lambda: run(
+        switch[("application", "x-7z-compressed")] = lambda _: run(
             ["7z", "l", "-p", "--", file], check=True
         )
 
@@ -100,26 +109,26 @@ def create_switch_case(file):
         switch[
             ("application", "vnd.oasis.opendocument.text"),
             ("application", "vnd.oasis.opendocument.spreadsheet"),
-        ] = lambda: run(["odt2txt", file], check=True)
+        ] = lambda _: run(["odt2txt", file], check=True)
         switch[
             (
                 "application",
                 "vnd.openxmlformats-officedocument.wordprocessingml.document",
             ),
-        ] = lambda: run(["pandoc", "-s", "-t", "gfm", "--", file], check=True)
+        ] = lambda _: run(["pandoc", "-s", "-t", "gfm", "--", file], check=True)
 
     def create_other_case():
-        switch[("application", "x-bittorrent")] = lambda: run(
+        switch[("application", "x-bittorrent")] = lambda _: run(
             ["transmission-show", "--", file], check=True
         )
-        switch[("text", "html"), ("application", "xhtml+xml")] = lambda: run(
+        switch[("text", "html"), ("application", "xhtml+xml")] = lambda _: run(
             ["w3m", "-dump", file], check=True
         )
         switch[
             ("application", "xml"),
             ("application", "json"),
             ("application", "x-shellscript"),
-        ] = lambda: preview_text(file)
+        ] = lambda _: preview_text(file)
 
     def default(mime_type_main: str):
         if mime_type_main == "text":
