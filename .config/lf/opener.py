@@ -16,15 +16,25 @@ def get_mime_type(file: str) -> tuple[str, str]:
     # `.md` (with CJK character), `.ts`,
     # `.m4a`, `.tm`, `.xopp`, `.org`, `.scm`
     extension = splitext(file)[1]
-    args = (
-        ["file", "-Lb", "--mime-type", file]
-        if extension in {".ts", ".bak"}
-        else ["xdg-mime", "query", "filetype", file]
-    )
+
+    file_args = ["file", "-Lb", "--mime-type", file]
+    xdg_args = ["xdg-mime", "query", "filetype", file]
+    args = file_args if extension in {".ts", ".bak"} else xdg_args
+
     string = run(args, capture_output=True, text=True, check=True).stdout.rstrip()
     mime_type = tuple(string.split("/", 1))
     if len(mime_type) != 2:
-        raise ValueError("Expected mime_type to split into exactly 2 strings")
+        if args == xdg_args:
+            new_str = run(
+                file_args, capture_output=True, text=True, check=True
+            ).stdout.rstrip()
+            new_type = tuple(new_str.split("/", 1))
+            if len(new_type) != 2:
+                raise ValueError(f"{file_args} returns: '{new_str}'")
+            else:
+                return new_type
+        else:
+            raise ValueError(f"{file_args} returns: '{string}'")
     else:
         return mime_type
 
