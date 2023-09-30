@@ -7,12 +7,12 @@ from os.path import (
     expanduser,
     join,
 )
-from os import makedirs, environ
+from os import makedirs
 from sys import argv
 from my_os import json_read, json_write
 
 
-def gen_thumb(media, thumb_path):
+def gen_thumb(media: str, thumb_path: str, mime_type: tuple[str, str] | None = None):
     from subprocess import DEVNULL, run
 
     def gen_for_video():
@@ -78,14 +78,23 @@ def gen_thumb(media, thumb_path):
         )
         raise SystemExit(mes)
 
-    mime_type = environ["mime_type"]
-    if mime_type.startswith("video"):
+    def get_mime_type() -> tuple[str, str]:
+        if mime_type is None:
+            from opener import get_mime_type as get_type
+
+            return get_type(media)
+        else:
+            return mime_type
+
+    mime_type = get_mime_type()
+    main = mime_type[0]
+    if main == "video":
         gen_for_video()
-    elif mime_type.startswith("audio"):
+    elif main == "audio":
         gen_for_audio()
-    elif mime_type == "application/pdf":
+    elif mime_type == ("application", "pdf"):
         gen_for_pdf()
-    elif mime_type == "application/epub+zip":
+    elif mime_type == ("application", "epub+zip"):
         gen_for_epub()
     else:
         exit_with_msg()
@@ -132,14 +141,14 @@ def upd_index_and_get_thumb(index, media):
     return thumb
 
 
-def upd_thumb(media: str, thumb_path: str):
+def upd_thumb(media: str, thumb_path: str, mime_type: tuple[str, str] | None = None):
     if isfile(thumb_path):
         return
     else:
-        gen_thumb(media, thumb_path)
+        gen_thumb(media, thumb_path, mime_type)
 
 
-def main(file: str | None = None):
+def main(file: str | None = None, mime_type: tuple[str, str] | None = None):
     file = argv[1] if file is None else file
 
     index_root = expanduser("~/.cache/lf_thumb")
@@ -149,7 +158,7 @@ def main(file: str | None = None):
 
     thumb = upd_index_and_get_thumb(index, file)
     thumb_path = join(cache_root, thumb)
-    upd_thumb(file, thumb_path)
+    upd_thumb(file, thumb_path, mime_type)
 
     return thumb_path
 

@@ -8,7 +8,7 @@ from os import environ, getenv
 from configparser import ConfigParser, SectionProxy
 
 
-def get_mime_type(file: str) -> str:
+def get_mime_type(file: str) -> tuple[str, str]:
     # `xdg-mime query filetype` are better than
     # `file -Lb --mime_type` & `mimetypes.guess_type()`
     # although both of them are not perfect
@@ -16,21 +16,17 @@ def get_mime_type(file: str) -> str:
     # `.md` (with CJK character), `.ts`,
     # `.m4a`, `.tm`, `.xopp`, `.org`, `.scm`
     extension = splitext(file)[1]
-    return (
-        run(
-            ["file", "-Lb", "--mime-type", file],
-            check=True,
-            capture_output=True,
-            text=True,
-        ).stdout.rstrip()
+    args = (
+        ["file", "-Lb", "--mime-type", file]
         if extension in {".ts", ".bak"}
-        else run(
-            ["xdg-mime", "query", "filetype", file],
-            check=True,
-            capture_output=True,
-            text=True,
-        ).stdout.rstrip()
+        else ["xdg-mime", "query", "filetype", file]
     )
+    string = run(args, capture_output=True, text=True, check=True).stdout.rstrip()
+    mime_type = tuple(string.split("/", 1))
+    if len(mime_type) != 2:
+        raise ValueError("Expected mime_type to split into exactly 2 strings")
+    else:
+        return mime_type
 
 
 def get_list_of_mimeapps(
@@ -279,7 +275,9 @@ def main():
     elif mime_type == "text/plain" and basename(file) == "playlist":
         run(["/usr/bin/mpv", f"--playlist={file}"])
     else:
-        default_desktops = get_default_desktops(mime_type, interactive=interactive)
+        default_desktops = get_default_desktops(
+            "/".join(mime_type), interactive=interactive
+        )
         open_with(default_desktops, file) if interactive else open(
             default_desktops, file  # pyright: ignore [reportGeneralTypeIssues]
         )

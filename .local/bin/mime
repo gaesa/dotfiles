@@ -2,4 +2,4 @@
 from opener import get_mime_type
 from sys import argv
 
-print(get_mime_type(" ".join(argv[1:])))
+print("/".join(get_mime_type(" ".join(argv[1:]))))

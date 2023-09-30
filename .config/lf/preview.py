@@ -73,47 +73,52 @@ class Switch:
 def create_switch_case(file):
     def create_archive_case():
         switch[
-            "application/x-compressed-tar",
-            "application/x-tar",
-            "application/x-archive",
-            "application/x-bzip",
-            "application/x-bzip-compressed-tar",
-            "application/vnd.ms-cab-compressed",
-            "application/gzip",
-            "application/x-java-archive",
-            "application/x-lzma",
-            "application/x-lz4",
-            "application/x-xz-compressed-tar",
-            "application/x-xz",
-            "application/x-xpinstall",
-            "application/x-compress",
-            "application/zip",
+            ("application", "x-compressed-tar"),
+            ("application", "x-tar"),
+            ("application", "x-archive"),
+            ("application", "x-bzip"),
+            ("application", "x-bzip-compressed-tar"),
+            ("application", "vnd.ms-cab-compressed"),
+            ("application", "gzip"),
+            ("application", "x-java-archive"),
+            ("application", "x-lzma"),
+            ("application", "x-lz4"),
+            ("application", "x-xz-compressed-tar"),
+            ("application", "x-xz"),
+            ("application", "x-xpinstall"),
+            ("application", "x-compress"),
+            ("application", "zip"),
         ] = lambda: run(["atool", "--list", "--", file], check=True)
-        switch["application/vnd.rar"] = lambda: run(
+        switch[("application", "vnd.rar")] = lambda: run(
             ["unrar", "lt", "-p-", "--", file], check=True
         )
-        switch["application/x-7z-compressed"] = lambda: run(
+        switch[("application", "x-7z-compressed")] = lambda: run(
             ["7z", "l", "-p", "--", file], check=True
         )
 
     def create_document_case():
         switch[
-            "application/vnd.oasis.opendocument.text",
-            "application/vnd.oasis.opendocument.spreadsheet",
+            ("application", "vnd.oasis.opendocument.text"),
+            ("application", "vnd.oasis.opendocument.spreadsheet"),
         ] = lambda: run(["odt2txt", file], check=True)
         switch[
-            "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+            (
+                "application",
+                "vnd.openxmlformats-officedocument.wordprocessingml.document",
+            ),
         ] = lambda: run(["pandoc", "-s", "-t", "gfm", "--", file], check=True)
 
     def create_other_case():
-        switch["application/x-bittorrent"] = lambda: run(
+        switch[("application", "x-bittorrent")] = lambda: run(
             ["transmission-show", "--", file], check=True
         )
-        switch["text/html", "application/xhtml+xml"] = lambda: run(
+        switch[("text", "html"), ("application", "xhtml+xml")] = lambda: run(
             ["w3m", "-dump", file], check=True
         )
         switch[
-            "application/xml", "application/json", "application/x-shellscript"
+            ("application", "xml"),
+            ("application", "json"),
+            ("application", "x-shellscript"),
         ] = lambda: preview_text(file)
 
     def default(mime_type_main: str):
@@ -153,9 +158,9 @@ def fallback_to_file_cmd(file):
     print(res, end="")
 
 
-def fallback_to_non_image(file, mime_type, mime_type_main):
+def fallback_to_non_image(file: str, mime_type: tuple[str, str]):
     switch = create_switch_case(file)
-    switch(mime_type, mime_type_main)
+    switch(mime_type, mime_type[0])
 
 
 def print_pure_image(file: str):
@@ -163,8 +168,8 @@ def print_pure_image(file: str):
     raise SystemExit(1)
 
 
-def print_cache_image(file: str):
-    print_image(thumb.main(file=file))
+def print_cache_image(file: str, mime_type: tuple[str, str]):
+    print_image(thumb.main(file=file, mime_type=mime_type))
     raise SystemExit(1)
 
 
@@ -174,23 +179,21 @@ def get_mime_type_main(mime_type):
     return mime_type_main
 
 
-def fallback(file, mime_type, mime_type_main):
-    from os import environ
-
-    environ["mime_type"] = mime_type
+def fallback(file: str, mime_type: tuple[str, str]):
+    mime_type_main = mime_type[0]
     if mime_type_main == "video":
-        print_cache_image(file)
+        print_cache_image(file, mime_type)
     elif mime_type_main == "audio":
         if audio_has_cover(file):
-            print_cache_image(file)
+            print_cache_image(file, mime_type)
         else:
             run(["mediainfo", "--", file], check=True)
     elif mime_type == "application/pdf":
-        print_cache_image(file)
+        print_cache_image(file, mime_type)
     elif mime_type == "application/epub+zip":
-        print_cache_image(file)
+        print_cache_image(file, mime_type)
     else:
-        fallback_to_non_image(file, mime_type, mime_type_main)
+        fallback_to_non_image(file, mime_type)
 
 
 def main():
@@ -200,12 +203,10 @@ def main():
         fallback_to_file_cmd(file)
     else:
         mime_type = get_mime_type(file)
-        mime_type_main = get_mime_type_main(mime_type)
-
-        if mime_type_main == "image":
+        if mime_type[0] == "image":
             print_pure_image(file)
         else:
-            fallback(file, mime_type, mime_type_main)
+            fallback(file, mime_type)
 
 
 if __name__ == "__main__":
