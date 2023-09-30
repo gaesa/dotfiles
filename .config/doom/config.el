@@ -331,8 +331,8 @@
     magit-copy-buffer-revision
     magit-copy-section-value))
 
-(mapcar (lambda (func) (advice-add func :around #'my/evil-clipboard))
-        clipboard-command-list)
+(for-each (lambda (fn) (advice-add fn :around #'my/evil-clipboard))
+          clipboard-command-list)
 
 (map! :leader "y" (lambda () (interactive)
                     (setq clipboard-enabled t)))
