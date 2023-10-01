@@ -1,29 +1,21 @@
 return {
     {
         "lukas-reineke/indent-blankline.nvim",
-        lazy = false,
-        opts = {
-            -- char = "┊",
-            show_first_indent_level = false,
-            show_trailing_blankline_indent = false,
-        },
+        main = "ibl",
+        event = "VeryLazy",
+        opts = { indent = { char = "│" }, scope = { enabled = false } },
         config = function(_, opts)
-            require("indent_blankline").setup(opts)
+            local hooks = require("ibl.hooks") -- must be set before setup() to initialize hook functions
+            hooks.register(hooks.type.WHITESPACE, hooks.builtin.hide_first_space_indent_level)
+            require("ibl").setup(opts)
 
-            -- Disable indent-blankline for some filetypes
-            local excluded_files = { "scheme", "lisp" }
-
-            local autocmd = vim.api.nvim_create_autocmd
-            local group = vim.api.nvim_create_augroup("plugins.indent-blankline", { clear = true })
-
-            autocmd({ "FileType" }, {
-                pattern = excluded_files,
+            -- https://github.com/lukas-reineke/indent-blankline.nvim/pull/685
+            vim.api.nvim_create_autocmd("ColorScheme", {
                 callback = function()
-                    require("indent_blankline").setup({
-                        enabled = false,
-                    })
+                    vim.api.nvim_set_hl(0, "IblIndent", vim.api.nvim_get_hl(0, { name = "Whitespace" }))
+                    require("ibl.highlights").setup()
                 end,
-                group = group,
+                group = vim.api.nvim_create_augroup("plugins.indent-blankline@fix-color-refresh", {}),
             })
         end,
     },
