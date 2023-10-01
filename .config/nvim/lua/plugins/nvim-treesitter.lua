@@ -47,6 +47,7 @@ return {
                 callback = fix_indent,
                 group = vim.api.nvim_create_augroup("plugins.nvim-treesitter@fix-indent", {}),
             })
+            fix_indent()
         end,
     },
 }
