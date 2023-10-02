@@ -877,10 +877,20 @@
                (switch-to-buffer-other-window buf))
       nil)))
 
+(defun join-path (&rest args)
+  (cl-reduce (lambda (x y)
+               (expand-file-name y x))
+             args))
+
+(progn (let ((fennel-mode-path (expand-file-name "~/.config/emacs/.local/straight/repos/fennel-mode")))
+         (autoload 'fennel-mode (join-path fennel-mode-path "fennel-mode") nil t)
+         (autoload 'antifennel-mode (join-path fennel-mode-path "antifennel.el") nil t))
+       (add-to-list 'auto-mode-alist '("\\.fnl\\'" . fennel-mode))
+       (add-hook 'lua-mode-hook 'antifennel-mode))
+
 (progn (add-hook 'scheme-mode-hook #'geiser-mode)
-       (add-hook 'scheme-mode-hook #'lispy-mode)
-       (add-hook 'geiser-repl-mode-hook #'lispy-mode)
-       (add-hook 'emacs-lisp-mode-hook #'lispy-mode))
+       (for-each (lambda (hook) (add-hook hook #'lispy-mode))
+                 '(scheme-mode-hook geiser-repl-mode-hook emacs-lisp-mode-hook fennel-mode-hook)))
 
 (setq scheme-program-name "chez"
       geiser-chez-binary "chez"

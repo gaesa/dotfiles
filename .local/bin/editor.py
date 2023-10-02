@@ -63,7 +63,7 @@ def open_with(nvim_files: list[str], emacs_files: list[str]):
 
 
 def split_cond(file: str) -> bool:
-    return splitext(file)[1] in {".org", ".el", ".scm", ".ss", ".rkt"}
+    return splitext(file)[1] in {".org", ".el", ".scm", ".ss", ".rkt", ".fnl"}
 
 
 def edit(files: list[str] | tuple[str, ...] | None = None):

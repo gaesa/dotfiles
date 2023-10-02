@@ -18,6 +18,7 @@
 (package! fcitx)
 (package! pangu-spacing)
 (package! dashboard)
+(package! fennel-mode :recipe (:host github :repo "emacsmirror/fennel-mode"))
 
 (package! xclip :disable t)
 (package! xdotool :disable t)
