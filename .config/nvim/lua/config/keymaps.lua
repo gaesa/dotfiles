@@ -146,6 +146,18 @@ map({ "n", "i" }, "<F11>", function()
     vim.wo.spell = not vim.wo.spell
 end)
 
+map({ "n", "i" }, "<F12>", function()
+    vim.bo.spellcapcheck = utils.cond.iif(
+        vim.bo.spellcapcheck == "", --
+        function()
+            return vim.b.spellcapcheck
+        end,
+        function()
+            return ""
+        end
+    )
+end)
+
 -- Buffers
 map({ "n" }, "<leader>bn", function()
     vim.cmd.bnext()
