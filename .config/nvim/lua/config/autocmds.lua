@@ -135,6 +135,14 @@ autocmd({ "FileType" }, {
     group = group,
 })
 
+-- Track default value of `vim.bo.spellcapcheck`
+autocmd({ "BufEnter" }, {
+    callback = function()
+        vim.b.spellcapcheck = vim.bo.spellcapcheck
+    end,
+    group = group,
+})
+
 -- Highlight yanked text
 autocmd({ "TextYankPost" }, {
     callback = function()
