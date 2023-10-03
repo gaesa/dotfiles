@@ -1,4 +1,5 @@
 local map = vim.keymap.set
+local utils = require("utils")
 
 -- Builtin file explorer
 map({ "n" }, "<leader>fm", vim.cmd.Ex)
@@ -164,26 +165,13 @@ local function replace(original)
     local function escape_string(s)
         return vim.fn.escape(s, "/.*[]")
     end
-    local function rstrip(s)
-        return string.gsub(s, "%s+$", "")
-    end
-    local function startswith(s, prefix)
-        return string.find(s, prefix, 1, true) == 1
-    end
-    local function iif(predicate, consequent, alternative)
-        if predicate then
-            return consequent()
-        else
-            return alternative()
-        end
-    end
 
     local replacement = vim.fn.input("Replace with: ")
     if replacement == "" then
         return
     else
-        vim.cmd("%s/" .. rstrip(escape_string(original)) .. "/" .. iif(
-            startswith(replacement, "''") or startswith(replacement, '""'), --
+        vim.cmd("%s/" .. utils.string.rstrip(escape_string(original)) .. "/" .. utils.cond.iif(
+            utils.string.startswith(replacement, "''") or utils.string.startswith(replacement, '""'), --
             function()
                 return string.sub(replacement, 3)
             end,
