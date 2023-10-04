@@ -54,7 +54,7 @@ _git_pre_exec() {
     local option="${remainder%% *}"
 
     if [[ -v git_cmds["${cmd}"] && "${git_cmds[$cmd]}" == true ]] || [[ "${cmd}" == 'git-'* ]]; then
-        if [[ "${PWD}" == "${HOME}" ]]; then
+        if [[ "$(pwd)" == "${HOME}" ]]; then
             if [[ -v option ]]; then
                 if [[ -v options["${option}"] && "${options[$option]}" == true ]]; then
                     _clr_git_env
@@ -77,7 +77,7 @@ preexec_functions+=(_git_pre_exec)
 # Make git completion work at HOME
 _git_env_on_chdir() {
     # Set GIT_DIR and GIT_WORK_TREE when at HOME
-    if [[ "${PWD}" == "${HOME}" ]]; then
+    if [[ "$(pwd)" == "${HOME}" ]]; then
         _set_git_env
     else
         _clr_git_env
@@ -88,11 +88,11 @@ precmd_functions+=(_git_env_on_chdir)
 #------Pyvenv---------
 #---------------------
 _auto_pyvenv() {
-    if [[ -n "${VIRTUAL_ENV}" && "${PWD}" != "$VIRTUAL_ENV"* ]]; then
+    if [[ -n "${VIRTUAL_ENV}" && "$(pwd)" != "$VIRTUAL_ENV"* ]]; then
         deactivate
     fi
-    if [[ -z "$VIRTUAL_ENV" && -f "${PWD}/bin/activate" ]]; then
-        source "${PWD}/bin/activate"
+    if [[ -z "$VIRTUAL_ENV" && -f "$(pwd)/bin/activate" ]]; then
+        source "$(pwd)/bin/activate"
     fi
 }
 chpwd_functions+=_auto_pyvenv
