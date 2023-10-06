@@ -65,23 +65,30 @@ local function sync_selection_callback()
     local text = api.nvim_buf_get_text(0, start_pos[1] - 1, start_pos[2], end_pos[1] - 1, end_pos[2] + 1, {})
     vim.fn.setreg("*", text)
 end
-autocmd({ "ModeChanged" }, {
-    callback = function()
-        local mode = string.sub(vim.api.nvim_get_mode().mode, 1, 1)
-        if mode == "v" then
-            if not sync_selection_timer_enabled then
-                sync_selection_timer:start(0, 500, vim.schedule_wrap(sync_selection_callback))
-                sync_selection_timer_enabled = true
+if vim.fn.getenv("WAYLAND_DISPLAY") ~= vim.NIL then
+    autocmd({ "ModeChanged" }, {
+        callback = function()
+            local mode = string.sub(vim.api.nvim_get_mode().mode, 1, 1)
+            if mode == "v" then
+                if not sync_selection_timer_enabled then
+                    sync_selection_timer:start(0, 500, vim.schedule_wrap(sync_selection_callback))
+                    sync_selection_timer_enabled = true
+                else
+                    return
+                end
+            else
+                if sync_selection_timer_enabled then
+                    sync_selection_timer:stop()
+                    sync_selection_timer_enabled = false
+                else
+                    return
+                end
             end
-        else
-            if sync_selection_timer_enabled then
-                sync_selection_timer:stop()
-                sync_selection_timer_enabled = false
-            end
-        end
-    end,
-    group = group,
-})
+        end,
+        group = group,
+    })
+else
+end
 
 -- Return to last edited postition and `zz`
 -- checks if the '" mark is defined, and jumps to it if so
