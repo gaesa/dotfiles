@@ -40,10 +40,7 @@ local sync_selection_timer = vim.loop.new_timer()
 local sync_selection_timer_enabled = false
 local function sync_selection_callback()
     local function get_start_end(pos1, pos2)
-        local pos1_row = pos1[1]
-        local pos1_col = pos1[2]
-        local pos2_row = pos2[1]
-        local pos2_col = pos2[2]
+        local pos1_row, pos1_col, pos2_row, pos2_col = pos1[1], pos1[2], pos2[1], pos2[2]
 
         if pos1_row < pos2_row then
             return pos1, pos2
