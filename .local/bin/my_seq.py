@@ -3,7 +3,7 @@ from functools import reduce  # fold-left
 from typing import Callable, Iterable, Any
 
 
-def append(lst: list, elem) -> list:
+def append(lst: list[Any], elem: Any) -> list[Any]:
     """
     Returns the updated list with the appended element.
     This function is more efficient than using the `+` or list unpacking
@@ -13,7 +13,7 @@ def append(lst: list, elem) -> list:
     return lst
 
 
-def flatmap(apply: Callable, seq: list | tuple) -> list | tuple:
+def flatmap(apply: Callable, seq: Iterable) -> list | tuple:
     return reduce(lambda x, y: x + y, map(apply, seq))
 
 
