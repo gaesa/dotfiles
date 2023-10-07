@@ -14,6 +14,18 @@ def add_post_hook(post_hook: Callable):
     return decorator
 
 
+def debug_fn(old_fn: Callable, name: str = ""):
+    def new_fn(*args, **kwargs):
+        print("args:", args, "kwargs:", kwargs) if name == "" else print(
+            f"name: {name}", f"args: {args}", f"kwargs: {kwargs}", sep="\n"
+        )
+        value = old_fn(*args, **kwargs)
+        print("returned value:", value, end="\n" * 2)
+        return value
+
+    return new_fn
+
+
 def is_global_user_fn(name: str) -> bool:
     caller_frame = stack()[1][0]
     caller_globals = caller_frame.f_globals
