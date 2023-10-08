@@ -54,3 +54,15 @@ def cond(*args: tuple[Callable[[], bool], Callable[[], Any]]) -> Any:
             return action()
         else:
             continue
+
+
+def begin(*args: Callable[[], Any]) -> Any:
+    """
+    Executes a sequence of functions in order and returns the result of the last function.
+
+    Each argument should be a function that takes no arguments. Functions are called in the order they are given.
+    """
+    value = None
+    for arg in args:
+        value = arg()
+    return value
