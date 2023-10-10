@@ -3,16 +3,6 @@ from functools import reduce  # fold-left
 from typing import Callable, Iterable, Any
 
 
-def append(lst: list[Any], element: Any) -> list[Any]:
-    """
-    Returns the updated list with the appended element.
-    This function is more efficient than using the `+` or list unpacking
-    (using the `*` operator within square brackets) to concatenate lists.
-    """
-    lst.append(element)
-    return lst
-
-
 def flatmap(operation: Callable, sequence: Iterable) -> list | tuple:
     return reduce(lambda x, y: x + y, map(operation, sequence))
 
