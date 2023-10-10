@@ -3,32 +3,30 @@ from functools import reduce  # fold-left
 from typing import Callable, Iterable, Any
 
 
-def append(lst: list[Any], elem: Any) -> list[Any]:
+def append(lst: list[Any], element: Any) -> list[Any]:
     """
     Returns the updated list with the appended element.
     This function is more efficient than using the `+` or list unpacking
     (using the `*` operator within square brackets) to concatenate lists.
     """
-    lst.append(elem)
+    lst.append(element)
     return lst
 
 
-def flatmap(apply: Callable, seq: Iterable) -> list | tuple:
-    return reduce(lambda x, y: x + y, map(apply, seq))
+def flatmap(operation: Callable, sequence: Iterable) -> list | tuple:
+    return reduce(lambda x, y: x + y, map(operation, sequence))
 
 
-def for_each(apply: Callable, seq: Iterable) -> None:
+def for_each(operation: Callable, sequence: Iterable) -> None:
     "Like `map`, but doesn't construct a sequence."
-    for ele in seq:
-        apply(ele)
+    for ele in sequence:
+        operation(ele)
 
 
-def split(predicate: Callable, group: Iterable) -> tuple[list, list]:
-    true_group, false_group = [], []
-    for_each(
-        lambda ele: (true_group if predicate(ele) else false_group).append(ele), group
-    )
-    return true_group, false_group
+def split(predicate: Callable, sequence: Iterable) -> tuple[list, list]:
+    t_part, f_part = [], []
+    for_each(lambda ele: (t_part if predicate(ele) else f_part).append(ele), sequence)
+    return t_part, f_part
 
 
 def fallback(*args: Callable[[], Any]) -> Any:
