@@ -198,6 +198,7 @@ def get_default_desktops(mime_type: str, interactive=False):
             default_desktop = input(
                 "No program found to open file. Please enter a program name: "
             )
+            print()
             if not default_desktop.endswith(".desktop"):
                 default_desktop += ".desktop"
             return [default_desktop] if interactive else default_desktop
