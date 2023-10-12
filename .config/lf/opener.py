@@ -280,9 +280,9 @@ def main():
         file = argv[1]
 
     mime_type = get_mime_type(file)
-    if mime_type == "application/x-executable":
+    if mime_type == ("application", "x-executable"):
         run([file], check=True)
-    elif mime_type == "text/plain" and basename(file) == "playlist":
+    elif mime_type == ("text", "plain") and basename(file) == "playlist":
         run(["/usr/bin/mpv", f"--playlist={file}"])
     else:
         default_desktops = get_default_desktops(
