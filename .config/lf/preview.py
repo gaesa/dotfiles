@@ -182,12 +182,6 @@ def print_cache_image(file: str, mime_type: tuple[str, str]):
     raise SystemExit(1)
 
 
-def get_mime_type_main(mime_type):
-    slash_pos = mime_type.find("/")
-    mime_type_main = mime_type[:slash_pos]
-    return mime_type_main
-
-
 def fallback(file: str, mime_type: tuple[str, str]):
     mime_type_main = mime_type[0]
     if mime_type_main == "video":
@@ -197,9 +191,9 @@ def fallback(file: str, mime_type: tuple[str, str]):
             print_cache_image(file, mime_type)
         else:
             run(["mediainfo", "--", file], check=True)
-    elif mime_type == "application/pdf":
+    elif mime_type == ("application", "pdf"):
         print_cache_image(file, mime_type)
-    elif mime_type == "application/epub+zip":
+    elif mime_type == ("application", "epub+zip"):
         print_cache_image(file, mime_type)
     else:
         fallback_to_non_image(file, mime_type)
