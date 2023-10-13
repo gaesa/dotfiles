@@ -282,12 +282,7 @@ def open_with(default_desktop, file):
 
 
 def main():
-    if argv[1] == "-i":
-        interactive = True
-        file = argv[2]
-    else:
-        interactive = False
-        file = argv[1]
+    interactive, file = (True, argv[2]) if argv[1] == "-i" else (False, argv[1])
 
     mime_type = get_mime_type(file)
     if mime_type == ("application", "x-executable"):
