@@ -25,3 +25,17 @@ def run_chdir(dir: str):
         return new_fn
 
     return decorator
+
+
+def run_chdir_async(dir: str):
+    def decorator(old_fn: Callable) -> Callable:
+        async def new_fn(*args, **kwargs):
+            cwd = getcwd()
+            chdir(dir)
+            value = await old_fn(*args, **kwargs)
+            chdir(cwd)
+            return value
+
+        return new_fn
+
+    return decorator
