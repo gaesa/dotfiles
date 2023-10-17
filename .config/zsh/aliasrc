@@ -26,7 +26,6 @@ autoload -Uz run-help-git run-help-ip \
 alias df="duf"
 alias du="dust"
 alias eik="edit-in-kitty"
-alias d="nvim -d"
 alias pf="pkgfile"
 alias pm="pacman"
 alias ctl="systemctl"

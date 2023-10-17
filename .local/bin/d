@@ -1,0 +1,11 @@
+#!/usr/bin/env python3
+from subprocess import run
+from sys import argv
+
+
+def main():
+    run(["/usr/bin/nvim", "-d", *reversed(argv[1:])])
+
+
+if __name__ == "__main__":
+    main()
