@@ -30,7 +30,7 @@ cmd open-with ${{
     opener.py -i "$f"
 }}
 cmd mkdir ${{
-    mkdir -p "$(echo $* | tr ' ' '\ ')"
+    mkdir -p "$@"
 }}
 cmd trash &{{
     if [[ "$XDG_CURRENT_DESKTOP" == "KDE" ]]; then
