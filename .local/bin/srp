@@ -98,12 +98,9 @@ def cp(param_list, dir):
 
 
 @ensure_two_parameters
-def d(param_list, dir):
+def diff(param_list, dir):
     file1, file2 = get_two_file(param_list, dir)
     run(["nvim", "-d", file1, file2])
-
-
-diff = d  # function alias
 
 
 # line count function
