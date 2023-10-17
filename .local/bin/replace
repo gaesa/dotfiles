@@ -1,0 +1,31 @@
+#!/usr/bin/env python3
+from argparse import ArgumentParser
+import re
+import sys
+
+
+def get_args() -> tuple[str, str, int]:
+    parser = ArgumentParser(description="A CLI program to replace regex patterns")
+    parser.add_argument("pattern", type=str, help="The regex pattern to be replaced")
+    parser.add_argument(
+        "replacement", type=str, help="The string to replace the pattern with"
+    )
+    parser.add_argument(
+        "-m",
+        "--max-count",
+        type=int,
+        default=0,
+        help="The maximum number of replacements",
+    )
+    args = parser.parse_args()
+    return args.pattern, args.replacement, args.max_count
+
+
+def main():
+    pattern, replacement, count = get_args()
+    for line in sys.stdin:
+        print(re.sub(pattern, replacement, line, count=count), end="")
+
+
+if __name__ == "__main__":
+    main()
