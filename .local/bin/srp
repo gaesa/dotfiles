@@ -92,7 +92,13 @@ def mv(param_list: list[str], dir: str):
 
 
 @ensure_two_parameters
-def cp(param_list, dir):
+def ln(param_list: list[str], dir: str):
+    file1, file2 = get_two_file(param_list, dir)
+    run(["ln", "-sr", file1, file2], check=True)
+
+
+@ensure_two_parameters
+def cp(param_list: list[str], dir: str):
     file1, file2 = get_two_file(param_list, dir)
     run(["cp", "-i", file1, file2], check=True)
 
