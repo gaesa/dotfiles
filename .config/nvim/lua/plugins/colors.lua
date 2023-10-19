@@ -35,7 +35,18 @@ return {
                 end
 
                 local function hack_cursorline()
-                    vim.opt.cursorline = not vim.wo.diff
+                    vim.api.nvim_create_autocmd({ "BufEnter" }, {
+                        callback = function()
+                            require("utils.table").for_each( --
+                                function(winid)
+                                    vim.wo[winid].cursorline = false
+                                end,
+                                vim.api.nvim_list_wins()
+                            )
+                            vim.api.nvim_del_augroup_by_name("plugins.colors@fix-diff-cursorline")
+                        end,
+                        group = vim.api.nvim_create_augroup("plugins.colors@fix-diff-cursorline", {}),
+                    })
                 end
 
                 vim.opt.background = color
