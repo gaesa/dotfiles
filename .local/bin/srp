@@ -31,13 +31,13 @@ def get_full_path(param_list: list[str], dir: str):
     return map(lambda item: join(dir, item), param_list)
 
 
-def ls(param_list, dir):
+def ls(param_list: list[str], dir: str):
     obj = [dir] if param_list == [] else get_full_path(param_list, dir)
     run(["ls", "-F", "--color=auto", "--group-directories-first", *obj])
 
 
-def cat(param_list, dir):
-    def cat(file: str):
+def cat(param_list: list[str], dir: str):
+    def display(file: str):
         with open(file, "r") as f:
             print(f.read(), end="")
 
@@ -47,24 +47,24 @@ def cat(param_list, dir):
         else:
             return
 
-    def apply(enum: tuple):
+    def op(enum: tuple):
         (i, file) = enum
-        cat(file)
+        display(file)
         print_separator(i)
 
     length = len(param_list)
-    for_each(apply, enumerate(get_full_path(param_list, dir)))
+    for_each(op, enumerate(get_full_path(param_list, dir)))
 
 
 @ensure_one_parameter
-def fd(param_list, dir):
+def fd(param_list: list[str], dir: str):
     pattern = " ".join(param_list)
     run(["fd", "-t", "f", pattern, dir, "-x", "printf", r"%s\n", r"{/}"], check=True)
 
 
 # grep (rg) function
 @ensure_one_parameter
-def rg(param_list, dir):
+def rg(param_list: list[str], dir: str):
     # if no object is found, 'rg' would return an error,
     # but 'none' is not equal to 'error'
     # see also: https://www.infoq.com/presentations/Null-References-The-Billion-Dollar-Mistake-Tony-Hoare/
@@ -74,19 +74,19 @@ def rg(param_list, dir):
 
 # trash function
 @ensure_one_parameter
-def tr(param_list, dir):
+def tr(param_list: list[str], dir: str):
     return for_each(
         lambda file: run(["trash", file], check=True),
         get_full_path(param_list, dir),
     )
 
 
-def get_two_file(param_list, dir):
+def get_two_file(param_list: list[str], dir: str):
     return join(dir, param_list[0]), join(dir, param_list[1])
 
 
 @ensure_two_parameters
-def mv(param_list, dir):
+def mv(param_list: list[str], dir: str):
     file1, file2 = get_two_file(param_list, dir)
     run(["mv", "-i", file1, file2], check=True)
 
@@ -98,20 +98,20 @@ def cp(param_list, dir):
 
 
 @ensure_two_parameters
-def diff(param_list, dir):
+def diff(param_list: list[str], dir: str):
     file1, file2 = get_two_file(param_list, dir)
     run(["nvim", "-d", file1, file2])
 
 
 # line count function
 @ensure_one_parameter
-def lc(param_list, dir):
+def lc(param_list: list[str], dir: str):
     files = get_full_path(param_list, dir)
     run(["wc", "-l", *files])
 
 
 @ensure_one_parameter
-def shck(param_list, dir):
+def shck(param_list: list[str], dir: str):
     return for_each(
         lambda file: run(["shellcheck", "-x", "-o", "all", file]),
         get_full_path(param_list, dir),
@@ -119,7 +119,7 @@ def shck(param_list, dir):
 
 
 # build a list then expand it to neovim
-def edit(param_list, dir):
+def edit(param_list: list[str], dir: str):
     import editor
     from stat import S_IMODE
     from os import chmod, stat
