@@ -6,11 +6,11 @@ from os.path import isdir, join
 from shutil import move
 from os import getenv, listdir, remove
 from mktemp import mktemp
-from my_seq import split
+from my_seq import partition
 
 
 def sorted_name_list(root, names):
-    dirs, files = split(lambda name: isdir(join(root, name)), names)
+    dirs, files = partition(lambda name: isdir(join(root, name)), names)
     return sorted(files) + sorted(dirs)
 
 

@@ -1,6 +1,7 @@
 from collections.abc import Sequence
 from functools import reduce  # fold-left
-from typing import Callable, Iterable, Any
+from itertools import tee, filterfalse
+from typing import Callable, Iterable, Iterator, Any
 
 
 def flatmap(operation: Callable, sequence: Iterable) -> list | tuple:
@@ -13,10 +14,12 @@ def for_each(operation: Callable, sequence: Iterable) -> None:
         operation(ele)
 
 
-def split(predicate: Callable, sequence: Iterable) -> tuple[list, list]:
-    t_part, f_part = [], []
-    for_each(lambda ele: (t_part if predicate(ele) else f_part).append(ele), sequence)
-    return t_part, f_part
+def partition(predicate: Callable[[Any], bool], iterable: Iterable[Any]):
+    "Use a predicate to partition entries into true entries and false entries"
+    it1, it2 = (
+        tee(iterable) if isinstance(iterable, (Iterator, range)) else (iterable,) * 2
+    )
+    return filter(predicate, it1), filterfalse(predicate, it2)
 
 
 def fallback(*args: Callable[[], Any]) -> Any:

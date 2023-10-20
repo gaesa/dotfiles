@@ -2,10 +2,10 @@
 from sys import argv
 from subprocess import run, Popen, DEVNULL
 from os.path import splitext
-from my_seq import for_each, split
+from my_seq import for_each, partition
 
 
-def open_with_nvim(files):
+def open_with_nvim(files: list[str]):
     if files != []:
         p = Popen(["nvim", "-o", *files, "-c", "wincmd H"])
         return p
@@ -71,8 +71,8 @@ def edit(files: list[str] | tuple[str, ...] | None = None):
     if files == []:
         run(["/usr/bin/nvim"])
     else:
-        emacs_files, nvim_files = split(split_cond, files)
-        nvim, emacs = open_with(nvim_files, emacs_files)
+        emacs_files, nvim_files = partition(split_cond, files)
+        nvim, emacs = open_with(list(nvim_files), list(emacs_files))
         wait_editor(nvim, emacs)
 
 
