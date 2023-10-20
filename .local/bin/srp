@@ -6,7 +6,7 @@ from sys import argv, modules
 from subprocess import run
 from os.path import basename, join, isfile, expanduser
 from my_fn import is_global_user_fn
-from my_seq import Iterable, for_each, split
+from my_seq import Iterable, for_each, partition
 
 
 def ensure_length(length: int, mes: str):
@@ -76,7 +76,8 @@ def rg(param_list: list[str], dir: str):
             )
         )
 
-    opts, args = split(lambda s: s.startswith("-"), param_list)
+    opts, args = partition(lambda s: s.startswith("-"), param_list)
+    args = tuple(args)
     run(
         [
             "rg",
