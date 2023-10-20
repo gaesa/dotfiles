@@ -6,7 +6,7 @@ from sys import argv, modules
 from subprocess import run
 from os.path import basename, join, isfile, expanduser
 from my_fn import is_global_user_fn
-from my_seq import for_each
+from my_seq import Iterable, for_each, split
 
 
 def ensure_length(length: int, mes: str):
@@ -65,11 +65,38 @@ def fd(param_list: list[str], dir: str):
 # grep (rg) function
 @ensure_one_parameter
 def rg(param_list: list[str], dir: str):
-    # if no object is found, 'rg' would return an error,
-    # but 'none' is not equal to 'error'
-    # see also: https://www.infoq.com/presentations/Null-References-The-Billion-Dollar-Mistake-Tony-Hoare/
-    pattern = " ".join(param_list)
-    run(["rg", "--smart-case", pattern, dir])
+    def substrings_to_pattern(substrings: Iterable[str]) -> str:
+        import re
+        from itertools import permutations
+
+        return "|".join(
+            map(
+                lambda perm: ".*".join(map(re.escape, perm)),
+                permutations(substrings),
+            )
+        )
+
+    opts, args = split(lambda s: s.startswith("-"), param_list)
+    run(
+        [
+            "rg",
+            "--smart-case",
+            "--follow",
+            *opts,
+            substrings_to_pattern(args) if len(args) > 1 else args[0],
+            dir,
+        ]
+    )
+    # `rg` returns a non-zero exit code when it does not locate a match,
+    # adhering to the traditional Unix shell convention
+    # where exit codes are interpreted as boolean values.
+    # However, this convention is not ideal as it specially treats and handles integers.
+    # A more general and elegant way could be to make the output of a command an object,
+    # containing stdout, stderr, and returncode.
+    # Programmers can manually specify conditions based on the returncode
+    # or any other attribute of the output object.
+    # This approach aligns with the principle of type consistency
+    # and can make error handling more explicit and robust.
 
 
 # trash function
