@@ -61,26 +61,36 @@ def cat(param_list: list[str], dir: str):
     for_each(op, enumerate(get_full_path(param_list, dir)))
 
 
+def substrings_to_pattern(substrings: Iterable[str]) -> str:
+    import re
+    from itertools import permutations
+
+    return "|".join(
+        map(
+            lambda perm: ".*".join(map(re.escape, perm)),
+            permutations(substrings),
+        )
+    )
+
+
 @ensure_one_parameter
 def fd(param_list: list[str], dir: str):
-    pattern = " ".join(param_list)
-    run(["fd", "-t", "f", pattern, dir, "-x", "printf", r"%s\n", r"{/}"], check=True)
+    run(
+        [
+            "fd",
+            "--color",
+            "never",
+            "--follow",
+            substrings_to_pattern(param_list),
+            dir,
+        ],
+        check=True,
+    )
 
 
 # grep (rg) function
 @ensure_one_parameter
 def rg(param_list: list[str], dir: str):
-    def substrings_to_pattern(substrings: Iterable[str]) -> str:
-        import re
-        from itertools import permutations
-
-        return "|".join(
-            map(
-                lambda perm: ".*".join(map(re.escape, perm)),
-                permutations(substrings),
-            )
-        )
-
     opts, args = partition(lambda s: s.startswith("-"), param_list)
     args = tuple(args)
     run(
@@ -186,6 +196,7 @@ def main():
         fn_name
         not in {
             "get_full_path",
+            "substrings_to_pattern",
             "edit",
             "main",
             "ensure_length",
