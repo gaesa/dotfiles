@@ -1,13 +1,14 @@
 from collections.abc import Sequence
-from functools import reduce  # fold-left
-from itertools import tee, filterfalse
+from itertools import chain, tee, filterfalse
 from typing import Callable, Iterable, Iterator, Any, TypeVar
 
 _T = TypeVar("_T")
 
 
-def flatmap(operation: Callable[[_T], Any], sequence: Iterable[_T]):
-    return reduce(lambda x, y: x + y, map(operation, sequence))
+def flatmap(
+    operation: Callable[[_T], Iterable[Any]], sequence: Iterable[_T]
+) -> Iterator[Any]:
+    return chain.from_iterable(map(operation, sequence))
 
 
 def for_each(operation: Callable[[_T], Any], sequence: Iterable[_T]) -> None:
