@@ -1,5 +1,13 @@
 local utils = {}
 
+function P(text, level, once)
+    if once then
+        vim.notify_once(vim.inspect(text), level)
+    else
+        vim.notify(vim.inspect(text), level, {})
+    end
+end
+
 utils.string = require("utils.string")
 utils.table = require("utils.table")
 utils.cond = require("utils.cond")
