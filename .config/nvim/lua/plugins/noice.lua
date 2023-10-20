@@ -106,4 +106,8 @@ return {
             end)
         end,
     },
+    {
+        "stevearc/dressing.nvim", -- for mason language filter
+        event = "VeryLazy",
+    },
 }
