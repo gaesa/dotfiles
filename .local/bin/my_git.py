@@ -1,9 +1,9 @@
 from subprocess import run
 from os.path import islink, isdir, join, dirname
-from os import environ, getcwd
+from os import environ
 
 
-def get_tracked_files(path: str = getcwd()) -> list[str]:
+def get_tracked_files(path: str = ".") -> list[str]:
     process = run(["/usr/bin/git", "ls-files", path], capture_output=True, text=True)
     if process.returncode == 0:
         files = process.stdout.splitlines()
@@ -23,7 +23,7 @@ def get_git_dir():
             return join(work_tree, ".git")
 
 
-def get_work_tree_without_config(dir=getcwd()) -> str | None:
+def get_work_tree_without_config(dir: str = ".") -> str | None:
     if "GIT_WORK_TREE" in environ:
         return environ["GIT_WORK_TREE"]
     else:

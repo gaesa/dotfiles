@@ -3,6 +3,7 @@ from sys import argv
 from os.path import getsize, join
 from subprocess import run
 from os import getenv
+from functools import reduce
 from my_git import get_tracked_files
 
 
@@ -12,20 +13,18 @@ def count_line(file: str) -> int:
 
 
 def get_total_count(files: list[str]) -> tuple[int, str, dict[str, int]]:
-    def sizeof_fmt(num, suffix="B"):
+    def sizeof_fmt(num: float, suffix: str = "B") -> str:
         for unit in ("", "Ki", "Mi", "Gi", "Ti", "Pi", "Ei", "Zi"):
             if abs(num) < 1024.0:
                 return f"{num:3.1f}{unit}{suffix}"
-            num /= 1024.0
+            else:
+                num /= 1024.0
         return f"{num:.1f}Yi{suffix}"
 
-    total_lines = 0
-    total_size = 0
-    file_to_lines = {}
+    total_lines, total_size, file_to_lines = 0, 0, {}
     for file in files:
         lines = count_line(file)
-        total_lines += lines
-        total_size += getsize(file)
+        total_lines, total_size = total_lines + lines, total_size + getsize(file)
         file_to_lines[file] = lines
     return total_lines, sizeof_fmt(total_size), file_to_lines
 
@@ -35,22 +34,26 @@ def sort_count(file_lines: dict[str, int]) -> dict[str, int]:
 
 
 def format_output(file_to_lines: dict[str, int], total_lines: int, total_size: str):
-    output = ""
-    for file in file_to_lines:
-        output += f"{file_to_lines[file]}: {file}\n"
-    output += f"Total lines: {total_lines}, "
-    output += f"size: {total_size}\n"
-    return output
+    return (
+        reduce(
+            lambda acc, file: acc + f"{file_to_lines[file]}: {file}\n",
+            file_to_lines,
+            "",
+        )
+        + f"Total lines: {total_lines}, "
+        f"size: {total_size}\n"
+    )
 
 
 def get_pager():
     pager = getenv("PAGER")
     if pager is None:
-        pager = "/usr/bin/less"
+        return "/usr/bin/less"
     else:
-        if not pager.startswith("/"):
-            pager = join("/usr/bin", pager)
-    return pager
+        if pager.startswith("/"):
+            return pager
+        else:
+            return join("/usr/bin", pager)
 
 
 def main() -> None:
@@ -65,5 +68,5 @@ def main() -> None:
 if __name__ == "__main__":
     try:
         main()
-    except KeyboardInterrupt:
+    except (KeyboardInterrupt, EOFError):
         pass
