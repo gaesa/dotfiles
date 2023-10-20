@@ -1,14 +1,16 @@
 from collections.abc import Sequence
 from functools import reduce  # fold-left
 from itertools import tee, filterfalse
-from typing import Callable, Iterable, Iterator, Any
+from typing import Callable, Iterable, Iterator, Any, TypeVar
+
+_T = TypeVar("_T")
 
 
-def flatmap(operation: Callable, sequence: Iterable) -> list | tuple:
+def flatmap(operation: Callable[[_T], Any], sequence: Iterable[_T]):
     return reduce(lambda x, y: x + y, map(operation, sequence))
 
 
-def for_each(operation: Callable, sequence: Iterable) -> None:
+def for_each(operation: Callable[[_T], Any], sequence: Iterable[_T]) -> None:
     "Like `map`, but doesn't construct a sequence."
     for ele in sequence:
         operation(ele)
