@@ -54,7 +54,7 @@ return {
                 always_divide_middle = true,
                 globalstatus = false,
                 refresh = {
-                    statusline = 1000,
+                    statusline = 350,
                     tabline = 1000,
                     winbar = 1000,
                 },
@@ -70,7 +70,37 @@ return {
                         symbols = { error = " ", warn = " ", info = " ", hint = " " },
                     },
                 },
-                lualine_c = { { "filename", file_status = true, path = 1 } },
+                lualine_c = {
+                    { "filename", file_status = true, path = 1 },
+                    {
+                        function()
+                            return require("noice").api.statusline.mode.get()
+                        end,
+                        cond = function()
+                            return require("noice").api.statusline.mode.has()
+                                and (
+                                    not vim.startswith(
+                                        require("noice").api.statusline.mode.get(),
+                                        "-- " --exclude cursor state
+                                    )
+                                )
+                        end,
+                        color = { fg = "#ff9e64" },
+                    },
+                    -- {-- can't be easily overwritten
+                    --     function()
+                    --         return require("noice").api.status.message.get_hl()
+                    --     end,
+                    --     cond = function()
+                    --         if not require("noice").api.status.message.has() then
+                    --             return false
+                    --         else
+                    --             local info = require("noice").api.status.message.get_hl()
+                    --             return vim.startswith(info, "%#NoiceAttr79#") --emsg
+                    --         end
+                    --     end,
+                    -- },
+                },
                 lualine_x = {
                     {
                         function()
