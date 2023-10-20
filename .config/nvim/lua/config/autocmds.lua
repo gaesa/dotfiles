@@ -112,6 +112,11 @@ autocmd({ "filetype" }, {
     callback = function()
         vim.keymap.set({ "n", "x" }, "j", "gj", { buffer = true, silent = true })
         vim.keymap.set({ "n", "x" }, "k", "gk", { buffer = true, silent = true })
+        if not vim.o.nu then
+            vim.o.nu = true
+        else
+            return
+        end
     end,
     group = group,
 })
