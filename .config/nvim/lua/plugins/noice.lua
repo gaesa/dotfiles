@@ -46,9 +46,45 @@ return {
             routes = {
                 {
                     filter = {
-                        event = "msg_show",
-                        kind = "", -- this also exclude `lua print`
-                        ["not"] = { event = "msg_show", find = "^.-:\n" }, --exclude spell check and mason filter
+                        any = {
+                            --FIXME: broken after `z=` with `which-key` enabled
+                            {
+                                event = "msg_show",
+                                kind = "", -- this contains `nmap`, `autocmd`
+                                -- FIXME: https://github.com/folke/noice.nvim/issues/259
+                                find = "%d+ lines yanked",
+                            },
+                            {
+                                event = "msg_show",
+                                kind = "",
+                                find = '^".*written$',
+                            },
+                            {
+                                event = "msg_show",
+                                kind = "",
+                                find = "^--No", --empty buffer
+                            },
+                            {
+                                event = "msg_show",
+                                kind = "",
+                                find = "%d+ more lines?",
+                            },
+                            {
+                                event = "msg_show",
+                                kind = "",
+                                find = "%d+ fewer lines?",
+                            },
+                            {
+                                event = "msg_show",
+                                kind = "",
+                                find = "%d+ line less;",
+                            },
+                            {
+                                event = "msg_show",
+                                kind = "",
+                                find = "%d+ changes?;",
+                            },
+                        },
                     },
                     opts = { skip = true },
                 },
