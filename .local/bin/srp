@@ -31,9 +31,13 @@ def get_full_path(param_list: list[str], dir: str):
     return map(lambda item: join(dir, item), param_list)
 
 
-def ls(param_list: list[str], dir: str):
+def ls(param_list: list[str], dir: str, opts: str = ""):
     obj = [dir] if param_list == [] else get_full_path(param_list, dir)
-    run(["ls", "-F", "--color=auto", "--group-directories-first", *obj])
+    run(["ls", f"-{opts}F", "--color=auto", "--group-directories-first", *obj])
+
+
+def ll(param_list: list[str], dir: str):
+    ls(param_list, dir, opts="lh")
 
 
 def cat(param_list: list[str], dir: str):
