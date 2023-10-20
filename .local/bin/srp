@@ -4,6 +4,7 @@
 
 from sys import argv, modules
 from subprocess import run
+from os import chdir
 from os.path import basename, join, isfile, expanduser
 from my_fn import is_global_user_fn
 from my_seq import Iterable, for_each, partition
@@ -113,32 +114,28 @@ def tr(param_list: list[str], dir: str):
     )
 
 
-def get_two_file(param_list: list[str], dir: str):
-    return join(dir, param_list[0]), join(dir, param_list[1])
-
-
 @ensure_two_parameters
 def mv(param_list: list[str], dir: str):
-    file1, file2 = get_two_file(param_list, dir)
-    run(["mv", "-i", file1, file2], check=True)
+    chdir(dir)
+    run(["mv", "-i", *param_list], check=True)
 
 
 @ensure_two_parameters
 def ln(param_list: list[str], dir: str):
-    file1, file2 = get_two_file(param_list, dir)
-    run(["ln", "-sr", file1, file2], check=True)
+    chdir(dir)
+    run(["ln", "-sr", param_list[0], param_list[1]], check=True)
 
 
 @ensure_two_parameters
 def cp(param_list: list[str], dir: str):
-    file1, file2 = get_two_file(param_list, dir)
-    run(["cp", "-i", file1, file2], check=True)
+    chdir(dir)
+    run(["cp", "-i", *param_list], check=True)
 
 
 @ensure_two_parameters
 def diff(param_list: list[str], dir: str):
-    file1, file2 = get_two_file(param_list, dir)
-    run(["nvim", "-d", file1, file2])
+    chdir(dir)
+    run(["nvim", "-d", *reversed(param_list)])
 
 
 # line count function
@@ -194,7 +191,6 @@ def main():
             "ensure_length",
             "ensure_one_parameter",
             "ensure_two_parameters",
-            "get_two_file",
         }
     ):
         getattr(modules[__name__], fn_name)(argv[2:], dir)
