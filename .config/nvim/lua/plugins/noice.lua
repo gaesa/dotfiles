@@ -51,38 +51,8 @@ return {
                             {
                                 event = "msg_show",
                                 kind = "", -- this contains `nmap`, `autocmd`
-                                -- FIXME: https://github.com/folke/noice.nvim/issues/259
-                                find = "%d+ lines yanked",
-                            },
-                            {
-                                event = "msg_show",
-                                kind = "",
-                                find = '^".*written$',
-                            },
-                            {
-                                event = "msg_show",
-                                kind = "",
-                                find = "^--No", --empty buffer
-                            },
-                            {
-                                event = "msg_show",
-                                kind = "",
-                                find = "%d+ more lines?",
-                            },
-                            {
-                                event = "msg_show",
-                                kind = "",
-                                find = "%d+ fewer lines?",
-                            },
-                            {
-                                event = "msg_show",
-                                kind = "",
-                                find = "%d+ line less;",
-                            },
-                            {
-                                event = "msg_show",
-                                kind = "",
-                                find = "%d+ changes?;",
+                                -- Use cmd("last") and cmd("history") to check blocked msg
+                                -- See also: https://github.com/folke/noice.nvim/issues/259
                             },
                         },
                     },
