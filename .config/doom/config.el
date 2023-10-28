@@ -575,7 +575,11 @@
 ;; If you use `org' and don't want your org files in the default location below,
 ;; change `org-directory'. It must be set before org loads!
 (setq org-directory "~/org"
-      org-hide-emphasis-markers t)
+      org-hide-emphasis-markers t
+      org-journal-date-prefix "#+TITLE: "
+      org-journal-time-prefix "* "
+      org-journal-date-format "%a, %Y-%m-%d"
+      org-journal-file-format "%Y-%m-%d.org")
 
 (with-eval-after-load 'org
   (global-org-modern-mode)
