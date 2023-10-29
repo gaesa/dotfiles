@@ -57,11 +57,8 @@ class Switch:
         return self.table[key]
 
     def __setitem__(self, keys, val):
-        if type(keys) not in {list, tuple, set}:
-            self.table[keys] = val
-        else:
-            for key in keys:
-                self.table[key] = val
+        for key in keys:
+            self.table[key] = val
 
     def __call__(self, key, var):
         if key in self.table:
@@ -98,10 +95,10 @@ def create_switch_case(file):
             ],
             check=True,
         )
-        switch[("application", "vnd.rar")] = lambda _: run(
+        switch[("application", "vnd.rar"),] = lambda _: run(
             ["unrar", "lt", "-p-", "--", file], check=True
         )
-        switch[("application", "x-7z-compressed")] = lambda _: run(
+        switch[("application", "x-7z-compressed"),] = lambda _: run(
             ["7z", "l", "-p", "--", file], check=True
         )
 
@@ -118,12 +115,13 @@ def create_switch_case(file):
         ] = lambda _: run(["pandoc", "-s", "-t", "gfm", "--", file], check=True)
 
     def create_other_case():
-        switch[("application", "x-bittorrent")] = lambda _: run(
+        switch[("application", "x-bittorrent"),] = lambda _: run(
             ["transmission-show", "--", file], check=True
         )
-        switch[("text", "html"), ("application", "xhtml+xml")] = lambda _: run(
-            ["w3m", "-dump", file], check=True
-        )
+        switch[
+            ("text", "html"),
+            ("application", "xhtml+xml"),
+        ] = lambda _: run(["w3m", "-dump", file], check=True)
         switch[
             ("application", "xml"),
             ("application", "json"),
