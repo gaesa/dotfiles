@@ -102,6 +102,6 @@ return {
     {
         -- Linter and formatter
         { "jay-babu/mason-null-ls.nvim" },
-        { "jose-elias-alvarez/null-ls.nvim" },
+        { "nvimtools/none-ls.nvim" },
     },
 }
