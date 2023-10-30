@@ -2,11 +2,12 @@
 # A stupid script that avoids repeatedly typing the script path
 # Depends On: fd, ripgrep, trash-cli, shellcheck, neovim
 
-from sys import argv, modules
+from sys import argv
 from subprocess import run
 from os import chdir
 from os.path import basename, join, isfile, expanduser
-from my_fn import is_global_user_fn
+from inspect import getattr_static
+from typing import Type
 from my_seq import Iterable, for_each, partition
 
 
@@ -32,35 +33,6 @@ def get_full_path(param_list: list[str], dir: str):
     return map(lambda item: join(dir, item), param_list)
 
 
-def ls(param_list: list[str], dir: str, opts: str = ""):
-    obj = [dir] if param_list == [] else get_full_path(param_list, dir)
-    run(["ls", f"-{opts}F", "--color=auto", "--group-directories-first", *obj])
-
-
-def ll(param_list: list[str], dir: str):
-    ls(param_list, dir, opts="lh")
-
-
-def cat(param_list: list[str], dir: str):
-    def display(file: str):
-        with open(file, "r") as f:
-            print(f.read(), end="")
-
-    def print_separator(i):
-        if i != length - 1:
-            print("-" * 50, end="\n" * 3)
-        else:
-            return
-
-    def op(enum: tuple):
-        (i, file) = enum
-        display(file)
-        print_separator(i)
-
-    length = len(param_list)
-    for_each(op, enumerate(get_full_path(param_list, dir)))
-
-
 def substrings_to_pattern(substrings: Iterable[str]) -> str:
     import re
     from itertools import permutations
@@ -73,94 +45,125 @@ def substrings_to_pattern(substrings: Iterable[str]) -> str:
     )
 
 
-@ensure_one_parameter
-def fd(param_list: list[str], dir: str):
-    run(
-        [
-            "fd",
-            "--color",
-            "never",
-            "--follow",
-            substrings_to_pattern(param_list),
-            dir,
-        ],
-        check=True,
-    )
+class Subcommands:
+    @staticmethod
+    def ls(param_list: list[str], dir: str, opts: str = ""):
+        obj = [dir] if param_list == [] else get_full_path(param_list, dir)
+        run(["ls", f"-{opts}F", "--color=auto", "--group-directories-first", *obj])
 
+    @staticmethod
+    def ll(param_list: list[str], dir: str):
+        Subcommands.ls(param_list, dir, opts="lh")
 
-# grep (rg) function
-@ensure_one_parameter
-def rg(param_list: list[str], dir: str):
-    opts, args = partition(lambda s: s.startswith("-"), param_list)
-    args = tuple(args)
-    run(
-        [
-            "rg",
-            "--smart-case",
-            "--follow",
-            *opts,
-            substrings_to_pattern(args) if len(args) > 1 else args[0],
-            dir,
-        ]
-    )
-    # `rg` returns a non-zero exit code when it does not locate a match,
-    # adhering to the traditional Unix shell convention
-    # where exit codes are interpreted as boolean values.
-    # However, this convention is not ideal as it specially treats and handles integers.
-    # A more general and elegant way could be to make the output of a command an object,
-    # containing stdout, stderr, and returncode.
-    # Programmers can manually specify conditions based on the returncode
-    # or any other attribute of the output object.
-    # This approach aligns with the principle of type consistency
-    # and can make error handling more explicit and robust.
+    @staticmethod
+    def cat(param_list: list[str], dir: str):
+        def display(file: str):
+            with open(file, "r") as f:
+                print(f.read(), end="")
 
+        def print_separator(i):
+            if i != length - 1:
+                print("-" * 50, end="\n" * 3)
+            else:
+                return
 
-# trash function
-@ensure_one_parameter
-def tr(param_list: list[str], dir: str):
-    return for_each(
-        lambda file: run(["trash", file], check=True),
-        get_full_path(param_list, dir),
-    )
+        def op(enum: tuple):
+            (i, file) = enum
+            display(file)
+            print_separator(i)
 
+        length = len(param_list)
+        for_each(op, enumerate(get_full_path(param_list, dir)))
 
-@ensure_two_parameters
-def mv(param_list: list[str], dir: str):
-    chdir(dir)
-    run(["mv", "-i", *param_list], check=True)
+    @staticmethod
+    @ensure_one_parameter
+    def fd(param_list: list[str], dir: str):
+        run(
+            [
+                "fd",
+                "--color",
+                "never",
+                "--follow",
+                substrings_to_pattern(param_list),
+                dir,
+            ],
+            check=True,
+        )
 
+    # grep (rg) function
+    @staticmethod
+    @ensure_one_parameter
+    def rg(param_list: list[str], dir: str):
+        opts, args = partition(lambda s: s.startswith("-"), param_list)
+        args = tuple(args)
+        run(
+            [
+                "rg",
+                "--smart-case",
+                "--follow",
+                *opts,
+                substrings_to_pattern(args) if len(args) > 1 else args[0],
+                dir,
+            ]
+        )
+        # `rg` returns a non-zero exit code when it does not locate a match,
+        # adhering to the traditional Unix shell convention
+        # where exit codes are interpreted as boolean values.
+        # However, this convention is not ideal as it specially treats and handles integers.
+        # A more general and elegant way could be to make the output of a command an object,
+        # containing stdout, stderr, and returncode.
+        # Programmers can manually specify conditions based on the returncode
+        # or any other attribute of the output object.
+        # This approach aligns with the principle of type consistency
+        # and can make error handling more explicit and robust.
 
-@ensure_two_parameters
-def ln(param_list: list[str], dir: str):
-    chdir(dir)
-    run(["ln", "-sr", param_list[0], param_list[1]], check=True)
+    # trash function
+    @staticmethod
+    @ensure_one_parameter
+    def tr(param_list: list[str], dir: str):
+        return for_each(
+            lambda file: run(["trash", file], check=True),
+            get_full_path(param_list, dir),
+        )
 
+    @staticmethod
+    @ensure_two_parameters
+    def mv(param_list: list[str], dir: str):
+        chdir(dir)
+        run(["mv", "-i", *param_list], check=True)
 
-@ensure_two_parameters
-def cp(param_list: list[str], dir: str):
-    chdir(dir)
-    run(["cp", "-i", *param_list], check=True)
+    @staticmethod
+    @ensure_two_parameters
+    def ln(param_list: list[str], dir: str):
+        chdir(dir)
+        run(["ln", "-sr", param_list[0], param_list[1]], check=True)
 
+    @staticmethod
+    @ensure_two_parameters
+    def cp(param_list: list[str], dir: str):
+        chdir(dir)
+        run(["cp", "-i", *param_list], check=True)
 
-@ensure_two_parameters
-def diff(param_list: list[str], dir: str):
-    chdir(dir)
-    run(["nvim", "-d", *reversed(param_list)])
+    @staticmethod
+    @ensure_two_parameters
+    def diff(param_list: list[str], dir: str):
+        chdir(dir)
+        run(["nvim", "-d", *reversed(param_list)])
 
+    # line count function
+    @staticmethod
+    @ensure_one_parameter
+    def lc(param_list: list[str], dir: str):
+        files = get_full_path(param_list, dir)
+        run(["wc", "-l", *files])
 
-# line count function
-@ensure_one_parameter
-def lc(param_list: list[str], dir: str):
-    files = get_full_path(param_list, dir)
-    run(["wc", "-l", *files])
-
-
-@ensure_one_parameter
-def shck(param_list: list[str], dir: str):
-    return for_each(
-        lambda file: run(["shellcheck", "-x", "-o", "all", file]),
-        get_full_path(param_list, dir),
-    )
+    @staticmethod
+    @ensure_one_parameter
+    def shck(param_list: list[str], dir: str):
+        return for_each(
+            lambda file: run(["shellcheck", "-x", "-o", "all", file]),
+            get_full_path(param_list, dir),
+        )
 
 
 # build a list then expand it to neovim or emacs
@@ -188,23 +191,15 @@ def edit(param_list: list[str], dir: str):
     update_permission(0o744)
 
 
+def is_user_defined_member(namespace: Type, member_name: str):
+    return (not member_name.startswith("_")) and (member_name in vars(namespace))
+
+
 @ensure_length(2, f"Missing argument for `{basename(__file__)}`")
 def main():
-    dir = expanduser("~/.local/bin")
-    fn_name = argv[1]
-    if is_global_user_fn(fn_name) and (
-        fn_name
-        not in {
-            "get_full_path",
-            "substrings_to_pattern",
-            "edit",
-            "main",
-            "ensure_length",
-            "ensure_one_parameter",
-            "ensure_two_parameters",
-        }
-    ):
-        getattr(modules[__name__], fn_name)(argv[2:], dir)
+    dir, fn_name = expanduser("~/.local/bin"), argv[1]
+    if is_user_defined_member(Subcommands, fn_name):
+        getattr_static(Subcommands, fn_name)(argv[2:], dir)
     else:
         edit(argv[1:], dir)
 
