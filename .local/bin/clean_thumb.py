@@ -78,7 +78,7 @@ def clean_old(cache_dir: str, index: str) -> None:
             media = cache_to_media.pop(cache)
             media_to_cache.pop(media)
 
-        d = json_read(index)
+        d: list[dict[str, str]] = json_read(index)
         [media_to_cache, cache_to_media] = d
         for_each(p, caches)
         json_write(index, d)
@@ -107,7 +107,7 @@ def clean_index(cache_dir: str, index: str):
             p, filter(lambda cache: not isfile(cache), tuple(cache_to_media.keys()))
         )
 
-    d = json_read(index)
+    d: list[dict[str, str]] = json_read(index)
     [media_to_cache, cache_to_media] = d
     length = len(media_to_cache)
 

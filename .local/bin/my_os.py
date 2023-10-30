@@ -3,7 +3,7 @@ import json
 from typing import Callable
 
 
-def json_read(file: str) -> list | dict:
+def json_read(file: str):
     with open(file, "r") as f:
         return json.load(f)
 
