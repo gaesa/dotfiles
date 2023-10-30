@@ -3,7 +3,7 @@ from datetime import datetime
 from os import remove, listdir
 from os.path import getmtime, expanduser, isdir, isfile, join
 from my_os import json_read, json_write
-from my_seq import for_each
+from my_seq import for_each, filterfalse
 from my_os import run_chdir
 
 
@@ -57,7 +57,7 @@ def within_one_month(old_dt: datetime, new_dt: datetime) -> bool:
         return False
 
 
-def clean_old(cache_dir: str, index: str) -> None:
+def clean_by_cache_mtime(cache_dir: str, index: str) -> None:
     """Remove old cache files, and delete the corresponding JSON contents"""
 
     @run_chdir(cache_dir)
@@ -87,32 +87,30 @@ def clean_old(cache_dir: str, index: str) -> None:
     return None if caches == () else pop_cache(caches)
 
 
-def clean_index(cache_dir: str, index: str):
-    def clean_media():
+def clean_by_index_file(cache_dir: str, index: str):
+    @run_chdir(cache_dir)
+    def handle_nonexistent_media():
         def p(media):
             cache = media_to_cache.pop(media)
             cache_to_media.pop(cache)
+            remove(cache) if isfile(cache) else None
 
-        for_each(
-            p, filter(lambda media: not isfile(media), tuple(media_to_cache.keys()))
-        )
+        for_each(p, filterfalse(isfile, tuple(media_to_cache.keys())))
 
     @run_chdir(cache_dir)
-    def clean_cache():
+    def handle_nonexistent_cache():
         def p(cache):
             media = cache_to_media.pop(cache)
             media_to_cache.pop(media)
 
-        for_each(
-            p, filter(lambda cache: not isfile(cache), tuple(cache_to_media.keys()))
-        )
+        for_each(p, filterfalse(isfile, tuple(cache_to_media.keys())))
 
     d: list[dict[str, str]] = json_read(index)
     [media_to_cache, cache_to_media] = d
     length = len(media_to_cache)
 
-    clean_media()
-    clean_cache()
+    handle_nonexistent_media()
+    handle_nonexistent_cache()
     if len(media_to_cache) != length:
         json_write(index, d)
     else:
@@ -125,8 +123,8 @@ def main():
     index = join(index_root, "index.json")
 
     if isdir(cache_root) and isfile(index):
-        clean_old(cache_root, index)
-        clean_index(cache_root, index)
+        clean_by_cache_mtime(cache_root, index)
+        clean_by_index_file(cache_root, index)
     else:
         return
 
