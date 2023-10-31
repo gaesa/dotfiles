@@ -22,7 +22,7 @@ function lfz() {
     command lf -last-dir-path="${tmp}" "$@"
     if [[ -f "${tmp}" ]]; then
         local -r dir="$(cat "${tmp}")"
-        command rm "${tmp}"
+        /usr/bin/rm "${tmp}"
         if [[ -d "${dir}" ]]; then
             if [[ "${dir}" != "$(pwd)" ]]; then
                 z "${dir}"
