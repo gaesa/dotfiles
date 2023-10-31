@@ -48,8 +48,16 @@ def substrings_to_pattern(substrings: Iterable[str]) -> str:
 class Subcommands:
     @staticmethod
     def ls(param_list: list[str], dir: str, opts: str = ""):
-        obj = [dir] if param_list == [] else get_full_path(param_list, dir)
-        run(["ls", f"-{opts}F", "--color=auto", "--group-directories-first", *obj])
+        run(
+            [
+                "ls",
+                f"-{opts}F",
+                "--color=auto",
+                "--group-directories-first",
+                *param_list,
+            ],
+            cwd=dir,
+        )
 
     @staticmethod
     def ll(param_list: list[str], dir: str):
@@ -73,7 +81,8 @@ class Subcommands:
             print_separator(i)
 
         length = len(param_list)
-        for_each(op, enumerate(get_full_path(param_list, dir)))
+        chdir(dir)
+        for_each(op, enumerate(param_list))
 
     @staticmethod
     @ensure_one_parameter
@@ -121,48 +130,45 @@ class Subcommands:
     @staticmethod
     @ensure_one_parameter
     def tr(param_list: list[str], dir: str):
+        chdir(dir)
         return for_each(
             lambda file: run(["trash", file], check=True),
-            get_full_path(param_list, dir),
+            param_list,
         )
 
     @staticmethod
     @ensure_two_parameters
     def mv(param_list: list[str], dir: str):
-        chdir(dir)
-        run(["mv", "-i", *param_list], check=True)
+        run(["mv", "-i", *param_list], check=True, cwd=dir)
 
     @staticmethod
     @ensure_two_parameters
     def ln(param_list: list[str], dir: str):
-        chdir(dir)
-        run(["ln", "-sr", param_list[0], param_list[1]], check=True)
+        run(["ln", "-sr", param_list[0], param_list[1]], check=True, cwd=dir)
 
     @staticmethod
     @ensure_two_parameters
     def cp(param_list: list[str], dir: str):
-        chdir(dir)
-        run(["cp", "-i", *param_list], check=True)
+        run(["cp", "-i", *param_list], check=True, cwd=dir)
 
     @staticmethod
     @ensure_two_parameters
     def diff(param_list: list[str], dir: str):
-        chdir(dir)
-        run(["nvim", "-d", *reversed(param_list)])
+        run(["nvim", "-d", *reversed(param_list)], cwd=dir)
 
     # line count function
     @staticmethod
     @ensure_one_parameter
     def lc(param_list: list[str], dir: str):
-        files = get_full_path(param_list, dir)
-        run(["wc", "-l", *files])
+        run(["wc", "-l", *param_list], cwd=dir)
 
     @staticmethod
     @ensure_one_parameter
     def shck(param_list: list[str], dir: str):
+        chdir(dir)
         return for_each(
             lambda file: run(["shellcheck", "-x", "-o", "all", file]),
-            get_full_path(param_list, dir),
+            param_list,
         )
 
 
@@ -172,11 +178,6 @@ def edit(param_list: list[str], dir: str):
     from stat import S_IMODE
     from os import chmod, stat
 
-    files = tuple(  # iterate over elements multiple times
-        get_full_path(param_list, dir)
-    )
-    editor.edit(files=files)
-
     def update_permission(permission):
         def get_permission(file):
             return oct(S_IMODE(stat(file).st_mode))
@@ -184,10 +185,13 @@ def edit(param_list: list[str], dir: str):
         for_each(
             lambda file: chmod(file, permission),
             filter(
-                lambda file: isfile(file) and get_permission(file) != permission, files
+                lambda file: isfile(file) and get_permission(file) != permission,
+                param_list,
             ),
         )
 
+    chdir(dir)
+    editor.edit(files=param_list)
     update_permission(0o744)
 
 
