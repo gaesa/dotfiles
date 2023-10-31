@@ -51,7 +51,7 @@ def open_with_emacs(files: list[str], allow_empty: bool = False):
 
 def wait_editor(*editors: Popen[bytes] | None):
     for_each(
-        lambda editor: editor.wait(),
+        lambda editor: editor.wait(),  # pyright: ignore [reportOptionalMemberAccess]
         filter(lambda editor: editor is not None, editors),
     )
 
