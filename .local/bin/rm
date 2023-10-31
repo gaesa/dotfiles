@@ -1,0 +1,48 @@
+#!/usr/bin/env python3
+from shutil import which
+import sys
+from subprocess import run
+from os.path import exists, expanduser
+
+
+def attach_tag(type_tag, contents):
+    return (type_tag, contents)
+
+
+def parse_args(args: list[str]):
+    try:
+        double_dash_index = args.index("--")
+        return attach_tag(False, args[double_dash_index + 1 :])
+    except ValueError:
+        return attach_tag(True, args)
+
+
+def trash(files: list[str], check_dash):
+    try:
+        from my_seq import for_each
+    except ModuleNotFoundError:
+        sys.path.append(expanduser("~/.local/bin"))
+        from my_seq import for_each
+
+    for_each(
+        lambda file: run(["trash", "-f", file], check=True),
+        filter(
+            lambda file: (not file.startswith("-")) and exists(file)
+            if check_dash
+            else exists,
+            files,
+        ),
+    )
+
+
+def main():
+    print("Please use 'trash' when possible", file=sys.stderr)
+    check_dash, files = parse_args(sys.argv[1:])
+    if which("trash") is not None:
+        trash(files, check_dash)
+    else:
+        run(["/usr/bin/rm", *sys.argv[1:]], check=True)
+
+
+if __name__ == "__main__":
+    main()
