@@ -1,0 +1,70 @@
+#!/usr/bin/env python3
+from subprocess import run
+import sys
+
+
+def catch_user_exception(orig_fn):
+    def new_fn(*args, **kwargs):
+        try:
+            return orig_fn(*args, **kwargs)
+        except KeyboardInterrupt:
+            raise SystemExit(0)
+
+    return new_fn
+
+
+@catch_user_exception
+def timed_input(prompt="", timeout: int | float = 5) -> str:
+    import os, time, multiprocessing
+
+    def input_subprocess(stdin_fd):
+        sys.stdin = os.fdopen(stdin_fd)
+        try:
+            input_queue.put(("input", input(prompt)))
+        except KeyboardInterrupt:
+            return
+
+    def loop():
+        nonlocal input_pair
+        while time.time() - start_time < timeout:
+            if not input_queue.empty():
+                input_pair = input_queue.get()
+                return
+            else:
+                continue
+
+    input_queue = multiprocessing.Queue()
+
+    p = multiprocessing.Process(target=input_subprocess, args=(sys.stdin.fileno(),))
+    p.start()
+    start_time, input_pair = time.time(), ("timeout", "")
+    loop()
+    p.terminate()
+
+    sys.stdin = os.fdopen(sys.stdin.fileno())
+
+    event, value = input_pair
+    if event == "timeout":
+        raise TimeoutError("No input received within the given timeout.")
+    else:
+        return value
+
+
+def get_input():
+    try:
+        return timed_input("Did you mean 'g s'? [Y/n]: ", 5)
+    except TimeoutError:
+        return None
+
+
+def main():
+    answer = get_input()
+    print()
+    if answer in {"y", "Y", ""}:
+        run(["git", "status"])
+    else:
+        run(["/usr/bin/gs", *sys.argv[1:]])
+
+
+if __name__ == "__main__":
+    main()
