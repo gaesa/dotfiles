@@ -31,7 +31,7 @@ lsp.on_attach(function(_, bufnr) --client
     local opts = { buffer = bufnr }
     local map = vim.keymap.set
 
-    map("n", "<leader>r", "<cmd>lua vim.lsp.buf.rename()<cr>", opts)
+    map("n", "<leader>r", vim.lsp.buf.rename, opts)
 end)
 
 lsp.set_sign_icons({
