@@ -138,7 +138,7 @@ autocmd({ "BufWritePre" }, {
 -- Should be placed before 'Retab' as some formatters don't support space indent
 autocmd({ "BufWritePre" }, {
     callback = function()
-        vim.lsp.buf.format({ async = false })
+        vim.cmd.NullFormat()
     end,
     group = group,
 })
