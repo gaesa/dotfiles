@@ -123,14 +123,26 @@ autocmd({ "filetype" }, {
 
 -- Remove all trailing whitespace
 autocmd({ "BufWritePre" }, {
-    command = [[silent! %s/\s\+$//e]],
+    callback = function()
+        local config = vim.b.editorconfig
+        if config ~= nil and config["trim_trailing_whitespace"] == "false" then
+            return
+        else
+            vim.cmd([[silent! %s/\s\+$//e]])
+        end
+    end,
     group = group,
 })
 
 -- Retab
 autocmd({ "BufWritePre" }, {
     callback = function()
-        vim.cmd.retab({ bang = true })
+        local config = vim.b.editorconfig
+        if config ~= nil and config["indent_style"] == "tab" then
+            return
+        else
+            vim.cmd.retab({ bang = true })
+        end
     end,
     group = group,
 })
