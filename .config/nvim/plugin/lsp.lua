@@ -105,6 +105,21 @@ require("mason-null-ls").setup({
                 extra_args = { "-style={IndentWidth: 4, ObjCBlockIndentWidth: 4, CommentPragmas: '^[^ ]',}" },
             }))
         end,
+
+        prettier = function(_, _)
+            null_ls.register(null_ls.builtins.formatting.prettier.with({
+                extra_args = function(params)
+                    if vim.bo.filetype == "markdown" or vim.b.editorconfig["indent_size"] ~= nil then
+                        return {}
+                    else
+                        return {
+                            "--tab-width",
+                            vim.api.nvim_buf_get_option(params.bufnr, "shiftwidth"),
+                        }
+                    end
+                end,
+            }))
+        end,
     },
 })
 
