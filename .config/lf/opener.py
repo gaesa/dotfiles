@@ -18,18 +18,21 @@ def get_mime_type(file: str) -> tuple[str, str]:
     extension = splitext(file)[1]
 
     file_args = ["file", "-Lb", "--mime-type", "--", file]
-    xdg_args = [
-        "xdg-mime",
-        "query",
-        "filetype",
-        "./" + file if file.startswith("-") else file,
-    ]
-    args = file_args if extension in {".ts", ".bak", ".txt", ".TXT"} else xdg_args
+    args = (
+        file_args
+        if extension in {".ts", ".bak", ".txt", ".TXT"}
+        else [
+            "xdg-mime",
+            "query",
+            "filetype",
+            "./" + file if file.startswith("-") else file,
+        ]
+    )
 
     string = run(args, capture_output=True, text=True, check=True).stdout.rstrip()
     mime_type = tuple(string.split("/", 1))
     if len(mime_type) != 2:
-        if args == xdg_args:
+        if args[0] == "xdg-mime":
             new_str = run(
                 file_args, capture_output=True, text=True, check=True
             ).stdout.rstrip()
