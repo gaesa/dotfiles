@@ -121,6 +121,57 @@ autocmd({ "filetype" }, {
     group = group,
 })
 
+-- Improve responsiveness in compact files
+autocmd({ "BufRead" }, {
+    callback = function(args)
+        local function detect_compact_file()
+            local lines = vim.api.nvim_buf_get_lines(0, 0, -1, false)
+            return #lines == 1 and #lines[1] > 200
+        end
+        -- local function make_plugin_stop(plugin, stop)
+        --     return function()
+        --         if not package.loaded[plugin] then
+        --             return
+        --         else
+        --             stop()
+        --         end
+        --     end
+        -- end
+        -- local stop_treesitter = make_plugin_stop("nvim-treesitter", vim.treesitter.stop)
+        -- local stop_illuminate = make_plugin_stop("nvim-treesitter", function()
+        --     require("illuminate").pause_buf()
+        -- end)
+        local function stop_lsp(buf)
+            vim.api.nvim_create_autocmd({ "LspAttach" }, {
+                buffer = buf,
+                ---@diagnostic disable-next-line: redefined-local
+                callback = function(args)
+                    vim.schedule(function()
+                        vim.lsp.buf_detach_client(buf, args.data.client_id)
+                    end)
+                end,
+            })
+        end
+        local function set_opts()
+            local function stop_paren()
+                if vim.fn.exists(":DoMatchParen") ~= 2 then
+                    return
+                else
+                    vim.cmd("NoMatchParen")
+                end
+            end
+            vim.opt_local.filetype = "" --core part
+            stop_paren()
+        end
+        if detect_compact_file() then
+            set_opts()
+            stop_lsp(args.buf)
+        else
+            return
+        end
+    end,
+})
+
 -- Remove all trailing whitespace
 autocmd({ "BufWritePre" }, {
     callback = function()
