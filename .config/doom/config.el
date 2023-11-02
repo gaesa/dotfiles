@@ -1195,8 +1195,8 @@
             (setq magit-git-global-arguments (remove git-arg magit-git-global-arguments))
           nil)))))
 
-(add-hook 'window-configuration-change-hook #'my/git-dir-hook)
-(add-hook 'window-buffer-change-functions #'my/git-dir-hook)
+(for-each (lambda (hook) (add-hook hook #'my/git-dir-hook))
+          '(window-buffer-change-functions window-configuration-change-hook))
 
 ;; Project
 (setq projectile-project-search-path '(("~/dm/pj" . 1)))
