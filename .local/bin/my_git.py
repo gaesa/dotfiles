@@ -1,6 +1,6 @@
 from subprocess import run
 from os.path import islink, isdir, join, dirname
-from os import environ
+from os import environ, getcwd
 
 
 def get_tracked_files(path: str = ".") -> list[str]:
@@ -23,12 +23,13 @@ def get_git_dir():
             return join(work_tree, ".git")
 
 
-def get_work_tree_without_config(dir: str = ".") -> str | None:
+def get_work_tree_without_config(dir: str | None = None) -> str | None:
     if "GIT_WORK_TREE" in environ:
         return environ["GIT_WORK_TREE"]
     else:
+        dir = getcwd() if dir is None else dir
         while dir != "/":
-            if isdir(join(dir, "git")):
+            if isdir(join(dir, ".git")):
                 return dir
             else:
                 dir = dirname(dir)
