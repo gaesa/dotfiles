@@ -172,6 +172,23 @@ autocmd({ "BufRead" }, {
     end,
 })
 
+-- Auto creates parent directories for a file if they don’t exist
+autocmd({ "BufWritePre" }, {
+    callback = function()
+        local function exists(path)
+            return vim.fn.empty(vim.fn.glob(path)) == 0
+        end
+
+        local dir = vim.fs.dirname(vim.api.nvim_buf_get_name(0))
+        if exists(dir) then
+            return
+        else
+            vim.fn.mkdir(dir, "p")
+        end
+    end,
+    group = group,
+})
+
 -- Remove all trailing whitespace
 autocmd({ "BufWritePre" }, {
     callback = function()
