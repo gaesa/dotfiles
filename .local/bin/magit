@@ -1,0 +1,10 @@
+#!/usr/bin/env python3
+from subprocess import run
+
+
+def main():
+    run(["emacsclient", "-c", "--eval", "(magit-status)"])
+
+
+if __name__ == "__main__":
+    main()
