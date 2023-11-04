@@ -99,6 +99,10 @@ dbus-update-activation-environment --systemd --all
 
 # Start KDE from TTY {{{
 if [[ -z "$WAYLAND_DISPLAY" ]] && [[ "$(tty)" = "/dev/tty1" ]]; then
+    chmod u+w "$HOME"
+    # See also:
+    # https://bugs.kde.org/show_bug.cgi?id=415770
+    # https://bugs.kde.org/show_bug.cgi?id=417534
     exec startplasma-wayland &>"$XDG_CACHE_HOME/startup.log"
 fi
 # }}}
