@@ -179,8 +179,8 @@ def edit(param_list: list[str], dir: str):
     from os import chmod, stat
 
     def update_permission(permission):
-        def get_permission(file):
-            return oct(S_IMODE(stat(file).st_mode))
+        def get_permission(file: str):
+            return S_IMODE(stat(file).st_mode)
 
         for_each(
             lambda file: chmod(file, permission),
