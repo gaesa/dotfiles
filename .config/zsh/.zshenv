@@ -59,6 +59,7 @@ if [[ -v PATHONPATH ]]; then
 else
     export PYTHONPATH="$HOME/.local/bin"
 fi
+export PYTHONSTARTUP="$XDG_CONFIG_HOME/python/startup.py"
 # }}}
 
 # path+ {{{
