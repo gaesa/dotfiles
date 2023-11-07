@@ -624,11 +624,13 @@
                                          ?_ t
                                          ?  t)))
 
-  (define-advice company--good-prefix-p (:override (prefix) support-ingore-prefix)
+  (define-advice company--good-prefix-p (:override (prefix min-length) support-ingore-prefix)
     (and (stringp (company--prefix-str prefix)) ;excludes 'stop
          (not (string= prefix ""))
          (let ((len (length prefix)))
-           (cond ((gethash (aref prefix 0) company-ignore-prefix) nil)
+           (cond ((or (< len min-length)
+                      (gethash (aref prefix 0) company-ignore-prefix))
+                  nil)
                  (company--manual-prefix
                   (or (not company-abort-manual-when-too-short)
                       ;; Must not be less than minimum or initial length.
