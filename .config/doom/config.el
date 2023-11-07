@@ -105,7 +105,7 @@
                                     test equal
                                     data ("\r" "\n"
                                           "\^[[K" "")))))
-                  filter)
+                   filter)
          (append (if (null sentinel)
                      '()
                    (list ':sentinel sentinel))
@@ -278,8 +278,8 @@
   "Used to track the state of clilpboard.")
 
 (defun closure-p (var)
-    (and (consp var)
-         (eq (car var) 'closure)))
+  (and (consp var)
+       (eq (car var) 'closure)))
 
 (defun my/evil-clipboard (orig-fun &rest args)
   (defun reset (old-kill)
@@ -332,7 +332,7 @@
     magit-copy-section-value))
 
 (mapc (lambda (fn) (advice-add fn :around #'my/evil-clipboard))
-          clipboard-command-list)
+      clipboard-command-list)
 
 (map! :leader "y" (lambda () (interactive)
                     (setq clipboard-enabled t)))
@@ -507,9 +507,9 @@
 ;; refresh the word list at run-time when ispell updates the personal dictionary
 ;; see: https://github.com/emacsmirror/spell-fu#todo
 (defun re-enable-spell (&optional _)
-    (if spell-fu-mode
-        (progn (spell-fu-mode -1)
-               (spell-fu-mode 1))))
+  (if spell-fu-mode
+      (progn (spell-fu-mode -1)
+             (spell-fu-mode 1))))
 (mapc (lambda (orig-fn) (advice-add orig-fn :after #'re-enable-spell))
       '(spell-fu-word-add spell-fu-word-remove))
 
@@ -558,18 +558,18 @@
 
 ;; Ligature
 (ligature-set-ligatures 'prog-mode '("|||>" "<|||" "<==>" "<!--" "####" "~~>" "***" "||=" "||>"
-                                       ":::" "::=" "=:=" "===" "==>" "=!=" "=>>" "=<<" "=/=" "!=="
-                                       "!!." ">=>" ">>=" ">>>" ">>-" ">->" "->>" "-->" "---" "-<<"
-                                       "<~~" "<~>" "<*>" "<||" "<|>" "<$>" "<==" "<=>" "<=<" "<->"
-                                       "<--" "<-<" "<<=" "<<-" "<<<" "<+>" "</>" "###" "#_(" "..<"
-                                       "..." "+++" "/==" "///" "_|_" "&&" "^=" "~~" "~@" "~="
-                                       "~>" "~-" "**" "*>" "*/" "||" "|}" "|]" "|=" "|>" "|-" "{|"
-                                       "[|" "]#" "::" ":=" ":>" ":<" "$>" "==" "=>" "!=" "!!" ">:"
-                                       ">=" ">>" ">-" "-~" "-|" "->" "--" "-<" "<~" "<*" "<|" "<:"
-                                       "<$" "<=" "<>" "<-" "<<" "<+" "</" "#{" "#[" "#:" "#=" "#!"
-                                       "##" "#(" "#?" "#_" "%%" ".=" ".-" ".." ".?" "+>" "++" "?:"
-                                       "?=" "?." "??" ";;" "/*" "/=" "/>" "//" "__" "~~" "(*" "*)"
-                                       "\\\\" "://"))
+                                     ":::" "::=" "=:=" "===" "==>" "=!=" "=>>" "=<<" "=/=" "!=="
+                                     "!!." ">=>" ">>=" ">>>" ">>-" ">->" "->>" "-->" "---" "-<<"
+                                     "<~~" "<~>" "<*>" "<||" "<|>" "<$>" "<==" "<=>" "<=<" "<->"
+                                     "<--" "<-<" "<<=" "<<-" "<<<" "<+>" "</>" "###" "#_(" "..<"
+                                     "..." "+++" "/==" "///" "_|_" "&&" "^=" "~~" "~@" "~="
+                                     "~>" "~-" "**" "*>" "*/" "||" "|}" "|]" "|=" "|>" "|-" "{|"
+                                     "[|" "]#" "::" ":=" ":>" ":<" "$>" "==" "=>" "!=" "!!" ">:"
+                                     ">=" ">>" ">-" "-~" "-|" "->" "--" "-<" "<~" "<*" "<|" "<:"
+                                     "<$" "<=" "<>" "<-" "<<" "<+" "</" "#{" "#[" "#:" "#=" "#!"
+                                     "##" "#(" "#?" "#_" "%%" ".=" ".-" ".." ".?" "+>" "++" "?:"
+                                     "?=" "?." "??" ";;" "/*" "/=" "/>" "//" "__" "~~" "(*" "*)"
+                                     "\\\\" "://"))
 (global-ligature-mode t)
 
 ;; Org-mode
@@ -895,7 +895,7 @@
 
 (progn (add-hook 'scheme-mode-hook #'geiser-mode)
        (mapc (lambda (hook) (add-hook hook #'lispy-mode))
-                 '(scheme-mode-hook geiser-repl-mode-hook emacs-lisp-mode-hook fennel-mode-hook)))
+             '(scheme-mode-hook geiser-repl-mode-hook emacs-lisp-mode-hook fennel-mode-hook)))
 
 (setq scheme-program-name "chez"
       geiser-chez-binary "chez"
@@ -1197,7 +1197,7 @@
           nil)))))
 
 (mapc (lambda (hook) (add-hook hook #'my/git-dir-hook))
-          '(window-buffer-change-functions window-configuration-change-hook))
+      '(window-buffer-change-functions window-configuration-change-hook))
 
 ;; Project
 (setq projectile-project-search-path '(("~/dm/pj" . 1)))
