@@ -884,14 +884,10 @@
                (switch-to-buffer-other-window buf))
       nil)))
 
-(defun join-path (&rest args)
-  (cl-reduce (lambda (x y)
-               (expand-file-name y x))
-             args))
-
+(require 'f)
 (progn (let ((fennel-mode-path (expand-file-name "~/.config/emacs/.local/straight/repos/fennel-mode")))
-         (autoload 'fennel-mode (join-path fennel-mode-path "fennel-mode") nil t)
-         (autoload 'antifennel-mode (join-path fennel-mode-path "antifennel.el") nil t))
+         (autoload 'fennel-mode (f-join fennel-mode-path "fennel-mode") nil t)
+         (autoload 'antifennel-mode (f-join fennel-mode-path "antifennel.el") nil t))
        (add-to-list 'auto-mode-alist '("\\.fnl\\'" . fennel-mode))
        (add-hook 'lua-mode-hook 'antifennel-mode))
 
@@ -1181,20 +1177,19 @@
 
 ;; Magit/yadm
 (defun find-git-root (dir)
-  (cond ((file-directory-p (join-path dir ".git")) dir)
-        ((string= dir "/") nil)
-        (t (find-git-root (directory-file-name
-                           (file-name-directory dir))))))
+  (cond ((f-dir? (f-join dir ".git")) dir)
+        ((f-equal? dir "/") nil)
+        (t (find-git-root (f-dirname dir)))))
 
 (with-eval-after-load 'magit
   (define-advice magit-process-environment (:filter-return (env) add-git-dir)
     "Inspired by https://github.com/magit/magit/issues/460#issuecomment-1475082958.
 This implementation requires users to set `core.worktree` and make sure that `core.bare` is not `true` since git doesn't allow `core.worktree` to exist when `core.bare` is set to `true`"
     (let* ((home (expand-file-name "~"))
-           (git-dir (join-path home ".local/share/yadm/repo.git")))
-      (when (and (file-exists-p git-dir)
-                 (let ((cwd (directory-file-name (expand-file-name default-directory))))
-                   (or (string= cwd home)
+           (git-dir (f-join home ".local/share/yadm/repo.git")))
+      (when (and (f-dir? git-dir)
+                 (let ((cwd (expand-file-name default-directory)))
+                   (or (f-equal? cwd home)
                        (null (find-git-root cwd)))))
         (push (format "GIT_DIR=%s" git-dir) env)))
     env))
