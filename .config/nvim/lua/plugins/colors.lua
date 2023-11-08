@@ -37,7 +37,7 @@ return {
                 local function hack_cursorline()
                     vim.api.nvim_create_autocmd({ "BufEnter" }, {
                         callback = function()
-                            require("utils.table").for_each( --
+                            require("utils").for_each( --
                                 function(winid)
                                     vim.wo[winid].cursorline = false
                                 end,

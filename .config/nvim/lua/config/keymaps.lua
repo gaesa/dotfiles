@@ -147,7 +147,7 @@ map({ "n", "i" }, "<F11>", function()
 end)
 
 map({ "n", "i" }, "<F12>", function()
-    vim.bo.spellcapcheck = utils.cond.iif(
+    vim.bo.spellcapcheck = utils.iif(
         vim.bo.spellcapcheck == "", --
         function()
             return vim.b.spellcapcheck
@@ -182,8 +182,8 @@ local function replace(original)
     if replacement == "" then
         return
     else
-        vim.cmd("%s/" .. utils.string.rstrip(escape_string(original)) .. "/" .. utils.cond.iif(
-            utils.string.startswith(replacement, "''") or utils.string.startswith(replacement, '""'), --
+        vim.cmd("%s/" .. utils.string.rstrip(escape_string(original)) .. "/" .. utils.iif(
+            vim.startswith(replacement, "''") or vim.startswith(replacement, '""'), --
             function()
                 return string.sub(replacement, 3)
             end,
