@@ -9,8 +9,24 @@ function P(text, level, once)
 end
 
 utils.string = require("utils.string")
-utils.table = require("utils.table")
-utils.cond = require("utils.cond")
+
+function utils.iif(predicate, consequent, alternative)
+    if predicate then
+        return consequent()
+    else
+        return alternative()
+    end
+end
+
+function utils.cond(...)
+    local args = { ... }
+    for _, tuple in ipairs(args) do
+        local condition, action = unpack(tuple)
+        if condition() then
+            return action()
+        end
+    end
+end
 
 function utils.range(start, stop, step)
     step = utils.iif(
@@ -27,6 +43,18 @@ function utils.range(start, stop, step)
             local current = start
             start = start + step
             return current
+        end
+    end
+end
+
+function utils.for_each(operation, sequence)
+    if type(sequence) == "function" then
+        for v in sequence do
+            operation(v)
+        end
+    else
+        for i, v in pairs(sequence) do
+            operation(v, i)
         end
     end
 end
