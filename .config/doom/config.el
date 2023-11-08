@@ -146,22 +146,44 @@
                                       (list repo-url path)))
     (add-to-list 'custom-theme-load-path path)))
 
+(cl-defun make-set (&optional lst &key (test 'equal))
+  (let ((set (make-hash-table :test test)))
+    (mapc (lambda (ele) (adjoin-set ele set)) lst)
+    set))
+(defun adjoin-set (element set)
+  (puthash element t set))
+(defun element-of-set? (element set)
+  (gethash element set))
+(defun remove-from-set (element set)
+  (remhash element set))
+(defun complement-set (set1 set2)
+  (let ((result (make-set)))
+    (maphash (lambda (key value)
+               (if (not (element-of-set? key set2))
+                   (adjoin-set key result)))
+             set1)
+    result))
+(defun set->list (set)
+  (let ((result-list '()))
+    (maphash (lambda (key value)
+               (push key result-list))
+             set)
+    result-list))
+(defun pop! (lst1 lst2)
+  (set->list (complement-set (make-set lst1)
+                             (make-set lst2))))
+
 (defun switch-theme (color)
-  (let ((colors #s(hash-table
-                   size 2
-                   test equal
-                   data (
-                         "light" t
-                         "dark" t))))
-    (if (gethash color colors)
-        (let ((desired-theme (intern (format "everforest-hard-%s" color)))
+  (let ((colors (make-set '(light dark) :test 'eq)))
+    (if (element-of-set? color colors)
+        (let ((desired-theme (intern (format "everforest-hard-%s" (symbol-name color))))
               (current-theme (if (null custom-enabled-themes)
                                  '()
                                (car custom-enabled-themes))))
           (if (not (eq current-theme desired-theme))
               (load-theme desired-theme t)
             '()))
-      (error "Invalid color: %s" color))))
+      (error "Invalid color: %s" (symbol-name color)))))
 
 (defun get-local-time ()
   (let ((current-time-structure (decode-time (current-time))))
@@ -182,8 +204,8 @@
 (defun switch-theme-if-needed (&optional time-range)
   (defun switch (time-range)
     (let ((desired-theme (if (light-theme-time? time-range)
-                             "light"
-                           "dark")))
+                             'light
+                           'dark)))
       (switch-theme desired-theme)))
   (if (null time-range)
       (switch '("06:00" "18:00"))
@@ -213,7 +235,7 @@
 
 (let ((interval (* 24 60 60))
       (times '("06:00" "18:00"))
-      (theme-table ["light" "dark"]))
+      (theme-table [light dark]))
   (add-hook 'after-init-hook (lambda () (switch-theme-if-needed times)))
   (for-each (lambda (time index)
               (run-at-time time interval
@@ -616,20 +638,14 @@
         company-dabbrev-downcase nil
         company-dabbrev-code-ignore-case t
         company-dabbrev-ignore-case t)
-  (defvar company-ignore-prefix #s(hash-table
-                                   size 2
-                                   test eq
-                                   data (
-                                         ?? t
-                                         ?_ t
-                                         ?  t)))
+  (defvar company-ignore-prefix (make-set '(?? ?_ ? ) :test 'eq))
 
   (define-advice company--good-prefix-p (:override (prefix min-length) support-ingore-prefix)
     (and (stringp (company--prefix-str prefix)) ;excludes 'stop
          (not (string= prefix ""))
          (let ((len (length prefix)))
            (cond ((or (< len min-length)
-                      (gethash (aref prefix 0) company-ignore-prefix))
+                      (element-of-set? (aref prefix 0) company-ignore-prefix))
                   nil)
                  (company--manual-prefix
                   (or (not company-abort-manual-when-too-short)
@@ -639,15 +655,8 @@
                  (t (>= len company-minimum-prefix-length))))))
 
   (defun blank-char-p (char)
-    (let ((blank-char
-           #s(hash-table size 4
-                         test eq
-                         data (
-                               ?\s t
-                               ?\t t
-                               ?\r t
-                               ?\n t))))
-      (not (null (gethash char blank-char)))))
+    (let ((blank-chars (make-set '(?\s ?\t ?\r ?\n) :test 'eq)))
+      (element-of-set? char blank-chars)))
 
   (define-advice company-indent-or-complete-common (:override (arg) fix-indent)
     (cond ((use-region-p)
@@ -908,26 +917,12 @@
 (add-hook 'minibuffer-setup-hook #'conditionally-enable-lispy)
 
 (defun closed-pair-p (char)
-  (let ((closed-pairs
-         #s(hash-table
-            size 3
-            test eq
-            data (
-                  ?\) t
-                  ?\] t
-                  ?\} t))))
-    (gethash char closed-pairs)))
+  (let ((closed-pairs (make-set '(?\) ?\] ?\}) :test 'eq)))
+    (element-of-set? char closed-pairs)))
 
 (defun opened-pair-p (char)
-  (let ((opened-pairs
-         #s(hash-table
-            size 3
-            test eq
-            data (
-                  ?\( t
-                  ?\[ t
-                  ?\{ t))))
-    (gethash char opened-pairs)))
+  (let ((opened-pairs (make-set '(?\( ?\[ ?\{) :test 'eq)))
+    (element-of-set? char opened-pairs)))
 
 (define-advice eros-eval-last-sexp (:around (orig-fun &rest args) support-next-sexp)
   (if (opened-pair-p (char-after))
