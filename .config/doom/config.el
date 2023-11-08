@@ -189,7 +189,7 @@
       (switch '("06:00" "18:00"))
     (switch time-range)))
 
-(defun for-each (procedure sequence)
+(defun for-each (procedure sequence)    ;support an optional index parameter
   (let* ((len-args (cdr (func-arity procedure)))
          (procedure (if (< len-args 2)
                         (lambda (element index)
@@ -331,7 +331,7 @@
     magit-copy-buffer-revision
     magit-copy-section-value))
 
-(for-each (lambda (fn) (advice-add fn :around #'my/evil-clipboard))
+(mapc (lambda (fn) (advice-add fn :around #'my/evil-clipboard))
           clipboard-command-list)
 
 (map! :leader "y" (lambda () (interactive)
@@ -389,22 +389,23 @@
 
 (defun my/center-line (&rest _)
   (evil-scroll-line-to-center nil))
-(advice-add 'evil-search-next :after #'my/center-line) ;; n -> nzz
-(advice-add 'evil-ex-search-next :after #'my/center-line) ;; n -> nzz
-(advice-add 'evil-search-previous :after #'my/center-line) ;; N -> Nzz
-(advice-add 'evil-ex-search-previous :after #'my/center-line) ;; N -> Nzz
-(advice-add 'evil-next-visual-line :after #'my/center-line) ;; gj -> gjzz
-(advice-add 'evil-previous-visual-line :after #'my/center-line) ;; gk -> gjzz
-(advice-add 'evil-scroll-up :after #'my/center-line) ;; C-u -> C-u zz
-(advice-add 'evil-scroll-down :after #'my/center-line) ;; C-d -> C-d zz
-(advice-add 'better-jumper-jump-forward :after #'my/center-line) ;; C-i -> C-o zz
-(advice-add 'better-jumper-jump-backward :after #'my/center-line) ;; C-o -> C-o zz
-(advice-add 'evil-ex-search-word-forward :after #'my/center-line) ;; * -> *zz
-(advice-add 'evil-ex-search-word-backward :after #'my/center-line) ;; # -> #zz
-(advice-add 'evil-goto-line :after #'my/center-line) ;; G -> Gzz
-(advice-add 'evil-jump-item :after #'my/center-line) ;; % -> %zz
-(advice-add '+lookup/definition :after #'my/center-line) ;; gd -> gdzz
-(advice-add '+lookup/references :after #'my/center-line) ;; gD -> gDzz
+(let ((functions '(evil-search-next             ;; n -> nzz
+                   evil-ex-search-next          ;; n -> nzz
+                   evil-search-previous         ;; N -> Nzz
+                   evil-ex-search-previous      ;; N -> Nzz
+                   evil-next-visual-line        ;; gj -> gjzz
+                   evil-previous-visual-line    ;; gk -> gkzz
+                   evil-scroll-up               ;; C-u -> C-u zz
+                   evil-scroll-down             ;; C-d -> C-d zz
+                   better-jumper-jump-forward   ;; C-i -> C-i zz
+                   better-jumper-jump-backward  ;; C-o -> C-o zz
+                   evil-ex-search-word-forward  ;; * -> *zz
+                   evil-ex-search-word-backward ;; # -> #zz
+                   evil-goto-line               ;; G -> Gzz
+                   evil-jump-item               ;; % -> %zz
+                   +lookup/definition           ;; gd -> gdzz
+                   +lookup/references)))        ;; gD -> gDzz
+  (mapc (lambda (fn) (advice-add fn :after #'my/center-line)) functions))
 
 ;; Line wrap
 (+global-word-wrap-mode t)
@@ -509,8 +510,8 @@
     (if spell-fu-mode
         (progn (spell-fu-mode -1)
                (spell-fu-mode 1))))
-(advice-add 'spell-fu-word-add :after #'re-enable-spell)
-(advice-add 'spell-fu-word-remove :after #'re-enable-spell)
+(mapc (lambda (orig-fn) (advice-add orig-fn :after #'re-enable-spell))
+      '(spell-fu-word-add spell-fu-word-remove))
 
 ;; disable spell check in insert mode
 (defun alistp (lst)
@@ -686,8 +687,8 @@
   (define-key company-active-map (kbd "C-M-s") nil)
   (define-key company-active-map (kbd "M-ESC ESC") nil))
 
-(add-hook 'after-init-hook #'global-company-mode)
-(add-hook 'after-init-hook #'company-statistics-mode)
+(mapc (lambda (fn) (add-hook 'after-init-hook fn))
+      #'(global-company-mode company-statistics-mode))
 (require 'company-box)
 (add-hook 'company-mode-hook #'company-box-mode)
 
@@ -844,8 +845,8 @@
 (require 'symbol-overlay)
 (define-key evil-normal-state-map (kbd "M-n") #'symbol-overlay-jump-next)
 (define-key evil-normal-state-map (kbd "M-p") #'symbol-overlay-jump-prev)
-(advice-add 'symbol-overlay-jump-next :after #'my/center-line)
-(advice-add 'symbol-overlay-jump-prev :after #'my/center-line)
+(mapc (lambda (orig-fn) (advice-add orig-fn :after #'my/center-line))
+      '(symbol-overlay-jump-next symbol-overlay-jump-prev))
 (map! :leader "r r" #'symbol-overlay-rename)
 (map! :leader "r q" #'symbol-overlay-query-replace)
 (advice-add 'symbol-overlay-query-replace :after #'symbol-overlay-remove-all)
@@ -893,7 +894,7 @@
        (add-hook 'lua-mode-hook 'antifennel-mode))
 
 (progn (add-hook 'scheme-mode-hook #'geiser-mode)
-       (for-each (lambda (hook) (add-hook hook #'lispy-mode))
+       (mapc (lambda (hook) (add-hook hook #'lispy-mode))
                  '(scheme-mode-hook geiser-repl-mode-hook emacs-lisp-mode-hook fennel-mode-hook)))
 
 (setq scheme-program-name "chez"
@@ -1195,7 +1196,7 @@
             (setq magit-git-global-arguments (remove git-arg magit-git-global-arguments))
           nil)))))
 
-(for-each (lambda (hook) (add-hook hook #'my/git-dir-hook))
+(mapc (lambda (hook) (add-hook hook #'my/git-dir-hook))
           '(window-buffer-change-functions window-configuration-change-hook))
 
 ;; Project
