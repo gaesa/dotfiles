@@ -175,13 +175,10 @@ class Subcommands:
 # build a list then expand it to neovim or emacs
 def edit(param_list: list[str], dir: str):
     import editor
-    from stat import S_IMODE
-    from os import chmod, stat
+    from os import chmod
+    from my_os import get_permission
 
     def update_permission(permission):
-        def get_permission(file: str):
-            return S_IMODE(stat(file).st_mode)
-
         for_each(
             lambda file: chmod(file, permission),
             filter(
