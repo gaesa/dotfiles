@@ -24,8 +24,11 @@ def get_cmd(CURRENT_FILE: str, HOME: str) -> list[str]:
         return bind(None, [path])
 
     def bind_pycache() -> Iterable[str]:
-        dir = join(HOME, ".config/lf/__pycache__")
-        return bind(None, [dir]) if isdir(dir) else []
+        prefix = join(HOME, ".cache/python")
+        dir_lf = join(prefix, join(HOME, ".config/lf")[1:])
+        dir_local_bin = join(prefix, join(HOME, ".local/bin")[1:])
+        dir_usr = join(prefix, "usr")
+        return bind(None, [dir_lf, dir_local_bin, dir_usr])
 
     preview = join(HOME, ".config/lf/preview.py")
     return [
