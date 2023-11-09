@@ -14,6 +14,13 @@ def after(post_fn: Callable):
     return decorator
 
 
+def filter_return(filter_fn: Callable):
+    def decorator(old_fn: Callable) -> Callable:
+        return lambda *args, **kwargs: filter_fn(old_fn(*args, **kwargs))
+
+    return decorator
+
+
 def debug_fn(old_fn: Callable, name: str = ""):
     def new_fn(*args, **kwargs):
         print("args:", args, "kwargs:", kwargs) if name == "" else print(
