@@ -1182,11 +1182,26 @@
     "Inspired by https://github.com/magit/magit/issues/460#issuecomment-1475082958.
 This implementation requires users to set `core.worktree` and make sure that `core.bare` is not `true` since git doesn't allow `core.worktree` to exist when `core.bare` is set to `true`"
     (let* ((home (expand-file-name "~"))
-           (git-dir (f-join home ".local/share/yadm/repo.git")))
+           (git-dir (f-join home ".local/share/yadm/repo.git"))
+           (get-tracked-dirs (lambda (home git-dir cwd)
+                               (let ((res (run-process
+                                           (list "git"
+                                                 (format "--git-dir=%s" git-dir)
+                                                 "ls-dirs"
+                                                 home))))
+                                 (if (not (= (car res) 0))
+                                     '()
+                                   (mapcar (lambda (d) (f-join cwd d))
+                                           (split-string
+                                            (s-trim-right
+                                             (cdr res))
+                                            "\n")))))))
       (when (and (f-dir? git-dir)
                  (let ((cwd (expand-file-name default-directory)))
                    (or (f-equal? cwd home)
-                       (null (find-git-root cwd)))))
+                       (and (null (find-git-root cwd))
+                            (element-of-set? (directory-file-name cwd)
+                                             (make-set (funcall get-tracked-dirs home git-dir cwd)))))))
         (push (format "GIT_DIR=%s" git-dir) env)))
     env))
 
