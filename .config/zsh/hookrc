@@ -86,14 +86,14 @@ _git_env_on_chdir() {
 }
 precmd_functions+=(_git_env_on_chdir)
 
-#------Pyvenv---------
+#------Python venv---------
 #---------------------
-_auto_pyvenv() {
+_auto_python_venv() {
     if [[ -n "${VIRTUAL_ENV}" && "$(pwd)" != "$VIRTUAL_ENV"* ]]; then
         deactivate
     fi
-    if [[ -z "$VIRTUAL_ENV" && -f "$(pwd)/bin/activate" ]]; then
-        source "$(pwd)/bin/activate"
+    if [[ -z "$VIRTUAL_ENV" && -f "$(pwd)/.venv/bin/activate" ]]; then
+        source "$(pwd)/.venv/bin/activate"
     fi
 }
-chpwd_functions+=_auto_pyvenv
+chpwd_functions+=_auto_python_venv
