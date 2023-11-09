@@ -1,6 +1,7 @@
-from os import getcwd, chdir
+from os import getcwd, chdir, stat
 import json
 from typing import Callable
+from stat import S_IMODE
 
 
 def json_read(file: str):
@@ -11,6 +12,10 @@ def json_read(file: str):
 def json_write(file: str, data: list | dict, mode: str = "w") -> None:
     with open(file, mode) as f:
         json.dump(data, f, indent=2, ensure_ascii=False)
+
+
+def get_permission(file: str):
+    return S_IMODE(stat(file).st_mode)
 
 
 def run_chdir(dir: str):
