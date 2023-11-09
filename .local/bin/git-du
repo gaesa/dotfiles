@@ -1,38 +1,57 @@
 #!/usr/bin/env python3
 from os.path import islink
 from subprocess import run
-from sys import argv
 from my_git import get_tracked_files, get_git_dir
 from my_fn import filter_return
-from itertools import filterfalse
+from itertools import filterfalse, chain
+from argparse import ArgumentParser
 
 get_tracked_files = filter_return(lambda files: filterfalse(islink, files))(
     get_tracked_files
 )
 
 
-def du(tracked_files: list[str], all: bool):
+def du(tracked_files: list[str], all: bool, apparent_size: bool):
     if tracked_files == []:
         print("No tracked files found here")
     else:
-        if all:
-            run(["dust", *tracked_files, get_git_dir()])
-        else:
-            run(["dust", *tracked_files])
+        run(
+            list(
+                chain.from_iterable(
+                    [
+                        ["dust", *tracked_files],
+                        [get_git_dir()] if all else [],
+                        ["--apparent-size"] if apparent_size else [],
+                    ]
+                )
+            )
+        )
+
+
+def parse_args() -> tuple[str, bool, bool]:
+    parser = ArgumentParser(description="Disk usage of tracked files")
+    parser.add_argument(
+        "-a",
+        "--all",
+        action="store_true",
+        help="Include files inside 'git-dir' as well",
+    )
+    parser.add_argument(
+        "-s",
+        "--apparent-size",
+        action="store_true",
+        help="Use file length instead of blocks",
+    )
+    parser.add_argument(
+        "path", type=str, nargs="?", default=".", help="The path to get tracked files"
+    )
+    args = parser.parse_args()
+    return args.path, args.all, args.apparent_size
 
 
 def main():
-    if len(argv) > 1:
-        if argv[1] in {"-a", "--all"}:
-            all = True
-            argv.pop(1)
-        else:
-            all = False
-    else:
-        all = False
-
-    tracked_files = get_tracked_files(argv[1]) if len(argv) > 1 else get_tracked_files()
-    du(tracked_files, all)
+    path, all, apparent_size = parse_args()
+    du(get_tracked_files(path), all, apparent_size)
 
 
 if __name__ == "__main__":
