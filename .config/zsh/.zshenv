@@ -60,6 +60,9 @@ else
     export PYTHONPATH="$HOME/.local/bin"
 fi
 export PYTHONSTARTUP="$XDG_CONFIG_HOME/python/startup.py"
+export PYTHONPYCACHEPREFIX="$XDG_CACHE_HOME/python"
+export PYTHONUSERBASE="$XDG_DATA_HOME/python"
+export PYTHON_KEYRING_BACKEND='keyring.backends.null.Keyring'
 # }}}
 
 # path+ {{{
