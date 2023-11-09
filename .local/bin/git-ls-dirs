@@ -1,0 +1,24 @@
+#!/usr/bin/env python3
+from my_git import get_tracked_dirs
+from my_seq import for_each
+from argparse import ArgumentParser
+
+
+def parse_args() -> str:
+    parser = ArgumentParser(description="Get tracked directories")
+    parser.add_argument(
+        "path",
+        type=str,
+        default=".",
+        nargs="?",
+        help="The path to get tracked directories",
+    )
+    return parser.parse_args().path
+
+
+def main():
+    for_each(print, get_tracked_dirs(parse_args()))
+
+
+if __name__ == "__main__":
+    main()

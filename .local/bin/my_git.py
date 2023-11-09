@@ -11,6 +11,15 @@ def get_tracked_files(path: str = ".") -> list[str]:
         raise SystemExit(process.stderr.rstrip())
 
 
+def get_tracked_dirs(path: str = ".") -> list[str]:
+    def add_dot(dir: str) -> str:
+        return "." if dir == "" else dir
+
+    return list(
+        dict.fromkeys(map(lambda f: add_dot(dirname(f)), get_tracked_files(path)))
+    )
+
+
 def get_git_dir():
     if "GIT_DIR" in environ:
         return environ["GIT_DIR"]
