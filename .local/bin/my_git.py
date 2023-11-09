@@ -1,13 +1,12 @@
 from subprocess import run
-from os.path import islink, isdir, join, dirname
+from os.path import isdir, join, dirname
 from os import environ, getcwd
 
 
 def get_tracked_files(path: str = ".") -> list[str]:
     process = run(["/usr/bin/git", "ls-files", path], capture_output=True, text=True)
     if process.returncode == 0:
-        files = process.stdout.splitlines()
-        return list(filter(lambda file: not islink(file), files))
+        return process.stdout.splitlines()
     else:
         raise SystemExit(process.stderr.rstrip())
 
