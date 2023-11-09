@@ -1,7 +1,14 @@
 #!/usr/bin/env python3
+from os.path import islink
 from subprocess import run
 from sys import argv
 from my_git import get_tracked_files, get_git_dir
+from my_fn import filter_return
+from itertools import filterfalse
+
+get_tracked_files = filter_return(lambda files: filterfalse(islink, files))(
+    get_tracked_files
+)
 
 
 def du(tracked_files: list[str], all: bool):
