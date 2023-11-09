@@ -2,11 +2,11 @@ from inspect import isfunction, getmodule, stack
 from typing import Callable
 
 
-def add_post_hook(post_hook: Callable):
+def after(post_fn: Callable):
     def decorator(old_fn: Callable) -> Callable:
         def new_fn(*args, **kwargs):
             value = old_fn(*args, **kwargs)
-            post_hook()
+            post_fn()
             return value
 
         return new_fn
