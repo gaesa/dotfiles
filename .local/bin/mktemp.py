@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 from uuid import uuid4
-from os import getenv, chmod, stat
-from stat import S_IMODE
+from os import getenv, chmod
 from os.path import join
+from my_utils.os import get_permission
 
 
 def mktemp(prefix=""):
@@ -14,9 +14,5 @@ def mktemp(prefix=""):
     path = join(dir, name)
     open(path, "w").close()
 
-    permission = oct(S_IMODE(stat(path).st_mode))
-    if permission != 0o600:
-        chmod(path, 0o600)
-        return path
-    else:
-        return path
+    chmod(path, 0o600) if get_permission(path) != 0o600 else None
+    return path
