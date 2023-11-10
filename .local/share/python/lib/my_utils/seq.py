@@ -28,11 +28,8 @@ def partition(predicate: Callable[[Any], bool], iterable: Iterable[Any]):
 def fallback(*args: Callable[[], Any]) -> Any:
     """Returns the first non-empty or non-None element in a sequence, the laziness is implemented by function"""
 
-    def is_seq(var):
-        return isinstance(var, Sequence)
-
     def cond(var):
-        return len(var) != 0 if is_seq(var) else var is not None
+        return len(var) != 0 if isinstance(var, Sequence) else var is not None
 
     for arg in args:
         value = arg()
