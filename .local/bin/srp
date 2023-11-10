@@ -93,7 +93,9 @@ class Subcommands:
                 "--color",
                 "never",
                 "--follow",
-                substrings_to_pattern(param_list),
+                substrings_to_pattern(param_list)
+                if len(param_list) > 1
+                else param_list[0],
                 dir,
             ],
             check=True,
