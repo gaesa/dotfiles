@@ -38,6 +38,7 @@ end
 return {
     {
         "nvim-lualine/lualine.nvim",
+        cond = not vim.g.vscode,
         dependencies = { "kyazdani42/nvim-web-devicons" },
         event = "VeryLazy",
         opts = {

@@ -1,6 +1,7 @@
 return {
     {
         "lukas-reineke/indent-blankline.nvim",
+        cond = not vim.g.vscode,
         main = "ibl",
         event = "VeryLazy",
         opts = { indent = { char = "│" }, scope = { enabled = false } },

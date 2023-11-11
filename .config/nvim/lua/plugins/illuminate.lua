@@ -58,7 +58,7 @@ return {
             local autocmd = vim.api.nvim_create_autocmd
             local group = vim.api.nvim_create_augroup("plugins.illuminate", { clear = true })
             local function close_hl()
-                if vim.wo.diff then
+                if vim.g.vscode or vim.wo.diff then
                     require("illuminate").invisible_buf()
                 else
                     return

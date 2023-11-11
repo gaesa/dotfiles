@@ -1,6 +1,7 @@
 return {
     {
         "theprimeagen/harpoon",
+        cond = not vim.g.vscode,
         event = "VeryLazy",
         config = function()
             local mark = require("harpoon.mark")

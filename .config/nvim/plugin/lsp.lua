@@ -1,3 +1,6 @@
+if vim.g.vscode then
+    return
+end
 -- Learn the keybindings, see :help lsp-zero-keybindings
 -- Learn to configure LSP servers, see :help lsp-zero-api-showcase
 local lsp = require("lsp-zero").preset({

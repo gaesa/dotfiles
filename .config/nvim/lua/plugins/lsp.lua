@@ -1,6 +1,7 @@
 return {
     {
         "VonHeikemen/lsp-zero.nvim",
+        cond = not vim.g.vscode,
         event = "VeryLazy",
         branch = "v2.x",
         dependencies = {

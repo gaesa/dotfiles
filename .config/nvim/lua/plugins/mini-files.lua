@@ -1,6 +1,7 @@
 return {
     {
         "echasnovski/mini.files",
+        cond = not vim.g.vscode,
         version = false,
         event = "VeryLazy",
         config = function()

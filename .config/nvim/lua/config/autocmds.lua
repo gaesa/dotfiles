@@ -4,18 +4,25 @@ local del_autocmd = api.nvim_del_autocmd
 local group = api.nvim_create_augroup("config", { clear = true })
 
 -- Toggle absolute and relative numbering by insert/normal mode
-autocmd({ "InsertEnter" }, {
-    callback = function()
-        vim.wo.rnu = false
-    end,
-    group = group,
-})
-autocmd({ "InsertLeave" }, {
-    callback = function()
-        vim.wo.rnu = true
-    end,
-    group = group,
-})
+local function setup_line_number()
+    if not vim.g.vscode then
+        autocmd({ "InsertEnter" }, {
+            callback = function()
+                vim.wo.rnu = false
+            end,
+            group = group,
+        })
+        autocmd({ "InsertLeave" }, {
+            callback = function()
+                vim.wo.rnu = true
+            end,
+            group = group,
+        })
+    else
+        return
+    end
+end
+setup_line_number()
 
 -- Change indent for some filetypes
 autocmd({ "FileType" }, {

@@ -1,6 +1,7 @@
 return {
     {
         "nvim-telescope/telescope.nvim",
+        cond = not vim.g.vscode,
         tag = "0.1.4",
         -- or branch = '0.1.x',
         dependencies = {
