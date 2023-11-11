@@ -1,0 +1,40 @@
+{
+  "editor.fontFamily": "'monospace', monospace",
+  "editor.fontSize": 18,
+  "editor.cursorBlinking": "solid",
+  "editor.bracketPairColorization.enabled": false,
+  "editor.minimap.enabled": false,
+  "window.menuBarVisibility": "toggle",
+  "files.autoSave": "onFocusChange",
+  "files.autoSaveDelay": 30,
+  "everforest.darkContrast": "hard",
+  "window.autoDetectColorScheme": true,
+  "workbench.preferredDarkColorTheme": "Everforest Dark",
+  "workbench.colorTheme": "Everforest Light",
+  "workbench.preferredLightColorTheme": "Everforest Light",
+  "extensions.experimental.affinity": {
+    "asvetliakov.vscode-neovim": 1
+  },
+  "telemetry.telemetryLevel": "off",
+  "workbench.startupEditor": "none",
+  "editor.guides.highlightActiveIndentation": false,
+  "terminal.external.linuxExec": "kitty",
+  "terminal.integrated.copyOnSelection": true,
+  "terminal.integrated.enableImages": true,
+  "terminal.integrated.fontSize": 19,
+  "terminal.integrated.gpuAcceleration": "on",
+  "terminal.explorerKind": "external",
+  "terminal.sourceControlRepositoriesKind": "external",
+  "terminal.integrated.tabStopWidth": 4,
+  "terminal.integrated.cursorStyle": "line",
+  "markdown.occurrencesHighlight.enabled": true,
+  "editor.formatOnSave": true,
+  "editor.tabCompletion": "on",
+  "workbench.editor.autoLockGroups": {
+    "imagePreview.previewEditor": true
+  },
+  "[python]": {
+    "editor.defaultFormatter": "ms-python.black-formatter"
+  },
+  "black-formatter.path": ["/usr/bin/black"]
+}
