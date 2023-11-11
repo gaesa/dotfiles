@@ -80,16 +80,13 @@ return {
                             })
 
                             ls.add_snippets("sh", {
-                                s(
-                                    {
-                                        name = "Better bash",
-                                        trig = "set",
-                                        dscr = "Fail fast and be aware of exit codes",
-                                    },
-                                    {
-                                        t([[set -Eeuo pipefail]]),
-                                    }
-                                ),
+                                s({
+                                    name = "Better bash",
+                                    trig = "set",
+                                    dscr = "Fail fast and be aware of exit codes",
+                                }, {
+                                    t([[set -Eeuo pipefail]]),
+                                }),
                             })
 
                             ls.add_snippets("c", {
