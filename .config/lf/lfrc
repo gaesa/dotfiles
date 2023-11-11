@@ -20,8 +20,7 @@ set cleaner ~/.config/lf/preview_clean.py
 # cmds/functions
 cmd on-cd &{{
     # Show current directory in window title
-    # See also: https://github.com/chmln/sd/issues/105
-    printf '\033]0; %s - lf\007' "$(pwd | replace -m 1 "$HOME" '~')" >/dev/tty
+    printf '\033]0; %s - lf\007' "$(pwd | sd "^$HOME" '~')" >/dev/tty
 }}
 cmd open ${{
     opener.py "$f"
