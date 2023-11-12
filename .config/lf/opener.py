@@ -221,16 +221,7 @@ def open(default_desktop: str, file: str):
     default_program = default_desktop[: -len(".desktop")]
     if default_program in {"nvim", "mpv"}:
         # ignore Exec entry & show output in terminal
-        if default_program == "mpv":
-            run(
-                [
-                    join("/usr/bin", default_program),
-                    file,
-                    "--msg-level=ffmpeg/demuxer=error",
-                ]
-            )
-        else:
-            run([join("/usr/bin", default_program), file])
+        run([join("/usr/bin", default_program), file])
     else:
 
         def choose_desktop():
@@ -296,7 +287,7 @@ def main():
     if mime_type == ("application", "x-executable"):
         run([file], check=True)
     elif mime_type == ("text", "plain") and basename(file) == "playlist":
-        run(["/usr/bin/mpv", f"--playlist={file}", "--msg-level=ffmpeg/demuxer=error"])
+        run(["/usr/bin/mpv", f"--playlist={file}"])
     else:
         default_desktops = get_default_desktops(
             "/".join(mime_type), interactive=interactive
