@@ -21,6 +21,8 @@ typeset -A my_env=(
     'CARGO_HOME' "$XDG_DATA_HOME/cargo"
     'RUSTUP_HOME' "$XDG_DATA_HOME/rustup"
     'NPM_CONFIG_USERCONFIG' "$XDG_CONFIG_HOME/npm/npmrc"
+    'NODE_REPL_HISTORY' "$XDG_STATE_HOME/node/repl_history"
+    'TS_NODE_HISTORY' "$XDG_STATE_HOME/ts-node/repl_history"
     '_JAVA_OPTIONS' "-Djava.util.prefs.userRoot=$XDG_CONFIG_HOME/java"
     'GNUPGHOME' "$XDG_DATA_HOME/gnupg"
     'ncmpcpp_directory' "$XDG_CONFIG_HOME/ncmpcpp"
@@ -28,7 +30,7 @@ typeset -A my_env=(
     'CUDA_CACHE_PATH' "$XDG_CACHE_HOME/nv"
     'ANDROID_HOME' "$XDG_DATA_HOME/android"
     'WGETRC' "$XDG_CONFIG_HOME/wget/wgetrc"
-    'RIPGREP_CONFIG_PATH' "$XDG_CONFIG_HOME/ripgreprc"
+    'RIPGREP_CONFIG_PATH' "$XDG_CONFIG_HOME/ripgrep/ripgreprc"
     # }}}
 
     # Terminal {{{
