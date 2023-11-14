@@ -19,7 +19,7 @@ autocmd({ "InsertLeave" }, {
 
 -- Change indent for some filetypes
 autocmd({ "FileType" }, {
-    pattern = { "xml", "json", "yaml", "html", "css" },
+    pattern = { "xml", "json", "jsonc", "yaml", "html", "css" },
     callback = function()
         vim.bo.tabstop = 2
         vim.bo.shiftwidth = 2
