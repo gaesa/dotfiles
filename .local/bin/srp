@@ -5,7 +5,7 @@
 from sys import argv
 from subprocess import run
 from os import chdir
-from os.path import basename, join, isfile, expanduser
+from os.path import basename, isfile, expanduser
 from inspect import getattr_static
 from typing import Type
 from my_utils.seq import Iterable, for_each, partition
@@ -27,10 +27,6 @@ def ensure_length(length: int, mes: str):
 
 ensure_one_parameter = ensure_length(1, "Missing one argument")
 ensure_two_parameters = ensure_length(2, "Missing two arguments")
-
-
-def get_full_path(param_list: list[str], dir: str):
-    return map(lambda item: join(dir, item), param_list)
 
 
 def substrings_to_pattern(substrings: Iterable[str]) -> str:
