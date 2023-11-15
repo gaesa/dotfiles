@@ -17,12 +17,10 @@ def is_socket(file: str):
 def get_nvim_socket_list(XDG_RUNTIME_DIR) -> Iterator[str]:
     if isdir(XDG_RUNTIME_DIR):
         prefix = "nvim."
-        return (
-            filter(
-                lambda file: file.startswith(prefix) and is_socket(file),
-                listdir(),
-            ),
-        )[0]
+        return filter(
+            lambda file: file.startswith(prefix) and is_socket(file),
+            listdir(),
+        )
     else:
         raise SystemExit(0)
 
