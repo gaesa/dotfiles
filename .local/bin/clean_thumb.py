@@ -2,9 +2,8 @@
 from datetime import datetime
 from os import remove, listdir
 from os.path import getmtime, expanduser, isdir, isfile, join
-from my_os import json_read, json_write
-from my_seq import for_each, filterfalse
-from my_os import run_chdir
+from my_utils.os import json_read, json_write, run_chdir
+from my_utils.seq import for_each, filterfalse
 
 
 def within_one_month(old_dt: datetime, new_dt: datetime) -> bool:

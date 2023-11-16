@@ -8,7 +8,7 @@ import asyncio
 from multiprocessing import cpu_count
 import re
 from typing import Iterable
-from my_os import run_chdir_async
+from my_utils.os import run_chdir_async
 
 
 def gen_playlist_file(file: str, lst: list[str]) -> None:

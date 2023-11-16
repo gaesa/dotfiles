@@ -2,7 +2,7 @@
 Name=Emacs (Client)
 GenericName=Text Editor
 Comment=Edit text
-Exec=emacs.py %F
+Exec=zsh -c emacs.py %F
 Icon=emacs
 Type=Application
 Terminal=false

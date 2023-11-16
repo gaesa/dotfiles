@@ -2,7 +2,7 @@ import atexit
 from os import getenv
 import readline
 from os.path import join, expanduser
-from my_seq import fallback
+from my_utils.seq import fallback
 
 
 def main():

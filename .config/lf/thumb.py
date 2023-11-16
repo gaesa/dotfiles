@@ -9,7 +9,7 @@ from os.path import (
 )
 from os import makedirs
 from sys import argv
-from my_os import json_read, json_write
+from my_utils.os import json_read, json_write
 
 
 def gen_thumb(media: str, thumb_path: str, mime_type: tuple[str, str] | None = None):

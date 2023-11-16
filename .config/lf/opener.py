@@ -53,7 +53,7 @@ def get_list_of_mimeapps(
     XDG_CONFIG_DIRS: list[str],
     XDG_DATA_DIRS: list[str],
 ) -> tuple[tuple[str, ...], tuple[str, ...]]:
-    from my_seq import flatmap
+    from my_utils.seq import flatmap
 
     return (
         (
@@ -97,7 +97,7 @@ def get_list_of_mimeapps(
 
 
 def get_default_desktops(mime_type: str, interactive=False):
-    from my_seq import fallback as first_valid
+    from my_utils.seq import fallback as first_valid
 
     config = ConfigParser()
     config.optionxform = (  # pyright: ignore [reportGeneralTypeIssues]

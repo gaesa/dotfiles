@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
-from my_git import get_tracked_dirs
-from my_seq import for_each
+from my_utils.git import get_tracked_dirs
+from my_utils.seq import for_each
 from argparse import ArgumentParser
 
 

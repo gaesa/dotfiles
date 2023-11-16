@@ -6,7 +6,7 @@ from os.path import isdir, join
 from shutil import move
 from os import getenv, listdir, remove
 from mktemp import mktemp
-from my_seq import partition
+from my_utils.seq import partition
 
 
 def sorted_name_list(root, names):

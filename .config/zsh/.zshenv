@@ -44,6 +44,14 @@ typeset -A my_env=(
     # Start ssh-agent with systemd user {{{
     'SSH_AUTH_SOCK' "$XDG_RUNTIME_DIR/ssh-agent.socket"
     # }}}
+
+    # Python {{{
+    'PYTHONPATH' "$XDG_DATA_HOME/python/lib"
+    'PYTHONSTARTUP' "$XDG_CONFIG_HOME/python/startup.py"
+    'PYTHONPYCACHEPREFIX' "$XDG_CACHE_HOME/python"
+    'PYTHONUSERBASE' "$XDG_DATA_HOME/python"
+    'PYTHON_KEYRING_BACKEND' 'keyring.backends.null.Keyring'
+    # }}}
 )
 for key val in "${(@kv)my_env}"; do
     export "$key"="$val"
@@ -53,18 +61,6 @@ unset my_env key val
 
 # Clean up home by alias {{{
 alias chez="chez --eehistory $XDG_STATE_HOME/chez/history"
-# }}}
-
-# Python {{{
-if [[ -v PATHONPATH ]]; then
-    export PYTHONPATH="$PATHONPATH:$HOME/.local/bin"
-else
-    export PYTHONPATH="$HOME/.local/bin"
-fi
-export PYTHONSTARTUP="$XDG_CONFIG_HOME/python/startup.py"
-export PYTHONPYCACHEPREFIX="$XDG_CACHE_HOME/python"
-export PYTHONUSERBASE="$XDG_DATA_HOME/python"
-export PYTHON_KEYRING_BACKEND='keyring.backends.null.Keyring'
 # }}}
 
 # path+ {{{

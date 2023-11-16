@@ -2,7 +2,7 @@
 from sys import argv
 from subprocess import run, Popen, DEVNULL
 from os.path import splitext
-from my_seq import for_each, partition
+from my_utils.seq import for_each, partition
 
 
 def open_with_nvim(files: list[str]):

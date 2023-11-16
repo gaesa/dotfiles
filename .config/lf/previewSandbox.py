@@ -4,7 +4,7 @@ from os import getenv, makedirs
 from os.path import expanduser, join, isdir, realpath
 from sys import argv
 from typing import Iterable, Literal
-from my_seq import flatmap
+from my_utils.seq import fallback, flatmap
 
 
 def get_cmd(CURRENT_FILE: str, HOME: str) -> list[str]:
@@ -26,11 +26,14 @@ def get_cmd(CURRENT_FILE: str, HOME: str) -> list[str]:
     def bind_pycache() -> Iterable[str]:
         prefix = join(HOME, ".cache/python")
         dir_lf = join(prefix, join(HOME, ".config/lf")[1:])
-        dir_local_bin = join(prefix, join(HOME, ".local/bin")[1:])
+        dir_utils = join(prefix, join(XDG_DATA_HOME, "python/lib/my_utils")[1:])
         dir_usr = join(prefix, "usr")
-        return bind(None, [dir_lf, dir_local_bin, dir_usr])
+        return bind(None, [dir_lf, dir_utils, dir_usr])
 
     preview = join(HOME, ".config/lf/preview.py")
+    XDG_DATA_HOME: str = fallback(
+        lambda: getenv("XDG_DATA_HOME"), lambda: join(HOME, ".local/share")
+    )
     return [
         "/usr/bin/bwrap",
         *bind("ro", ["/usr/bin", "/usr/share", "/usr/lib", "/usr/lib64"]),
@@ -44,7 +47,7 @@ def get_cmd(CURRENT_FILE: str, HOME: str) -> list[str]:
                 join(HOME, ".config/lf/opener.py"),
                 join(HOME, ".config/lf/thumb.py"),
                 join(HOME, ".config/bat/config"),
-                join(HOME, ".local/bin/my_os.py"),
+                join(XDG_DATA_HOME, "python/lib/my_utils/os.py"),
                 CURRENT_FILE,
             ],
         ),

@@ -4,4 +4,6 @@ OnFailure=status_email@%n.service
 
 [Service]
 Type=oneshot
+Environment=PYTHONPATH=%h/.local/share/python/lib
+Environment=PYTHONPYCACHEPREFIX=%C/python
 ExecStart=%h/.local/bin/clean-old

@@ -8,7 +8,7 @@ from os import chdir
 from os.path import basename, join, isfile, expanduser
 from inspect import getattr_static
 from typing import Type
-from my_seq import Iterable, for_each, partition
+from my_utils.seq import Iterable, for_each, partition
 
 
 def ensure_length(length: int, mes: str):
@@ -176,7 +176,7 @@ class Subcommands:
 def edit(param_list: list[str], dir: str):
     import editor
     from os import chmod
-    from my_os import get_permission
+    from my_utils.os import get_permission
 
     def update_permission(permission):
         for_each(
