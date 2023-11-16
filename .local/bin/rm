@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 from shutil import which
 import sys
-from subprocess import run
+from subprocess import CalledProcessError, run
 from os.path import exists, expanduser
 
 
@@ -24,8 +24,27 @@ def trash(files: list[str], check_dash):
         sys.path.append(expanduser("~/.local/share/python/lib"))
         from my_utils.seq import for_each
 
+    def p(file: str):
+        try:
+            run(["trash", "-f", file], check=True)
+        except CalledProcessError:
+            from pathlib import Path
+            from shutil import rmtree
+
+            f = Path(file)
+            try:
+                if f.is_file() or f.is_symlink():
+                    f.unlink(missing_ok=True)
+                else:
+                    rmtree(f)
+            except PermissionError as e:
+                if e.errno == 13:
+                    run(["/usr/bin/rm", "-rf", file], check=True)
+                else:
+                    raise
+
     for_each(
-        lambda file: run(["trash", "-f", file], check=True),
+        p,
         filter(
             lambda file: (not file.startswith("-")) and exists(file)
             if check_dash
