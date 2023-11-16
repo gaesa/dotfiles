@@ -263,9 +263,10 @@ def open(default_desktop: str, file: str):
         # it is necessary to suppress the output of any background processes
 
 
-def open_with(default_desktop, file):
-    for i in range(len(default_desktop)):
-        print(f"{i}. {default_desktop[i]}")
+def open_with(default_desktop: list[str], file: str):
+    from my_utils.seq import for_each
+
+    for_each(lambda id: print(f"{id[0]}. {id[1]}"), enumerate(default_desktop))
     try:
         choice = int(
             input(
