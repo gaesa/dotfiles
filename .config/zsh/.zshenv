@@ -51,6 +51,7 @@ typeset -A my_env=(
     'PYTHONPYCACHEPREFIX' "$XDG_CACHE_HOME/python"
     'PYTHONUSERBASE' "$XDG_DATA_HOME/python"
     'PYTHON_KEYRING_BACKEND' 'keyring.backends.null.Keyring'
+    'PYENV_ROOT' "$XDG_DATA_HOME/pyenv"
     # }}}
 )
 for key val in "${(@kv)my_env}"; do
@@ -90,6 +91,7 @@ local added_paths=(
     '.' #current directory
     '/opt/bin' #add-on application software packages path
     "$XDG_DATA_HOME/cargo/bin"
+    "$PYENV_ROOT/shims"
 )
 add_paths added_paths
 unset -f add_paths && unset added_paths

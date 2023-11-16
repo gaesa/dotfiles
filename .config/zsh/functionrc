@@ -11,3 +11,20 @@ function private_mode() {
     printf "zsh is running in private mode, history will not be persisted.\n"
 }
 bindkey -s '^[p' 'private_mode\n'
+
+# from "$(pyenv init -)", excluding the slow `rehash`
+function pyenv() {
+    local command="${1:-}"
+    if (( $# > 0 )); then
+        shift
+    fi
+
+    case "$command" in
+        rehash|shell)
+            eval "$(pyenv "sh-$command" "$@")"
+            ;;
+        *)
+            command pyenv "$command" "$@"
+            ;;
+    esac
+}
