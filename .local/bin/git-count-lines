@@ -5,8 +5,8 @@ from subprocess import run
 from os import getenv
 from functools import reduce
 from itertools import filterfalse
-from my_git import get_tracked_files
-from my_fn import filter_return
+from my_utils.git import get_tracked_files
+from my_utils.fn import filter_return
 
 
 get_tracked_files = filter_return(lambda files: filterfalse(islink, files))(

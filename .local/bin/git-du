@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 from os.path import islink
 from subprocess import run
-from my_git import get_tracked_files, get_git_dir
-from my_fn import filter_return
+from my_utils.git import get_tracked_files, get_git_dir
+from my_utils.fn import filter_return
 from itertools import filterfalse, chain
 from argparse import ArgumentParser
 
