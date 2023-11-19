@@ -1,0 +1,34 @@
+#!/usr/bin/env python3
+from argparse import ArgumentParser
+from subprocess import run
+
+
+def get_name(tree_ish: str = "HEAD") -> str:
+    result = run(
+        ["git", "name-rev", "--name-only", tree_ish], capture_output=True, text=True
+    )
+    output = result.stdout.rstrip()
+    tilde_index = output.rfind("~")
+    return output if tilde_index == -1 else output[:tilde_index]
+
+
+def parse_args() -> str:
+    parser = ArgumentParser(description="Get branch name")
+    parser.add_argument(
+        "tree_ish",
+        type=str,
+        default="HEAD",
+        nargs="?",
+        help="The name of a tree-ish object (default: HEAD)",
+    )
+    args = parser.parse_args()
+    return args.tree_ish
+
+
+def main():
+    tree_ish = parse_args()
+    print(get_name(tree_ish))
+
+
+if __name__ == "__main__":
+    main()
