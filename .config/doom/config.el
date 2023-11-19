@@ -1182,25 +1182,40 @@
 This implementation requires users to set `core.worktree` and make sure that `core.bare` is not `true` since git doesn't allow `core.worktree` to exist when `core.bare` is set to `true`"
     (let* ((home (expand-file-name "~"))
            (git-dir (f-join home ".local/share/yadm/repo.git"))
+           (default-branch "develop")
+           (get-branch-name (lambda ()
+                              (let ((res (run-process
+                                          (list "git"
+                                                (format "--git-dir=%s" git-dir)
+                                                "branch-name"))))
+                                (if (not (= (car res) 0))
+                                    default-branch ;Custom command is not available at HEAD
+                                  (s-trim-right (cdr res))))))
            (get-tracked-dirs (lambda (home git-dir cwd)
                                (let ((res (run-process
                                            (list "git"
                                                  (format "--git-dir=%s" git-dir)
                                                  "ls-dirs"
-                                                 home))))
-                                 (if (not (= (car res) 0))
-                                     '()
-                                   (mapcar (lambda (d) (f-join cwd d))
-                                           (split-string
-                                            (s-trim-right
-                                             (cdr res))
-                                            "\n")))))))
+                                                 home
+                                                 "--tree-ish"
+                                                 (funcall get-branch-name)))))
+                                 (let ((status (car res)))
+                                   (if (= status 0)
+                                       (mapcar (lambda (d) (f-join cwd d))
+                                               (split-string
+                                                (s-trim-right
+                                                 (cdr res))
+                                                "\n"))
+                                     'error)))))) ;Custom command is not available at HEAD
       (when (and (f-dir? git-dir)
                  (let ((cwd (expand-file-name default-directory)))
                    (or (f-equal? cwd home)
                        (and (null (find-git-root cwd))
-                            (element-of-set? (directory-file-name cwd)
-                                             (make-set (funcall get-tracked-dirs home git-dir cwd)))))))
+                            (let ((res (funcall get-tracked-dirs home git-dir cwd)))
+                              (if (eq res 'error)
+                                  t
+                                (element-of-set? (directory-file-name cwd)
+                                                 (make-set res))))))))
         (push (format "GIT_DIR=%s" git-dir) env)))
     env))
 
