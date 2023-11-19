@@ -1144,8 +1144,7 @@
 ;; Magit
 (with-eval-after-load 'magit
   (setf (alist-get 'unpushed magit-section-initial-visibility-alist) 'show) ;expand `Recent commits`
-  (put 'magit-log-mode 'magit-log-default-arguments '("--graph" "-n256" "--decorate" "--color"))
-  (advice-remove 'magit-status-here #'doom-recenter-a)) ;fix cursor hop
+  (put 'magit-log-mode 'magit-log-default-arguments '("--graph" "-n256" "--decorate" "--color")))
 
 ;; Avoid a redundant newline introduced by `open-line' in `git-commit-setup'
 (add-hook 'git-commit-setup-hook (lambda ()
