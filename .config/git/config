@@ -30,7 +30,6 @@
     d = difftool
     ctc = shortlog -s
     ctl = !git-count-lines
-    du = !git-du
     cm = commit
     rst = restore
     rs = reset
@@ -52,7 +51,6 @@
     la = log --graph --all --pretty=format:'%C(auto)%h%C(auto)%d %s %C(dim white)(%aN, %ar)'
     lsa = log --graph --stat --all --pretty=format:'%C(auto)%h%C(auto)%d %s %C(dim white)(%aN, %ar)'
     rmt = fetch --prune origin +refs/tags/*:refs/tags/*
-    ls-dirs = !git-ls-dirs
 [submodule]
     recurse = true
 [submodule "*"]
