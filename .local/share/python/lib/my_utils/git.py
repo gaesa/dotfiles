@@ -3,20 +3,26 @@ from os.path import isdir, join, dirname
 from os import environ, getcwd
 
 
-def get_tracked_files(path: str = ".") -> list[str]:
-    process = run(["/usr/bin/git", "ls-files", path], capture_output=True, text=True)
+def get_tracked_files(path: str = ".", tree_ish: str = "HEAD") -> list[str]:
+    process = run(
+        ["/usr/bin/git", "ls-tree", "--full-tree", "-r", "--name-only", tree_ish, path],
+        capture_output=True,
+        text=True,
+    )
     if process.returncode == 0:
         return process.stdout.splitlines()
     else:
         raise SystemExit(process.stderr.rstrip())
 
 
-def get_tracked_dirs(path: str = ".") -> list[str]:
+def get_tracked_dirs(path: str = ".", tree_ish: str = "HEAD") -> list[str]:
     def add_dot(dir: str) -> str:
         return "." if dir == "" else dir
 
     return list(
-        dict.fromkeys(map(lambda f: add_dot(dirname(f)), get_tracked_files(path)))
+        dict.fromkeys(
+            map(lambda f: add_dot(dirname(f)), get_tracked_files(path, tree_ish))
+        )
     )
 
 
