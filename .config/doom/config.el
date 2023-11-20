@@ -91,6 +91,10 @@
       (while (process-live-p process)
         (accept-process-output process))
       (cons (process-exit-status process) (buffer-string)))))
+(defun status-process (process)
+  (car process))
+(defun output-process (process)
+  (cdr process))
 
 (cl-defun run-process-with-message (command &key filter sentinel name)
   (apply #'run-process
@@ -1184,27 +1188,27 @@ This implementation requires users to set `core.worktree` and make sure that `co
            (git-dir (f-join home ".local/share/yadm/repo.git"))
            (default-branch "develop")
            (get-branch-name (lambda ()
-                              (let ((res (run-process
-                                          (list "git"
-                                                (format "--git-dir=%s" git-dir)
-                                                "branch-name"))))
-                                (if (not (= (car res) 0))
+                              (let ((p (run-process
+                                        (list "git"
+                                              (format "--git-dir=%s" git-dir)
+                                              "branch-name"))))
+                                (if (not (= (status-process p) 0))
                                     default-branch ;Custom command is not available at HEAD
-                                  (s-trim-right (cdr res))))))
+                                  (s-trim-right (output-process p))))))
            (get-tracked-dirs (lambda (home git-dir cwd)
-                               (let ((res (run-process
-                                           (list "git"
-                                                 (format "--git-dir=%s" git-dir)
-                                                 "ls-dirs"
-                                                 home
-                                                 "--tree-ish"
-                                                 (funcall get-branch-name)))))
-                                 (let ((status (car res)))
+                               (let ((p (run-process
+                                         (list "git"
+                                               (format "--git-dir=%s" git-dir)
+                                               "ls-dirs"
+                                               home
+                                               "--tree-ish"
+                                               (funcall get-branch-name)))))
+                                 (let ((status (status-process p)))
                                    (if (= status 0)
                                        (mapcar (lambda (d) (f-join cwd d))
                                                (split-string
                                                 (s-trim-right
-                                                 (cdr res))
+                                                 (output-process p))
                                                 "\n"))
                                      'error)))))) ;Custom command is not available at HEAD
       (when (and (f-dir? git-dir)
