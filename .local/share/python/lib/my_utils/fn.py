@@ -13,6 +13,17 @@ def after(post_fn: Callable):
     return decorator
 
 
+def before(pre_fn: Callable):
+    def decorator(old_fn: Callable) -> Callable:
+        def new_fn(*args, **kwargs):
+            pre_fn()
+            return old_fn(*args, **kwargs)
+
+        return new_fn
+
+    return decorator
+
+
 def filter_return(filter_fn: Callable):
     def decorator(old_fn: Callable) -> Callable:
         return lambda *args, **kwargs: filter_fn(old_fn(*args, **kwargs))
