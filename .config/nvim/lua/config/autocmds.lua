@@ -196,40 +196,76 @@ autocmd({ "BufWritePre" }, {
     group = group,
 })
 
--- Remove all trailing whitespace
-autocmd({ "BufWritePre" }, {
-    callback = function()
-        local config = vim.b.editorconfig
-        if config ~= nil and config["trim_trailing_whitespace"] == "false" then
-            return
+local function setup_auto_formatting()
+    local state = true
+    local function toggle_state(arg)
+        if arg == "true" then
+            state = true
+        elseif arg == "false" then
+            state = false
         else
-            vim.cmd([[silent! %s/\s\+$//e]])
+            state = not state
         end
-    end,
-    group = group,
-})
 
--- Formatter
--- Should be placed before 'Retab' as some formatters don't support space indent
-autocmd({ "BufWritePre" }, {
-    callback = function()
-        vim.cmd.NullFormat()
-    end,
-    group = group,
-})
-
--- Retab
-autocmd({ "BufWritePre" }, {
-    callback = function()
-        local config = vim.b.editorconfig
-        if config ~= nil and config["indent_style"] == "tab" then
-            return
+        local s
+        if state then
+            s = "enabled"
         else
-            vim.cmd.retab({ bang = true })
+            s = "disabled"
         end
-    end,
-    group = group,
-})
+        vim.notify("Auto formatting is now " .. s, vim.log.levels.INFO)
+    end
+
+    vim.api.nvim_create_user_command("ToggleAutoFormat", toggle_state, { nargs = "?" })
+
+    -- Remove all trailing whitespace
+    autocmd({ "BufWritePre" }, {
+        callback = function()
+            if state then
+                local config = vim.b.editorconfig
+                if config ~= nil and config["trim_trailing_whitespace"] == "false" then
+                    return
+                else
+                    vim.cmd([[silent! %s/\s\+$//e]])
+                end
+            else
+                return
+            end
+        end,
+        group = group,
+    })
+
+    -- Formatter
+    -- Should be placed before 'Retab' as some formatters don't support space indent
+    autocmd({ "BufWritePre" }, {
+        callback = function()
+            if state then
+                vim.cmd.NullFormat()
+            else
+                return
+            end
+        end,
+        group = group,
+    })
+
+    -- Retab
+    autocmd({ "BufWritePre" }, {
+        callback = function()
+            if state then
+                local config = vim.b.editorconfig
+                if config ~= nil and config["indent_style"] == "tab" then
+                    return
+                else
+                    vim.cmd.retab({ bang = true })
+                end
+            else
+                return
+            end
+        end,
+        group = group,
+    })
+end
+setup_auto_formatting()
 
 -- Automatically enable spell checking in specific files
 autocmd({ "FileType" }, {
