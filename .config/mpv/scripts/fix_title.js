@@ -1,0 +1,1 @@
+!function(){"use strict";mp.register_event("file-loaded",(function(){var e=mp.get_property_native("metadata");void 0!==e.title&&e.title===e.album&&mp.set_property("force-media-title",mp.get_property_native("filename"))}))}();
