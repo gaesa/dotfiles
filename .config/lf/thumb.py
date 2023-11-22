@@ -109,7 +109,7 @@ def prepare(cache_dir, index):
 
     def check_index(index):
         if not isfile(index):
-            json_write(index, [{}, {}], mode="w+")
+            json_write(index, [{}, {}])
         else:
             return
 
