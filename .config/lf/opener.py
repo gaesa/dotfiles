@@ -220,6 +220,7 @@ def open(default_desktop: str, file: str):
     if default_program in {"nvim", "mpv"}:
         # ignore Exec entry & show output in terminal
         run([join("/usr/bin", default_program), file])
+        print() if default_program in {"mpv"} else None
     else:
 
         def choose_desktop():
