@@ -293,7 +293,9 @@ def main():
         default_desktops = get_default_desktops(
             "/".join(mime_type), interactive=interactive
         )
-        open_with(default_desktops, file) if interactive else open(
+        open_with(
+            default_desktops, file  # pyright: ignore [reportGeneralTypeIssues]
+        ) if interactive else open(
             default_desktops, file  # pyright: ignore [reportGeneralTypeIssues]
         )
 
