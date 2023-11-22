@@ -189,31 +189,63 @@ autocmd({ "BufWritePre" }, {
     group = group,
 })
 
--- Remove all trailing whitespace
-autocmd({ "BufWritePre" }, {
-    callback = function()
-        local config = vim.b.editorconfig
-        if config ~= nil and config["trim_trailing_whitespace"] == "false" then
-            return
+local function setup_auto_formatting()
+    local state = true
+    local function toggle_state(arg)
+        if arg == "true" then
+            state = true
+        elseif arg == "false" then
+            state = false
         else
-            vim.cmd([[silent! %s/\s\+$//e]])
+            state = not state
         end
-    end,
-    group = group,
-})
 
--- Retab
-autocmd({ "BufWritePre" }, {
-    callback = function()
-        local config = vim.b.editorconfig
-        if config ~= nil and config["indent_style"] == "tab" then
-            return
+        local s
+        if state then
+            s = "enabled"
         else
-            vim.cmd.retab({ bang = true })
+            s = "disabled"
         end
-    end,
-    group = group,
-})
+        vim.notify("Auto formatting is now " .. s, vim.log.levels.INFO)
+    end
+
+    vim.api.nvim_create_user_command("ToggleAutoFormat", toggle_state, { nargs = "?" })
+
+    autocmd({ "BufWritePre" }, {
+        callback = function()
+            local function trim_trailing_whitespace_when(cond)
+                if cond then
+                    vim.cmd([[silent! %s/\s\+$//e]])
+                else
+                    return
+                end
+            end
+
+            local function retab_when(cond)
+                if cond then
+                    vim.cmd.retab({ bang = true })
+                else
+                    return
+                end
+            end
+
+            if state then
+                local config = vim.b.editorconfig
+                if config ~= nil then
+                    trim_trailing_whitespace_when(config["trim_trailing_whitespace"] ~= "false")
+                    retab_when(config["indent_style"] ~= "tab")
+                else
+                    trim_trailing_whitespace_when(true)
+                    retab_when(true)
+                end
+            else
+                return
+            end
+        end,
+        group = group,
+    })
+end
+setup_auto_formatting()
 
 -- Automatically enable spell checking in specific files
 autocmd({ "FileType" }, {
