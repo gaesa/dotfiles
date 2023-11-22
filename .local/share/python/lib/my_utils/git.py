@@ -1,16 +1,21 @@
 from subprocess import run
-from os.path import isdir, join, dirname
+from os.path import isdir, islink, join, dirname
 from os import environ, getcwd
+from itertools import filterfalse
 
 
-def get_tracked_files(path: str = ".", tree_ish: str = "HEAD") -> list[str]:
+def get_tracked_files(
+    path: str = ".", tree_ish: str = "HEAD", include_link: bool = True
+) -> list[str]:
     process = run(
         ["/usr/bin/git", "ls-tree", "--full-tree", "-r", "--name-only", tree_ish, path],
         capture_output=True,
         text=True,
     )
     if process.returncode == 0:
-        return process.stdout.splitlines()
+        return (  # pyright: ignore [reportGeneralTypeIssues]
+            (lambda x: x) if include_link else (lambda x: list(filterfalse(islink, x)))
+        )(process.stdout.splitlines())
     else:
         raise SystemExit(process.stderr.rstrip())
 

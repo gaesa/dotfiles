@@ -1,17 +1,10 @@
 #!/usr/bin/env python3
 from sys import argv
-from os.path import getsize, join, islink
+from os.path import getsize, join
 from subprocess import run
 from os import getenv
 from functools import reduce
-from itertools import filterfalse
 from my_utils.git import get_tracked_files
-from my_utils.fn import filter_return
-
-
-get_tracked_files = filter_return(lambda files: filterfalse(islink, files))(
-    get_tracked_files
-)
 
 
 def count_line(file: str) -> int:
@@ -64,7 +57,11 @@ def get_pager():
 
 
 def main() -> None:
-    files = get_tracked_files(argv[1]) if len(argv) > 1 else get_tracked_files()
+    files = (
+        get_tracked_files(argv[1], include_link=False)
+        if len(argv) > 1
+        else get_tracked_files(include_link=False)
+    )
     total_lines, total_size, file_to_lines = get_total_count(files)
     file_to_lines = sort_count(file_to_lines)
 

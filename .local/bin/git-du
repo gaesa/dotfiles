@@ -1,14 +1,8 @@
 #!/usr/bin/env python3
-from os.path import islink
 from subprocess import run
 from my_utils.git import get_tracked_files, get_git_dir
-from my_utils.fn import filter_return
-from itertools import filterfalse, chain
+from itertools import chain
 from argparse import ArgumentParser
-
-get_tracked_files = filter_return(lambda files: filterfalse(islink, files))(
-    get_tracked_files
-)
 
 
 def du(tracked_files: list[str], all: bool, apparent_size: bool):
@@ -51,7 +45,7 @@ def parse_args() -> tuple[str, bool, bool]:
 
 def main():
     path, all, apparent_size = parse_args()
-    du(get_tracked_files(path), all, apparent_size)
+    du(get_tracked_files(path, include_link=False), all, apparent_size)
 
 
 if __name__ == "__main__":
