@@ -57,3 +57,13 @@ def begin(*args: Callable[[], Any]) -> Any:
     for arg in args:
         value = arg()
     return value
+
+
+async def abegin(*args: Callable[[], Any]) -> Any:
+    """
+    async version of `begin`
+    """
+    value = None
+    for arg in args:
+        value = await arg()
+    return value
