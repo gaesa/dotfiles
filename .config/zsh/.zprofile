@@ -103,6 +103,11 @@ if [[ -z "$WAYLAND_DISPLAY" ]] && [[ "$(tty)" = "/dev/tty1" ]]; then
     # See also:
     # https://bugs.kde.org/show_bug.cgi?id=415770
     # https://bugs.kde.org/show_bug.cgi?id=417534
+
+    [[ ! -L "$XDG_CACHE_HOME/runtime" ]] && ln -srf "$XDG_RUNTIME_DIR" "$XDG_CACHE_HOME/runtime"
+    # See also:
+    # https://github.com/MusicPlayerDaemon/MPD/issues/263
+    # https://github.com/ncmpcpp/ncmpcpp/issues/76
     exec startplasma-wayland &>"$XDG_CACHE_HOME/startup.log"
 fi
 # }}}
