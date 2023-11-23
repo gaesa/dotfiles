@@ -1,23 +1,44 @@
 from typing import Callable
 
 
-def after(post_fn: Callable):
+def after(post_fn: Callable, is_async: bool = False):
     def decorator(old_fn: Callable) -> Callable:
-        def new_fn(*args, **kwargs):
-            value = old_fn(*args, **kwargs)
-            post_fn()
-            return value
+        if is_async:
+
+            async def new_fn(  # pyright: ignore [reportGeneralTypeIssues]
+                *args, **kwargs
+            ):
+                value = await old_fn(*args, **kwargs)
+                await post_fn()
+                return value
+
+        else:
+
+            def new_fn(*args, **kwargs):
+                value = old_fn(*args, **kwargs)
+                post_fn()
+                return value
 
         return new_fn
 
     return decorator
 
 
-def before(pre_fn: Callable):
+def before(pre_fn: Callable, is_async: bool = False):
     def decorator(old_fn: Callable) -> Callable:
-        def new_fn(*args, **kwargs):
-            pre_fn()
-            return old_fn(*args, **kwargs)
+        if is_async:
+
+            async def new_fn(  # pyright: ignore [reportGeneralTypeIssues]
+                *args, **kwargs
+            ):
+                await pre_fn()
+                return await old_fn(*args, **kwargs)
+
+        else:
+
+            def new_fn(*args, **kwargs):
+                pre_fn()
+                return old_fn(*args, **kwargs)
 
         return new_fn
 
