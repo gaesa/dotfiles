@@ -43,59 +43,63 @@ autocmd({ "FileType" }, {
 -- Pull2: https://github.com/neovim/neovim/pull/3708
 -- Post1: https://vi.stackexchange.com/questions/36692/vimscript-how-to-detect-selection-of-a-text-object-in-visual-mode
 -- Post2: https://vi.stackexchange.com/questions/31420/how-to-get-the-range-of-selected-lines-in-visual-lines-mode
-local sync_selection_timer = vim.loop.new_timer()
-local sync_selection_timer_enabled = false
-local function sync_selection_callback()
-    local function get_start_end(pos1, pos2)
-        local pos1_row, pos1_col, pos2_row, pos2_col = pos1[1], pos1[2], pos2[1], pos2[2]
+local function setup_primary_selection()
+    local function sync_selection()
+        local function get_start_end(pos1, pos2)
+            local pos1_row, pos1_col, pos2_row, pos2_col = pos1[1], pos1[2], pos2[1], pos2[2]
 
-        if pos1_row < pos2_row then
-            return pos1, pos2
-        elseif pos1_row == pos2_row then
-            if pos1_col < pos2_col then
+            if pos1_row < pos2_row then
                 return pos1, pos2
+            elseif pos1_row == pos2_row then
+                if pos1_col < pos2_col then
+                    return pos1, pos2
+                else
+                    return pos2, pos1
+                end
             else
                 return pos2, pos1
             end
-        else
-            return pos2, pos1
         end
+        -- I have tested that vim.api.nvim_buf_get_mark(0, "v") doesn't
+        -- retrieve the correct position when compared to vim.fn.getpos("v").
+        -- Both `vim.fn.getpos("'<")` and `vim.api.nvim_buf_get_mark(0, "<")` fail to
+        -- retrieve the latest content when the current mode is visual mode.
+        local v_pos = vim.fn.getpos("v")
+        v_pos = { v_pos[2], v_pos[3] - 1 } -- (1, 1)-index to (1, 0)-index
+        local cur_pos = api.nvim_win_get_cursor(0)
+        local start_pos, end_pos = get_start_end(v_pos, cur_pos)
+        local text = api.nvim_buf_get_text(0, start_pos[1] - 1, start_pos[2], end_pos[1] - 1, end_pos[2] + 1, {})
+        vim.fn.setreg("*", text)
     end
-    -- I have tested that vim.api.nvim_buf_get_mark(0, "v") doesn't
-    -- retrieve the correct position when compared to vim.fn.getpos("v").
-    -- Both `vim.fn.getpos("'<")` and `vim.api.nvim_buf_get_mark(0, "<")` fail to
-    -- retrieve the latest content when the current mode is visual mode.
-    local v_pos = vim.fn.getpos("v")
-    v_pos = { v_pos[2], v_pos[3] - 1 } -- (1, 1)-index to (1, 0)-index
-    local cur_pos = api.nvim_win_get_cursor(0)
-    local start_pos, end_pos = get_start_end(v_pos, cur_pos)
-    local text = api.nvim_buf_get_text(0, start_pos[1] - 1, start_pos[2], end_pos[1] - 1, end_pos[2] + 1, {})
-    vim.fn.setreg("*", text)
-end
-if vim.fn.getenv("WAYLAND_DISPLAY") ~= vim.NIL then
-    autocmd({ "ModeChanged" }, {
-        callback = function()
-            local mode = string.sub(vim.api.nvim_get_mode().mode, 1, 1)
-            if mode == "v" then
-                if not sync_selection_timer_enabled then
-                    sync_selection_timer:start(0, 500, vim.schedule_wrap(sync_selection_callback))
-                    sync_selection_timer_enabled = true
+
+    if vim.fn.getenv("WAYLAND_DISPLAY") ~= vim.NIL then
+        local timer, state = vim.loop.new_timer(), false
+        autocmd({ "ModeChanged" }, {
+            callback = function()
+                local mode = string.sub(vim.api.nvim_get_mode().mode, 1, 1)
+                if mode == "v" then
+                    if not state then
+                        timer:start(0, 500, vim.schedule_wrap(sync_selection))
+                        state = true
+                    else
+                        return
+                    end
                 else
-                    return
+                    if state then
+                        timer:stop()
+                        state = false
+                    else
+                        return
+                    end
                 end
-            else
-                if sync_selection_timer_enabled then
-                    sync_selection_timer:stop()
-                    sync_selection_timer_enabled = false
-                else
-                    return
-                end
-            end
-        end,
-        group = group,
-    })
-else
+            end,
+            group = group,
+        })
+    else
+        return
+    end
 end
+setup_primary_selection()
 
 -- Return to last edited postition and `zz`
 -- checks if the '" mark is defined, and jumps to it if so
@@ -294,63 +298,68 @@ autocmd({ "TextYankPost" }, {
 
 -- Auto remove search highlight and rehighlight when using n or N
 -- https://github.com/glepnir/hlsearch.nvim
-local function stop_hl()
-    if vim.v.hlsearch ~= 0 then
-        local keycode = vim.api.nvim_replace_termcodes("<Cmd>nohl<CR>", true, false, true)
-        vim.api.nvim_feedkeys(keycode, "n", false)
-    else
-        return
+local function setup_search_highlight()
+    local function stop_hl()
+        if vim.v.hlsearch ~= 0 then
+            local keycode = vim.api.nvim_replace_termcodes("<Cmd>nohl<CR>", true, false, true)
+            vim.api.nvim_feedkeys(keycode, "n", false)
+        else
+            return
+        end
     end
-end
-local function start_hl()
-    local res = vim.fn.getreg("/")
-    if vim.v.hlsearch == 1 and vim.fn.search([[\%#\zs]] .. res, "cnW") == 0 then
-        stop_hl()
-    else
-        return
+
+    local function start_hl()
+        local res = vim.fn.getreg("/")
+        if vim.v.hlsearch == 1 and vim.fn.search([[\%#\zs]] .. res, "cnW") == 0 then
+            stop_hl()
+        else
+            return
+        end
     end
-end
 
-local buffers = {}
-local function hs_event(bufnr)
-    if buffers[bufnr] then
-        return
-    else
-        buffers[bufnr] = true
-        local cm_id = autocmd("CursorMoved", {
-            buffer = bufnr,
-            group = group,
-            callback = start_hl,
-            desc = "Auto hlsearch",
-        })
+    local buffers = {}
 
-        local ie_id = autocmd("InsertEnter", {
-            buffer = bufnr,
-            group = group,
-            callback = stop_hl,
-            desc = "Auto remove hlsearch",
-        })
+    local function hs_event(bufnr)
+        if buffers[bufnr] then
+            return
+        else
+            buffers[bufnr] = true
+            local cm_id = autocmd("CursorMoved", {
+                buffer = bufnr,
+                group = group,
+                callback = start_hl,
+                desc = "Auto hlsearch",
+            })
 
-        autocmd("BufDelete", {
-            buffer = bufnr,
-            group = group,
-            callback = function(opt)
-                buffers[bufnr] = nil
-                pcall(del_autocmd, cm_id)
-                pcall(del_autocmd, ie_id)
-                pcall(del_autocmd, opt.id)
-            end,
-        })
+            local ie_id = autocmd("InsertEnter", {
+                buffer = bufnr,
+                group = group,
+                callback = stop_hl,
+                desc = "Auto remove hlsearch",
+            })
+
+            autocmd("BufDelete", {
+                buffer = bufnr,
+                group = group,
+                callback = function(opt)
+                    buffers[bufnr] = nil
+                    pcall(del_autocmd, cm_id)
+                    pcall(del_autocmd, ie_id)
+                    pcall(del_autocmd, opt.id)
+                end,
+            })
+        end
     end
-end
 
-autocmd("BufWinEnter", {
-    group = group,
-    callback = function(opt)
-        hs_event(opt.buf)
-    end,
-    desc = "Auto remove search highlight and rehighlight when using n or N",
-})
+    autocmd("BufWinEnter", {
+        group = group,
+        callback = function(opt)
+            hs_event(opt.buf)
+        end,
+        desc = "Auto remove search highlight and rehighlight when using n or N",
+    })
+end
+setup_search_highlight()
 
 -- Automatically change shortcuts in specific files
 autocmd({ "BufEnter" }, {
