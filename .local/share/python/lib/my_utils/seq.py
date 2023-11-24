@@ -25,6 +25,32 @@ def partition(predicate: Callable[[Any], bool], iterable: Iterable[Any]):
     return filter(predicate, it1), filterfalse(predicate, it2)
 
 
+def get_differences(a: Iterable[_T], b: Iterable[_T]) -> tuple[set[_T], set[_T]]:
+    """
+    Compute the differences between two iterables.
+
+    Parameters:
+        `a (Iterable[T])`: The first iterable.
+        `b (Iterable[T])`: The second iterable.
+
+    Returns:
+        `tuple[set[T], set[T]]`: A tuple of two sets. The first set is `a - b`, and the second set is `b - a`.
+    """
+
+    a = a if isinstance(a, set) else set(a)
+    b = b if isinstance(b, set) else set(b)
+    a_minus_b, b_minus_a = set(), set()
+
+    for ele in set(chain(a, b)):
+        if ele in a:
+            if ele not in b:
+                a_minus_b.add(ele)
+        else:
+            b_minus_a.add(ele)
+
+    return a_minus_b, b_minus_a
+
+
 def fallback(*args: Callable[[], Any]) -> Any:
     """Returns the first non-empty or non-None element in a sequence, the laziness is implemented by function"""
 
