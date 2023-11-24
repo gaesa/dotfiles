@@ -44,7 +44,7 @@ def print_image(image: str):
         )
 
 
-class Switch:
+class Case:
     def __init__(
         self,
         cases: dict | None = None,
@@ -69,7 +69,7 @@ class Switch:
 
 def create_switch_case(file):
     def create_archive_case():
-        switch[
+        case[
             ("application", "x-compressed-tar"),
             ("application", "x-tar"),
             ("application", "x-archive"),
@@ -95,19 +95,19 @@ def create_switch_case(file):
             ],
             check=True,
         )
-        switch[("application", "vnd.rar"),] = lambda _: run(
+        case[("application", "vnd.rar"),] = lambda _: run(
             ["unrar", "lt", "-p-", "--", file], check=True
         )
-        switch[("application", "x-7z-compressed"),] = lambda _: run(
+        case[("application", "x-7z-compressed"),] = lambda _: run(
             ["7z", "l", "-p", "--", file], check=True
         )
 
     def create_document_case():
-        switch[
+        case[
             ("application", "vnd.oasis.opendocument.text"),
             ("application", "vnd.oasis.opendocument.spreadsheet"),
         ] = lambda _: run(["odt2txt", file], check=True)
-        switch[
+        case[
             (
                 "application",
                 "vnd.openxmlformats-officedocument.wordprocessingml.document",
@@ -115,14 +115,14 @@ def create_switch_case(file):
         ] = lambda _: run(["pandoc", "-s", "-t", "gfm", "--", file], check=True)
 
     def create_other_case():
-        switch[("application", "x-bittorrent"),] = lambda _: run(
+        case[("application", "x-bittorrent"),] = lambda _: run(
             ["transmission-show", "--", file], check=True
         )
-        switch[
+        case[
             ("text", "html"),
             ("application", "xhtml+xml"),
         ] = lambda _: run(["w3m", "-dump", file], check=True)
-        switch[
+        case[
             ("application", "xml"),
             ("application", "json"),
             ("application", "x-shellscript"),
@@ -134,11 +134,11 @@ def create_switch_case(file):
         else:
             fallback_to_file_cmd(file)
 
-    switch = Switch(default=default)
+    case = Case(default=default)
     create_archive_case()
     create_document_case()
     create_other_case()
-    return switch
+    return case
 
 
 def preview_text(file):
