@@ -127,7 +127,7 @@ if options.direct_io then
     end
 end
 
-local file = nil
+local file
 local file_bytes = 0
 local spawned = false
 local disabled = false
@@ -138,21 +138,16 @@ local script_written = false
 
 local dirty = false
 
-local x = nil
-local y = nil
-local last_x = x
-local last_y = y
+local x, y
+local last_x, last_y
 
-local last_seek_time = nil
+local last_seek_time
 
-local effective_w = options.max_width
-local effective_h = options.max_height
-local real_w = nil
-local real_h = nil
-local last_real_w = nil
-local last_real_h = nil
+local effective_w, effective_h = options.max_width, options.max_height
+local real_w, real_h
+local last_real_w, last_real_h
 
-local script_name = nil
+local script_name
 
 local show_thumbnail = false
 
@@ -169,7 +164,7 @@ local tone_mappings = {
     ["hable"] = true,
     ["mobius"] = true,
 }
-local last_tone_mapping = nil
+local last_tone_mapping
 
 local last_vf_reset = ""
 local last_vf_runtime = ""
@@ -179,10 +174,12 @@ local last_rotate = 0
 local par = ""
 local last_par = ""
 
+local last_crop = nil
+
 local last_has_vid = 0
 local has_vid = 0
 
-local file_timer = nil
+local file_timer
 local file_check_period = 1 / 60
 
 local allow_fast_seek = true
@@ -246,30 +243,91 @@ local os_name = mp.get_property("platform") or get_os()
 
 local path_separator = os_name == "windows" and "\\" or "/"
 
-local TMPDIR = os.getenv("TMPDIR")
+local function fallback(...)
+    local args = { ... }
 
-local function init_option(opt_name, windows_name, non_windows_name)
-    if options[opt_name] == "" then
-        if os_name == "windows" then
-            if type(windows_name) == "function" then
-                options[opt_name] = windows_name()
-            else
-                options[opt_name] = windows_name
-            end
+    local function cond(var)
+        if type(var) == "table" then
+            return #var ~= 0
         else
-            if TMPDIR == nil then
-                options[opt_name] = mp.utils.join_path("/tmp", non_windows_name)
-            else
-                options[opt_name] = mp.utils.join_path(TMPDIR, non_windows_name)
-            end
+            return var ~= nil
+        end
+    end
+
+    for _, arg in ipairs(args) do
+        local value = arg()
+        if cond(value) then
+            return value
         end
     end
 end
 
-init_option("socket", "thumbfast", "thumbfast")
-init_option("thumbnail", function()
-    return mp.utils.join_path(os.getenv("TEMP"), "thumbfast.out")
-end, "thumbfast.out")
+local function isdir(file)
+    local info = mp.utils.file_info(file)
+    if info == nil then
+        return false
+    else
+        return info.is_dir
+    end
+end
+
+local function gettempdir()
+    local function get_existing_dir(dir)
+        if dir == nil then
+            return nil
+        else
+            if isdir(dir) then
+                return dir
+            else
+                return nil
+            end
+        end
+    end
+
+    local initial = fallback(function()
+        return get_existing_dir(os.getenv("TMPDIR"))
+    end, function()
+        return get_existing_dir(os.getenv("TEMP"))
+    end, function()
+        return get_existing_dir(os.getenv("TMP"))
+    end)
+
+    if os_name == "windows" then
+        return fallback(function()
+            return initial
+        end, function()
+            return mp.utils.getcwd()
+        end)
+    else
+        return fallback(function()
+            return initial
+        end, function()
+            return get_existing_dir(os.getenv("XDG_RUNTIME_DIR"))
+        end, function()
+            return get_existing_dir("/tmp")
+        end, function()
+            return mp.utils.getcwd()
+        end)
+    end
+end
+
+local function set_options_paths(opts_tbl)
+    local tempdir = gettempdir()
+
+    local function set(opt_name, filename)
+        if options[opt_name] == "" then
+            options[opt_name] = mp.utils.join_path(tempdir, filename)
+        else
+            return
+        end
+    end
+
+    for opt_name, filename in pairs(opts_tbl) do
+        set(opt_name, filename)
+    end
+end
+
+set_options_paths({ socket = "thumbfast", thumbnail = "thumbfast.out" })
 
 local unique = mp.utils.getpid()
 
@@ -330,6 +388,17 @@ end
 local function vf_string(filters, full)
     local vf = ""
     local vf_table = properties["vf"]
+
+    if (properties["video-crop"] or "") ~= "" then
+        vf = "lavfi-crop="
+            .. string.gsub(properties["video-crop"], "(%d*)x?(%d*)%+(%d+)%+(%d+)", "w=%1:h=%2:x=%3:y=%4")
+            .. ","
+        local width = properties["video-out-params"] and properties["video-out-params"]["dw"]
+        local height = properties["video-out-params"] and properties["video-out-params"]["dh"]
+        if width and height then
+            vf = string.gsub(vf, "w=:h=:", "w=" .. width .. ":h=" .. height .. ":")
+        end
+    end
 
     if vf_table and #vf_table > 0 then
         for i = #vf_table, 1, -1 do
@@ -907,8 +976,7 @@ local function thumb(time, r_x, r_y, script)
     script_name = script
     if last_x ~= x or last_y ~= y or not show_thumbnail then
         show_thumbnail = true
-        last_x = x
-        last_y = y
+        last_x, last_y = x, y
         draw(real_w, real_h, script)
     end
 
@@ -951,6 +1019,7 @@ local function watch_changes()
         or last_vf_reset ~= vf_reset
         or (last_rotate % 180) ~= (rotate % 180)
         or par ~= last_par
+        or last_crop ~= properties["video-crop"]
 
     if resized then
         last_rotate = rotate
@@ -985,6 +1054,7 @@ local function watch_changes()
     last_vf_reset = vf_reset
     last_rotate = rotate
     last_par = par
+    last_crop = properties["video-crop"]
     last_has_vid = has_vid
 
     if not spawned and not disabled and options.spawn_first and resized then
@@ -1092,6 +1162,7 @@ mp.observe_property("stream-open-filename", "native", update_property)
 mp.observe_property("macos-app-activation-policy", "native", update_property)
 mp.observe_property("current-vo", "native", update_property)
 mp.observe_property("video-rotate", "native", update_property)
+mp.observe_property("video-crop", "native", update_property)
 mp.observe_property("path", "native", update_property)
 mp.observe_property("vid", "native", sync_changes)
 mp.observe_property("edition", "native", sync_changes)
