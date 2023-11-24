@@ -1,5 +1,5 @@
 from subprocess import run
-from os.path import isdir, islink, join, dirname
+from os.path import exists, isdir, islink, join, dirname
 from os import environ, getcwd
 from itertools import filterfalse
 
@@ -14,8 +14,10 @@ def get_tracked_files(
     )
     if process.returncode == 0:
         return (  # pyright: ignore [reportGeneralTypeIssues]
-            (lambda x: x) if include_link else (lambda x: list(filterfalse(islink, x)))
-        )(process.stdout.splitlines())
+            (lambda f: list(f))
+            if include_link
+            else (lambda f: list(filterfalse(islink, f)))
+        )(filter(exists, process.stdout.splitlines()))
     else:
         raise SystemExit(process.stderr.rstrip())
 
