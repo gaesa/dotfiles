@@ -2,6 +2,7 @@
 from shutil import which
 import sys
 from subprocess import CalledProcessError, run
+from os import getppid
 from os.path import exists, expanduser
 
 
@@ -54,8 +55,21 @@ def trash(files: list[str], check_dash):
     )
 
 
+def get_parent_process_name() -> str | None:
+    parent_pid = getppid()
+    try:
+        with open(f"/proc/{parent_pid}/comm", "r") as f:
+            parent_process_name = f.read().rstrip()
+    except FileNotFoundError:
+        parent_process_name = None
+    return parent_process_name
+
+
 def main():
-    print("Please use 'trash' when possible", file=sys.stderr)
+    print(
+        f"[{get_parent_process_name()}] Please use 'trash' when possible",
+        file=sys.stderr,
+    )
     check_dash, files = parse_args(sys.argv[1:])
     if which("trash") is not None:
         trash(files, check_dash)
