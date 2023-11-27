@@ -1,35 +1,27 @@
 #!/usr/bin/env python3
-from os import environ, stat as os_stat, remove, listdir, chdir
-from os.path import expanduser, isdir
-from stat import S_ISSOCK
+from pathlib import Path
 from pynvim import attach
 from sys import argv
 from typing import Iterator
+from my_utils.dirs import Xdg
 
 
-def is_socket(file: str):
-    try:
-        return S_ISSOCK(os_stat(file).st_mode)
-    except FileNotFoundError:
-        return False
-
-
-def get_nvim_socket_list(XDG_RUNTIME_DIR) -> Iterator[str]:
-    if isdir(XDG_RUNTIME_DIR):
+def get_nvim_socket_list(XDG_RUNTIME_DIR: Path) -> Iterator[Path]:
+    if XDG_RUNTIME_DIR.is_dir():
         prefix = "nvim."
         return filter(
-            lambda file: file.startswith(prefix) and is_socket(file),
-            listdir(),
+            lambda file: file.name.startswith(prefix) and file.is_socket(),
+            Path.iterdir(XDG_RUNTIME_DIR),
         )
     else:
         raise SystemExit(0)
 
 
-def load_theme(color, socket_list: Iterator[str]):
+def load_theme(color, socket_list: Iterator[Path]):
     def clean(exception: OSError, code_range: set[int | None]):
         code = exception.errno
         if code in code_range:
-            remove(path)
+            path.unlink()
         else:
             raise
 
@@ -37,7 +29,7 @@ def load_theme(color, socket_list: Iterator[str]):
         try:
             with attach("socket", path=path) as nvim:
                 nvim.vars["mycolor"] = color
-                args = [expanduser("~/.config/nvim/plugin/colors.lua")]
+                args = [str(Path("~/.config/nvim/plugin/colors.lua").expanduser())]
                 nvim.lua.vim.cmd({"cmd": "source", "args": args})
         # neovim may exit unexpectedly
         # but to tell if `OSError` is caused by that is hard
@@ -48,8 +40,7 @@ def load_theme(color, socket_list: Iterator[str]):
 
 
 def main():
-    XDG_RUNTIME_DIR = environ["XDG_RUNTIME_DIR"]
-    chdir(XDG_RUNTIME_DIR)
+    XDG_RUNTIME_DIR = Xdg.user_runtime_path()
     socket_list = get_nvim_socket_list(XDG_RUNTIME_DIR)
 
     if len(argv) < 2:
