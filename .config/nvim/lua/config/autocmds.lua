@@ -244,7 +244,11 @@ local function setup_auto_formatting()
     autocmd({ "BufWritePre" }, {
         callback = function()
             if state then
-                vim.cmd.NullFormat()
+                if vim.fn.exists(":NullFormat") ~= 0 then
+                    vim.cmd.NullFormat()
+                else
+                    return
+                end
             else
                 return
             end
