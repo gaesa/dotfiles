@@ -37,6 +37,7 @@
     co = checkout
     br = branch
     cl = clone
+    f = fetch
     sub = submodule
     rb = rebase
     mg = merge
@@ -50,7 +51,7 @@
     ls = log --graph --stat --pretty=format:'%C(auto)%h%C(auto)%d %s %C(dim white)(%aN, %ar)'
     la = log --graph --all --pretty=format:'%C(auto)%h%C(auto)%d %s %C(dim white)(%aN, %ar)'
     lsa = log --graph --stat --all --pretty=format:'%C(auto)%h%C(auto)%d %s %C(dim white)(%aN, %ar)'
-    rmt = fetch --prune origin +refs/tags/*:refs/tags/*
+    ft = fetch --prune origin +refs/tags/*:refs/tags/*
 [submodule]
     recurse = true
 [submodule "*"]
