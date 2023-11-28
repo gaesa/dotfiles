@@ -72,7 +72,9 @@ def edit(files: list[str] | tuple[str, ...] | None = None):
         run(["/usr/bin/nvim"])
     else:
         emacs_files, nvim_files = partition(split_cond, files)
-        nvim, emacs = open_with(list(nvim_files), list(emacs_files))
+        nvim, emacs = open_with(
+            nvim_files, emacs_files  # pyright: ignore [reportGeneralTypeIssues]
+        )
         wait_editor(nvim, emacs)
 
 

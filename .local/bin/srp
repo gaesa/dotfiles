@@ -102,14 +102,17 @@ class Subcommands:
     @ensure_one_parameter
     def rg(param_list: list[str], dir: str):
         opts, args = partition(lambda s: s.startswith("-"), param_list)
-        args = tuple(args)
         run(
             [
                 "rg",
                 "--smart-case",
                 "--follow",
                 *opts,
-                substrings_to_pattern(args) if len(args) > 1 else args[0],
+                (
+                    substrings_to_pattern(args)
+                    if len(args) > 1  # pyright: ignore [reportGeneralTypeIssues]
+                    else args[0]  # pyright: ignore [reportGeneralTypeIssues]
+                ),
                 dir,
             ]
         )
