@@ -240,7 +240,6 @@ local function setup_auto_formatting()
     })
 
     -- Formatter
-    -- Should be placed before 'Retab' as some formatters don't support space indent
     autocmd({ "BufWritePre" }, {
         callback = function()
             if state then
@@ -248,23 +247,6 @@ local function setup_auto_formatting()
                     vim.cmd.NullFormat()
                 else
                     return
-                end
-            else
-                return
-            end
-        end,
-        group = group,
-    })
-
-    -- Retab
-    autocmd({ "BufWritePre" }, {
-        callback = function()
-            if state then
-                local config = vim.b.editorconfig
-                if config ~= nil and config["indent_style"] == "tab" then
-                    return
-                else
-                    vim.cmd.retab({ bang = true })
                 end
             else
                 return

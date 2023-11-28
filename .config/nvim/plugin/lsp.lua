@@ -124,6 +124,22 @@ require("mason-null-ls").setup({
                 end,
             }))
         end,
+
+        stylua = function(_, _)
+            null_ls.register(null_ls.builtins.formatting.stylua.with({
+                extra_args = function(_)
+                    local config = vim.b.editorconfig
+                    if config ~= nil and config["indent_style"] ~= nil then
+                        return {}
+                    else
+                        return {
+                            "--indent-type",
+                            "Spaces",
+                        }
+                    end
+                end,
+            }))
+        end,
     },
 })
 
