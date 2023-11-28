@@ -17,12 +17,22 @@ def for_each(operation: Callable[[_T], Any], sequence: Iterable[_T]) -> None:
         operation(ele)
 
 
-def partition(predicate: Callable[[Any], bool], iterable: Iterable[Any]):
+def partition(
+    predicate: Callable[[_T], bool], iterable: Iterable[_T], lazy: bool = False
+) -> tuple[Iterator[_T], Iterator[_T]] | tuple[list[_T], list[_T]]:
     "Use a predicate to partition entries into true entries and false entries"
-    it1, it2 = (
-        tee(iterable) if isinstance(iterable, (Iterator, range)) else (iterable,) * 2
-    )
-    return filter(predicate, it1), filterfalse(predicate, it2)
+    if lazy:
+        it1, it2 = tee(iterable)
+        return filter(
+            predicate, it1  # pyright: ignore [reportGeneralTypeIssues]
+        ), filterfalse(
+            predicate, it2  # pyright: ignore [reportGeneralTypeIssues]
+        )
+    else:
+        it1, it2 = [], []
+        for ele in iterable:
+            (it1 if predicate(ele) else it2).append(ele)
+        return it1, it2
 
 
 def get_differences(a: Iterable[_T], b: Iterable[_T]) -> tuple[set[_T], set[_T]]:
