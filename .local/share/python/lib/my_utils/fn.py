@@ -20,6 +20,16 @@ def filter_return(filter_fn: Callable):
     return decorator
 
 
+def cache_single_value(orig_fn: Callable):
+    def new_fn(*args, **kwargs):
+        value = orig_fn(*args, **kwargs)
+        container[0] = lambda *_, **__: value
+        return value
+
+    container = [new_fn]
+    return lambda *args, **kwargs: container[0](*args, **kwargs)
+
+
 def debug_fn(old_fn: Callable, name: str = ""):
     def new_fn(*args, **kwargs):
         print("args:", args, "kwargs:", kwargs) if name == "" else print(
