@@ -4,7 +4,6 @@
 from subprocess import DEVNULL, Popen, run
 from sys import argv
 from os.path import expanduser, isfile, join, splitext, basename
-from os import environ, getenv
 from configparser import ConfigParser, SectionProxy
 
 
@@ -97,7 +96,8 @@ def get_list_of_mimeapps(
 
 
 def get_default_desktops(mime_type: str, interactive=False):
-    from my_utils.seq import fallback as first_valid
+    from my_utils.dirs import Xdg
+    from os import environ
 
     config = ConfigParser()
     config.optionxform = (  # pyright: ignore [reportGeneralTypeIssues]
@@ -106,13 +106,11 @@ def get_default_desktops(mime_type: str, interactive=False):
     XDG_CURRENT_DESKTOP = tuple(
         map(str.lower, environ["XDG_CURRENT_DESKTOP"].split(":"))
     )
-    XDG_CONFIG_HOME: str = first_valid(
-        lambda: getenv("XDG_CONFIG_HOME"), lambda: expanduser("~/.config")
-    )
-    XDG_CONFIG_DIRS = environ["XDG_CONFIG_DIRS"].split(":")
-    XDG_DATA_DIRS = environ["XDG_DATA_DIRS"].split(":")
     user_configs, system_configs = get_list_of_mimeapps(
-        XDG_CONFIG_HOME, XDG_CURRENT_DESKTOP, XDG_CONFIG_DIRS, XDG_DATA_DIRS
+        Xdg.user_config_dir(),
+        XDG_CURRENT_DESKTOP,
+        Xdg.site_config_dirs(),
+        Xdg.site_data_dirs(),
     )
 
     def extract_desktops():
