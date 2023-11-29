@@ -1,16 +1,19 @@
 from os import getcwd, chdir, stat
-import json
 from pathlib import Path
 from typing import Callable
 from stat import S_IMODE
 
 
 def json_read(file: str | Path):
+    import json
+
     with open(file, "r") as f:
         return json.load(f)
 
 
 def json_write(file: str | Path, data: list | dict, mode: str = "w") -> None:
+    import json
+
     with open(file, mode) as f:
         json.dump(data, f, indent=2, ensure_ascii=False)
 
