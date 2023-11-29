@@ -46,6 +46,44 @@ def get_mime_type(file: str | Path) -> tuple[str, str]:
         return mime_type
 
 
+async def get_mime_type_async(file: str | Path) -> tuple[str, str]:
+    from .aio import run
+
+    file = file if isinstance(file, Path) else Path(file)
+    extension = file.suffix
+
+    file_args = ["file", "-Lb", "--mime-type", "--", file]
+    args = (
+        file_args
+        if extension in {".ts", ".bak", ".txt", ".TXT"}
+        else [
+            "xdg-mime",
+            "query",
+            "filetype",
+            f"./{file}" if str(file).startswith("-") else file,
+        ]
+    )
+
+    string: str = (
+        await run(args, text=True, check=True)
+    ).stdout.rstrip()  # pyright: ignore [reportGeneralTypeIssues, reportOptionalMemberAccess]
+    mime_type = tuple(string.split("/", 1))
+    if len(mime_type) != 2:
+        if args[0] == "xdg-mime":
+            new_str: str = (
+                await run(file_args, text=True, check=True)
+            ).stdout.rstrip()  # pyright: ignore [reportGeneralTypeIssues, reportOptionalMemberAccess]
+            new_type = tuple(new_str.split("/", 1))
+            if len(new_type) != 2:
+                raise ValueError(f"{file_args} returns: '{new_str}'")
+            else:
+                return new_type
+        else:
+            raise ValueError(f"{file_args} returns: '{string}'")
+    else:
+        return mime_type
+
+
 def json_read(file: str | Path):
     import json
 
