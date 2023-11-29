@@ -3,47 +3,9 @@
 # running in terminal directly
 from subprocess import DEVNULL, Popen, run
 from sys import argv
-from os.path import expanduser, isfile, join, splitext, basename
+from os.path import expanduser, isfile, join, basename
 from configparser import ConfigParser, SectionProxy
-
-
-def get_mime_type(file: str) -> tuple[str, str]:
-    # `xdg-mime query filetype` are better than
-    # `file -Lb --mime_type` & `mimetypes.guess_type()`
-    # although both of them are not perfect
-    # problematic extensions:
-    # `.md` (with CJK character), `.ts`,
-    # `.m4a`, `.tm`, `.xopp`, `.org`, `.scm`
-    extension = splitext(file)[1]
-
-    file_args = ["file", "-Lb", "--mime-type", "--", file]
-    args = (
-        file_args
-        if extension in {".ts", ".bak", ".txt", ".TXT"}
-        else [
-            "xdg-mime",
-            "query",
-            "filetype",
-            "./" + file if file.startswith("-") else file,
-        ]
-    )
-
-    string = run(args, capture_output=True, text=True, check=True).stdout.rstrip()
-    mime_type = tuple(string.split("/", 1))
-    if len(mime_type) != 2:
-        if args[0] == "xdg-mime":
-            new_str = run(
-                file_args, capture_output=True, text=True, check=True
-            ).stdout.rstrip()
-            new_type = tuple(new_str.split("/", 1))
-            if len(new_type) != 2:
-                raise ValueError(f"{file_args} returns: '{new_str}'")
-            else:
-                return new_type
-        else:
-            raise ValueError(f"{file_args} returns: '{string}'")
-    else:
-        return mime_type
+from my_utils.os import get_mime_type
 
 
 def get_list_of_mimeapps(

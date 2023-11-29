@@ -80,7 +80,7 @@ def gen_thumb(media: str, thumb_path: str, mime_type: tuple[str, str] | None = N
 
     def get_mime_type() -> tuple[str, str]:
         if mime_type is None:
-            from opener import get_mime_type as get_type
+            from my_utils.os import get_mime_type as get_type
 
             return get_type(media)
         else:
