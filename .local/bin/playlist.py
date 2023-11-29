@@ -1,17 +1,14 @@
 #!/usr/bin/env python3
-from os import listdir, getcwd
-from os.path import isfile, join
+from pathlib import Path
 from subprocess import run
-from opener import get_mime_type
 from argparse import ArgumentParser
 import asyncio
-from multiprocessing import cpu_count
 import re
 from typing import Iterable
-from my_utils.os import run_chdir_async
+from my_utils.os import get_mime_type_async
 
 
-def gen_playlist_file(file: str, lst: list[str]) -> None:
+def gen_playlist_file(file: str | Path, lst: list[str]) -> None:
     if lst != []:
         with open(file, "w") as f:
             f.write("\n".join(lst))
@@ -34,24 +31,13 @@ def natsort(strings: Iterable[str]) -> list[str]:
     return sorted(strings, key=key)
 
 
-async def get_mime_type_async(
-    file: str, sem: asyncio.Semaphore | None = None
-) -> tuple[str, str]:
-    if sem is None:
-        return await asyncio.to_thread(get_mime_type, file)
-    else:
-        async with sem:
-            return await asyncio.to_thread(get_mime_type, file)
-
-
-async def gen_playlist() -> list[str]:
-    files = tuple(filter(isfile, listdir()))
-    sem = asyncio.Semaphore(cpu_count())
-    tasks = map(lambda file: get_mime_type_async(file, sem=sem), files)
+async def gen_playlist(dir: Path) -> list[str]:
+    files = tuple(filter(lambda f: f.is_file(), dir.iterdir()))
+    tasks = map(lambda file: get_mime_type_async(file), files)
     mime_types: list[tuple[str, str]] = await asyncio.gather(*tasks)
     return natsort(
         map(
-            lambda file_mime: file_mime[0],
+            lambda file_mime: file_mime[0].parts[-1],
             filter(
                 lambda file_mime: file_mime[1][0] in {"video", "audio"},
                 zip(files, mime_types, strict=True),
@@ -60,15 +46,15 @@ async def gen_playlist() -> list[str]:
     )
 
 
-def get_args() -> tuple[str, bool, bool, str]:
+def get_args() -> tuple[Path, bool, bool, Path]:
     parser = ArgumentParser(
         description="A script to generate and play a playlist using mpv"
     )
     parser.add_argument(
         "directory",
-        type=str,
+        type=Path,
         nargs="?",
-        default=getcwd(),
+        default=".",
         help="The directory path where videos are located "
         "or will be generated. "
         "Default is the current working directory.",
@@ -95,21 +81,21 @@ def get_args() -> tuple[str, bool, bool, str]:
     )
     args = parser.parse_args()
     args.output = (
-        join(args.directory, "playlist") if args.output is None else args.output
+        Path(args.directory, "playlist") if args.output is None else args.output
     )
     return args.directory, args.force, args.skip_play, args.output
 
 
 def main():
-    directory, force_regen, skip_play, playlist_path = get_args()
+    dir, force_regen, skip_play, playlist_path = get_args()
 
-    if isfile(playlist_path) and (not force_regen) and (not skip_play):
+    if playlist_path.is_file() and (not force_regen) and (not skip_play):
         run(["/usr/bin/mpv", f"--playlist={playlist_path}"])
     else:
-        playlist = asyncio.run(run_chdir_async(directory)(gen_playlist)())
+        playlist: list[str] = asyncio.run(gen_playlist(dir))
         gen_playlist_file(playlist_path, playlist)
 
-        if (not skip_play) and isfile(playlist_path):
+        if (not skip_play) and playlist_path.is_file():
             run(["/usr/bin/mpv", f"--playlist={playlist_path}"])
         else:
             return
