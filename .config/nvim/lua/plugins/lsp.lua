@@ -7,29 +7,6 @@ return {
         dependencies = {
             { -- LSP Support
                 "neovim/nvim-lspconfig",
-                dependencies = {
-                    { -- Symbols outline & context
-                        "SmiteshP/nvim-navbuddy",
-                        dependencies = {
-                            "SmiteshP/nvim-navic",
-                            "MunifTanjim/nui.nvim",
-                        },
-                        config = function()
-                            require("nvim-navbuddy").setup({ lsp = { auto_attach = true } })
-                            vim.keymap.set({ "n" }, "<leader>o", function()
-                                require("nvim-navbuddy").open()
-                                --local function sleep(sec)
-                                --    sec = tostring(sec)
-                                --    vim.fn.system({ "sleep", sec })
-                                --end
-                                --sleep(5)
-                                --local winid = vim.fn.win_getid() --vim.fn.winnr("$")
-                                --print(winid)
-                                --vim.api.nvim_set_option_value("winblend", 10, { scope = "local", win = winid })
-                            end)
-                        end,
-                    },
-                },
             },
             {
                 "williamboman/mason.nvim",
