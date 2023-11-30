@@ -6,8 +6,7 @@ from sys import argv
 from subprocess import run
 from os import chdir
 from os.path import basename, isfile, expanduser
-from inspect import getattr_static
-from typing import Type
+from typing import Callable, Any
 from my_utils.seq import Iterable, for_each, partition
 
 
@@ -41,136 +40,165 @@ def substrings_to_pattern(substrings: Iterable[str]) -> str:
     )
 
 
-class Subcommands:
-    @staticmethod
-    def ls(param_list: list[str], dir: str, opts: str = ""):
-        run(
-            [
-                "ls",
-                f"-{opts}F",
-                "--color=auto",
-                "--group-directories-first",
-                *param_list,
-            ],
-            cwd=dir,
-        )
+class Namespace:
+    def __init__(self):
+        self.__table: dict[str, Any] = {}
 
-    @staticmethod
-    def ll(param_list: list[str], dir: str):
-        Subcommands.ls(param_list, dir, opts="lh")
+    def put(self, obj: Any):
+        if hasattr(obj, "__name__"):
+            self.__table[obj.__name__] = obj
+        else:
+            self.__table[str(obj)] = obj
+        return obj
 
-    @staticmethod
-    def cat(param_list: list[str], dir: str):
-        def display(file: str):
-            with open(file, "r") as f:
-                print(f.read(), end="")
+    def get(self, name: str):
+        return self.__table[name]
 
-        def print_separator(i):
-            if i != length - 1:
-                print("-" * 50, end="\n" * 3)
-            else:
-                return
+    def has(self, name: str):
+        return name in self.__table
 
-        def op(enum: tuple):
-            (i, file) = enum
-            display(file)
-            print_separator(i)
 
-        length = len(param_list)
-        chdir(dir)
-        for_each(op, enumerate(param_list))
+namespace = Namespace()
 
-    @staticmethod
-    @ensure_one_parameter
-    def fd(param_list: list[str], dir: str):
-        run(
-            [
-                "fd",
-                "--color",
-                "never",
-                "--follow",
-                substrings_to_pattern(param_list)
-                if len(param_list) > 1
-                else param_list[0],
-                dir,
-            ],
-            check=True,
-        )
 
-    # grep (rg) function
-    @staticmethod
-    @ensure_one_parameter
-    def rg(param_list: list[str], dir: str):
-        opts, args = partition(lambda s: s.startswith("-"), param_list)
-        run(
-            [
-                "rg",
-                "--smart-case",
-                "--follow",
-                *opts,
-                (
-                    substrings_to_pattern(args)
-                    if len(args) > 1  # pyright: ignore [reportGeneralTypeIssues]
-                    else args[0]  # pyright: ignore [reportGeneralTypeIssues]
-                ),
-                dir,
-            ]
-        )
-        # `rg` returns a non-zero exit code when it does not locate a match,
-        # adhering to the traditional Unix shell convention
-        # where exit codes are interpreted as boolean values.
-        # However, this convention is not ideal as it specially treats and handles integers.
-        # A more general and elegant way could be to make the output of a command an object,
-        # containing stdout, stderr, and returncode.
-        # Programmers can manually specify conditions based on the returncode
-        # or any other attribute of the output object.
-        # This approach aligns with the principle of type consistency
-        # and can make error handling more explicit and robust.
+@namespace.put
+def ls(param_list: list[str], dir: str, opts: str = ""):
+    run(
+        [
+            "ls",
+            f"-{opts}F",
+            "--color=auto",
+            "--group-directories-first",
+            *param_list,
+        ],
+        cwd=dir,
+    )
 
-    # trash function
-    @staticmethod
-    @ensure_one_parameter
-    def tr(param_list: list[str], dir: str):
-        chdir(dir)
-        return for_each(
-            lambda file: run(["trash", file], check=True),
-            param_list,
-        )
 
-    @staticmethod
-    @ensure_two_parameters
-    def mv(param_list: list[str], dir: str):
-        run(["mv", "-i", *param_list], check=True, cwd=dir)
+@namespace.put
+def ll(param_list: list[str], dir: str):
+    ls(param_list, dir, opts="lh")
 
-    @staticmethod
-    @ensure_two_parameters
-    def ln(param_list: list[str], dir: str):
-        run(["ln", "-sr", param_list[0], param_list[1]], check=True, cwd=dir)
 
-    @staticmethod
-    @ensure_two_parameters
-    def cp(param_list: list[str], dir: str):
-        run(["cp", "-i", *param_list], check=True, cwd=dir)
+@namespace.put
+def cat(param_list: list[str], dir: str):
+    def display(file: str):
+        with open(file, "r") as f:
+            print(f.read(), end="")
 
-    @staticmethod
-    @ensure_two_parameters
-    def diff(param_list: list[str], dir: str):
-        run(["nvim", "-d", *reversed(param_list)], cwd=dir)
+    def print_separator(i):
+        if i != length - 1:
+            print("-" * 50, end="\n" * 3)
+        else:
+            return
 
-    # line count function
-    @staticmethod
-    @ensure_one_parameter
-    def lc(param_list: list[str], dir: str):
-        run(["wc", "-l", *param_list], cwd=dir)
+    def op(enum: tuple):
+        (i, file) = enum
+        display(file)
+        print_separator(i)
 
-    @staticmethod
-    @ensure_one_parameter
-    def shck(param_list: list[str], dir: str):
-        chdir(dir)
-        return for_each(
-            lambda file: run(["shellcheck", "-x", "-o", "all", file]),
-            param_list,
-        )
+    length = len(param_list)
+    chdir(dir)
+    for_each(op, enumerate(param_list))
+
+
+@namespace.put
+@ensure_one_parameter
+def fd(param_list: list[str], dir: str):
+    run(
+        [
+            "fd",
+            "--color",
+            "never",
+            "--follow",
+            substrings_to_pattern(param_list) if len(param_list) > 1 else param_list[0],
+            dir,
+        ],
+        check=True,
+    )
+
+
+# grep (rg) function
+@namespace.put
+@ensure_one_parameter
+def rg(param_list: list[str], dir: str):
+    opts, args = partition(lambda s: s.startswith("-"), param_list)
+    run(
+        [
+            "rg",
+            "--smart-case",
+            "--follow",
+            *opts,
+            (
+                substrings_to_pattern(args)
+                if len(args) > 1  # pyright: ignore [reportGeneralTypeIssues]
+                else args[0]  # pyright: ignore [reportGeneralTypeIssues]
+            ),
+            dir,
+        ]
+    )
+    # `rg` returns a non-zero exit code when it does not locate a match,
+    # adhering to the traditional Unix shell convention
+    # where exit codes are interpreted as boolean values.
+    # However, this convention is not ideal as it specially treats and handles integers.
+    # A more general and elegant way could be to make the output of a command an object,
+    # containing stdout, stderr, and returncode.
+    # Programmers can manually specify conditions based on the returncode
+    # or any other attribute of the output object.
+    # This approach aligns with the principle of type consistency
+    # and can make error handling more explicit and robust.
+
+
+# trash function
+@namespace.put
+@ensure_one_parameter
+def tr(param_list: list[str], dir: str):
+    chdir(dir)
+    return for_each(
+        lambda file: run(["trash", file], check=True),
+        param_list,
+    )
+
+
+@namespace.put
+@ensure_two_parameters
+def mv(param_list: list[str], dir: str):
+    run(["mv", "-i", *param_list], check=True, cwd=dir)
+
+
+@namespace.put
+@ensure_two_parameters
+def ln(param_list: list[str], dir: str):
+    run(["ln", "-sr", param_list[0], param_list[1]], check=True, cwd=dir)
+
+
+@namespace.put
+@ensure_two_parameters
+def cp(param_list: list[str], dir: str):
+    run(["cp", "-i", *param_list], check=True, cwd=dir)
+
+
+@namespace.put
+@ensure_two_parameters
+def diff(param_list: list[str], dir: str):
+    run(["nvim", "-d", *reversed(param_list)], cwd=dir)
+
+
+# line count function
+@namespace.put
+@ensure_one_parameter
+def lc(param_list: list[str], dir: str):
+    run(["wc", "-l", *param_list], cwd=dir)
+
+
+@namespace.put
+@ensure_one_parameter
+def shck(param_list: list[str], dir: str):
+    chdir(dir)
+    return for_each(
+        lambda file: run(["shellcheck", "-x", "-o", "all", file]),
+        param_list,
+    )
 
 
 # build a list then expand it to neovim or emacs
@@ -193,15 +221,11 @@ def edit(param_list: list[str], dir: str):
     update_permission(0o744)
 
 
-def is_user_defined_member(namespace: Type, member_name: str):
-    return (not member_name.startswith("_")) and (member_name in vars(namespace))
-
-
 @ensure_length(2, f"Missing argument for `{basename(__file__)}`")
 def main():
     dir, fn_name = expanduser("~/.local/bin"), argv[1]
-    if is_user_defined_member(Subcommands, fn_name):
-        getattr_static(Subcommands, fn_name)(argv[2:], dir)
+    if namespace.has(fn_name):
+        namespace.get(fn_name)(argv[2:], dir)
     else:
         edit(argv[1:], dir)
 
