@@ -8,16 +8,18 @@ from os import chdir
 from os.path import basename, isfile, expanduser
 from typing import Callable, Any
 from my_utils.seq import Iterable, for_each, partition
+from functools import wraps
 
 
 def ensure_length(length: int, mes: str):
-    def decorator(old_fn):
+    def decorator(orig_fn: Callable):
+        @wraps(orig_fn)
         def new_fn(*args, **kwargs):
             lst = args[0] if len(args) > 0 else argv
             if len(lst) < length:
                 raise SystemExit(mes)
             else:
-                old_fn(*args, **kwargs)
+                orig_fn(*args, **kwargs)
 
         return new_fn
 
