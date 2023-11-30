@@ -112,7 +112,8 @@ require("mason-null-ls").setup({
         prettier = function(_, _)
             null_ls.register(null_ls.builtins.formatting.prettier.with({
                 extra_args = function(params)
-                    if vim.bo.filetype == "markdown" or vim.b.editorconfig["indent_size"] ~= nil then
+                    local config = vim.b.editorconfig
+                    if vim.bo.filetype == "markdown" or (config ~= nil and config["indent_size"] ~= nil) then
                         return {}
                     else
                         return {
