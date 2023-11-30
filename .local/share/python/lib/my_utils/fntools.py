@@ -1,21 +1,24 @@
 from typing import Callable
+from functools import wraps
 
 
 def after(post_fn: Callable, is_async: bool = False):
-    def decorator(old_fn: Callable) -> Callable:
+    def decorator(orig_fn: Callable) -> Callable:
         if is_async:
 
+            @wraps(orig_fn)
             async def new_fn(  # pyright: ignore [reportGeneralTypeIssues]
                 *args, **kwargs
             ):
-                value = await old_fn(*args, **kwargs)
+                value = await orig_fn(*args, **kwargs)
                 await post_fn()
                 return value
 
         else:
 
+            @wraps(orig_fn)
             def new_fn(*args, **kwargs):
-                value = old_fn(*args, **kwargs)
+                value = orig_fn(*args, **kwargs)
                 post_fn()
                 return value
 
@@ -25,20 +28,22 @@ def after(post_fn: Callable, is_async: bool = False):
 
 
 def before(pre_fn: Callable, is_async: bool = False):
-    def decorator(old_fn: Callable) -> Callable:
+    def decorator(orig_fn: Callable) -> Callable:
         if is_async:
 
+            @wraps(orig_fn)
             async def new_fn(  # pyright: ignore [reportGeneralTypeIssues]
                 *args, **kwargs
             ):
                 await pre_fn()
-                return await old_fn(*args, **kwargs)
+                return await orig_fn(*args, **kwargs)
 
         else:
 
+            @wraps(orig_fn)
             def new_fn(*args, **kwargs):
                 pre_fn()
-                return old_fn(*args, **kwargs)
+                return orig_fn(*args, **kwargs)
 
         return new_fn
 
@@ -46,8 +51,10 @@ def before(pre_fn: Callable, is_async: bool = False):
 
 
 def filter_return(filter_fn: Callable):
-    def decorator(old_fn: Callable) -> Callable:
-        return lambda *args, **kwargs: filter_fn(old_fn(*args, **kwargs))
+    def decorator(orig_fn: Callable) -> Callable:
+        return wraps(orig_fn)(
+            lambda *args, **kwargs: filter_fn(orig_fn(*args, **kwargs))
+        )
 
     return decorator
 
@@ -59,15 +66,16 @@ def cache_single_value(orig_fn: Callable):
         return value
 
     container = [new_fn]
-    return lambda *args, **kwargs: container[0](*args, **kwargs)
+    return wraps(orig_fn)(lambda *args, **kwargs: container[0](*args, **kwargs))
 
 
-def debug_fn(old_fn: Callable, name: str = ""):
+def debug_fn(orig_fn: Callable, name: str = ""):
+    @wraps(orig_fn)
     def new_fn(*args, **kwargs):
         print("args:", args, "kwargs:", kwargs) if name == "" else print(
             f"name: {name}", f"args: {args}", f"kwargs: {kwargs}", sep="\n"
         )
-        value = old_fn(*args, **kwargs)
+        value = orig_fn(*args, **kwargs)
         print("returned value:", value, end="\n" * 2)
         return value
 
