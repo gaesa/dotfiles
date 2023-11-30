@@ -3,11 +3,12 @@ from itertools import chain, tee, filterfalse
 from typing import Callable, Iterable, Iterator, Any, TypeVar
 
 _T = TypeVar("_T")
+_U = TypeVar("_U")
 
 
 def flatmap(
-    operation: Callable[[_T], Iterable[Any]], sequence: Iterable[_T]
-) -> Iterator[Any]:
+    operation: Callable[[_T], Iterable[_U]], sequence: Iterable[_T]
+) -> Iterator[_U]:
     return chain.from_iterable(map(operation, sequence))
 
 
