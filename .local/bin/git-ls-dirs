@@ -1,10 +1,23 @@
 #!/usr/bin/env python3
 from my_utils.git import get_tracked_dirs
-from my_utils.seq import for_each
-from argparse import ArgumentParser
+from my_utils.seq import for_each, flatmap, unique
+from argparse import ArgumentParser, Action
 
 
-def parse_args() -> tuple[str, str]:
+def parse_args() -> tuple[str, list[str]]:
+    class AppendWithoutDefault(Action):
+        def __init__(self, *args, **kwargs):
+            super(AppendWithoutDefault, self).__init__(*args, **kwargs)
+            self._is_passed = False
+
+        def __call__(self, _, namespace, values, __):
+            if not self._is_passed:
+                setattr(namespace, self.dest, [])
+                self._is_passed = True
+                getattr(namespace, self.dest).append(values)
+            else:
+                getattr(namespace, self.dest).append(values)
+
     parser = ArgumentParser(description="Get tracked directories")
     parser.add_argument(
         "path",
@@ -16,16 +29,17 @@ def parse_args() -> tuple[str, str]:
     parser.add_argument(
         "--tree-ish",
         type=str,
-        default="HEAD",
+        default=["HEAD"],
+        action=AppendWithoutDefault,
         help="The name of a tree-ish object (default: HEAD)",
     )
     args = parser.parse_args()
-    return args.path, args.tree_ish
+    return args.path, list(unique(args.tree_ish))
 
 
 def main():
     path, tree_ish = parse_args()
-    for_each(print, get_tracked_dirs(path, tree_ish))
+    for_each(print, unique(flatmap(lambda obj: get_tracked_dirs(path, obj), tree_ish)))
 
 
 if __name__ == "__main__":
