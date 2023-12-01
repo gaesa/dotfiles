@@ -1208,6 +1208,8 @@ This implementation requires users to set `core.worktree` and make sure that `co
                                                "ls-dirs"
                                                home
                                                "--tree-ish"
+                                               "HEAD"
+                                               "--tree-ish"
                                                (funcall get-branch-name)))))
                                  (let ((status (status-process p)))
                                    (if (= status 0)
