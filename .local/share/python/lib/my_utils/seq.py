@@ -6,6 +6,10 @@ _T = TypeVar("_T")
 _U = TypeVar("_U")
 
 
+def unique(sequence: Iterable[_T]) -> dict[_T, None]:
+    return dict.fromkeys(sequence)
+
+
 def flatmap(
     operation: Callable[[_T], Iterable[_U]], sequence: Iterable[_T]
 ) -> Iterator[_U]:
