@@ -1,10 +1,10 @@
 #!/usr/bin/env python3
 from sys import argv
-from typing import Callable
 from my_utils.os import get_mime_type
 from subprocess import run
 import thumb
 from os.path import getsize
+from typing import Callable
 
 
 def audio_has_cover(audio):
@@ -47,98 +47,114 @@ def print_image(image: str):
 class Case:
     def __init__(
         self,
-        cases: dict | None = None,
-        default: Callable = lambda *_, **__: None,  # pyright: ignore ["__" is not accessed]
-    ):
-        self.table = dict() if cases is None else cases
-        self.default = default
+        init: list[tuple[set, Callable]] | None = None,
+        default: Callable | None = None,
+    ) -> None:
+        self.__cases = [] if init is None else init
+        self.__default = default
 
-    def __getitem__(self, key):
-        return self.table[key]
+    def append(self, elements: set, action: Callable):
+        self.__cases.append((elements, action))
 
-    def __setitem__(self, keys, val):
-        for key in keys:
-            self.table[key] = val
+    def extend(self, *pairs: tuple[set, Callable]):
+        self.__cases.extend(pairs)
 
-    def __call__(self, key, var):
-        if key in self.table:
-            self.table[key](key)
-        else:
-            self.default(var)
+    def run(self, x):
+        for elements, action in self.__cases:
+            if x in elements:
+                return action(x)
+        return None if self.__default is None else self.__default(x)
 
 
-def create_switch_case(file):
-    def create_archive_case():
-        case[
-            ("application", "x-compressed-tar"),
-            ("application", "x-tar"),
-            ("application", "x-archive"),
-            ("application", "x-bzip"),
-            ("application", "x-bzip-compressed-tar"),
-            ("application", "vnd.ms-cab-compressed"),
-            ("application", "gzip"),
-            ("application", "x-java-archive"),
-            ("application", "x-lzma"),
-            ("application", "x-lz4"),
-            ("application", "x-xz-compressed-tar"),
-            ("application", "x-xz"),
-            ("application", "x-xpinstall"),
-            ("application", "x-compress"),
-            ("application", "zip"),
-        ] = lambda mime_type: run(
-            [
-                "atool",
-                "--list",
-                *(["-F", "zip"] if mime_type[1] == "zip" else []),
-                "--",
-                file,
-            ],
-            check=True,
-        )
-        case[("application", "vnd.rar"),] = lambda _: run(
-            ["unrar", "lt", "-p-", "--", file], check=True
-        )
-        case[("application", "x-7z-compressed"),] = lambda _: run(
-            ["7z", "l", "-p", "--", file], check=True
-        )
-
-    def create_document_case():
-        case[
-            ("application", "vnd.oasis.opendocument.text"),
-            ("application", "vnd.oasis.opendocument.spreadsheet"),
-        ] = lambda _: run(["odt2txt", file], check=True)
-        case[
-            (
-                "application",
-                "vnd.openxmlformats-officedocument.wordprocessingml.document",
+def fallback_to_non_image(file: str, mime_type: tuple[str, str]):
+    def make_archive_case():
+        case.append(
+            {
+                ("application", "x-compressed-tar"),
+                ("application", "x-tar"),
+                ("application", "x-archive"),
+                ("application", "x-bzip"),
+                ("application", "x-bzip-compressed-tar"),
+                ("application", "vnd.ms-cab-compressed"),
+                ("application", "gzip"),
+                ("application", "x-java-archive"),
+                ("application", "x-lzma"),
+                ("application", "x-lz4"),
+                ("application", "x-xz-compressed-tar"),
+                ("application", "x-xz"),
+                ("application", "x-xpinstall"),
+                ("application", "x-compress"),
+                ("application", "zip"),
+            },
+            lambda mime_type: run(
+                [
+                    "atool",
+                    "--list",
+                    *(("-F", "zip") if mime_type[1] == "zip" else ()),
+                    "--",
+                    file,
+                ],
+                check=True,
             ),
-        ] = lambda _: run(["pandoc", "-s", "-t", "gfm", "--", file], check=True)
-
-    def create_other_case():
-        case[("application", "x-bittorrent"),] = lambda _: run(
-            ["transmission-show", "--", file], check=True
         )
-        case[
-            ("text", "html"),
-            ("application", "xhtml+xml"),
-        ] = lambda _: run(["w3m", "-dump", file], check=True)
-        case[
-            ("application", "xml"),
-            ("application", "json"),
-            ("application", "x-shellscript"),
-        ] = lambda _: preview_text(file)
+        case.append(
+            {("application", "vnd.rar")},
+            lambda _: run(["unrar", "lt", "-p-", "--", file], check=True),
+        )
+        case.append(
+            {("application", "x-7z-compressed")},
+            lambda _: run(["7z", "l", "-p", "--", file], check=True),
+        )
 
-    def default(mime_type_main: str):
-        if mime_type_main == "text":
-            preview_text(file)
-        else:
-            fallback_to_file_cmd(file)
+    def make_document_case():
+        case.extend(
+            (
+                {
+                    ("application", "vnd.oasis.opendocument.text"),
+                    ("application", "vnd.oasis.opendocument.spreadsheet"),
+                },
+                lambda _: run(["odt2txt", file], check=True),
+            ),
+            (
+                {
+                    (
+                        "application",
+                        "vnd.openxmlformats-officedocument.wordprocessingml.document",
+                    )
+                },
+                lambda _: run(["pandoc", "-s", "-t", "gfm", "--", file], check=True),
+            ),
+        )
 
-    case = Case(default=default)
-    create_archive_case()
-    create_document_case()
-    create_other_case()
-    return case
+    def make_misc_case():
+        case.extend(
+            (
+                {("application", "x-bittorrent")},
+                lambda _: run(["transmission-show", "--", file], check=True),
+            ),
+            (
+                {("text", "html"), ("application", "xhtml+xml")},
+                lambda _: run(["w3m", "-dump", file], check=True),
+            ),
+            (
+                {
+                    ("application", "xml"),
+                    ("application", "json"),
+                    ("application", "x-shellscript"),
+                },
+                lambda _: preview_text(file),
+            ),
+        )
+
+    case = Case(
+        default=lambda mime_type: preview_text(file)
+        if mime_type[0] == "text"
+        else fallback_to_file_cmd(file)
+    )
+    make_archive_case()
+    make_document_case()
+    make_misc_case()
+    case.run(mime_type)
 
 
 def preview_text(file):
@@ -163,11 +179,6 @@ def fallback_to_file_cmd(file):
         ["file", "-Lb", file], check=True, capture_output=True, text=True
     ).stdout
     print(res, end="")
-
-
-def fallback_to_non_image(file: str, mime_type: tuple[str, str]):
-    switch = create_switch_case(file)
-    switch(mime_type, mime_type[0])
 
 
 def print_pure_image(file: str):
