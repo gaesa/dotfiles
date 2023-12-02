@@ -1,7 +1,6 @@
 #!/usr/bin/env python3
 from subprocess import run
 from my_utils.git import get_tracked_files, get_git_dir
-from itertools import chain
 from argparse import ArgumentParser
 
 
@@ -10,15 +9,12 @@ def du(tracked_files: list[str], all: bool, apparent_size: bool):
         print("No tracked files found here")
     else:
         run(
-            list(
-                chain.from_iterable(
-                    [
-                        ["dust", *tracked_files],
-                        [get_git_dir()] if all else [],
-                        ["--apparent-size"] if apparent_size else [],
-                    ]
-                )
-            )
+            [
+                "dust",
+                *tracked_files,
+                *((get_git_dir(),) if all else ()),
+                *(("--apparent-size",) if apparent_size else ()),
+            ]
         )
 
 
