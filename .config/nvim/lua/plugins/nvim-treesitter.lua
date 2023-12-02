@@ -37,11 +37,7 @@ return {
                     })
                 end
                 -- Fix indent for python
-                if vim.bo.filetype == "python" then
-                    toggle_indent(true)
-                else
-                    toggle_indent(false)
-                end
+                toggle_indent(vim.bo.filetype == "python")
             end
             vim.api.nvim_create_autocmd({ "BufEnter" }, {
                 callback = fix_indent,
