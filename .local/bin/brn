@@ -24,7 +24,7 @@ def rename_edit(name_record):
     run([editor, name_record], check=True)
 
 
-def rename_move(dir, name_list, name_record):
+def rename_move(dir, name_list, name_record, _symbols_deleted={" ", "-"}):
     with open(name_record, "r") as f:
         lines = f.read().splitlines()
     if len(lines) == len(name_list):
@@ -34,7 +34,7 @@ def rename_move(dir, name_list, name_record):
                 if lines[i] == "":
                     run(["trash", src_path], check=True)
                 else:
-                    if lines[i][0] in {" ", "-"} and lines[i][1:] == name_list[i]:
+                    if lines[i][0] in _symbols_deleted and lines[i][1:] == name_list[i]:
                         run(["trash", src_path], check=True)
                     else:
                         move(src_path, join(dir, lines[i]))

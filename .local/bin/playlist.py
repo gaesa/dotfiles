@@ -35,11 +35,12 @@ async def gen_playlist(dir: Path) -> list[str]:
     files = tuple(filter(lambda f: f.is_file(), dir.iterdir()))
     tasks = map(lambda file: get_mime_type_async(file), files)
     mime_types: list[tuple[str, str]] = await asyncio.gather(*tasks)
+    allowed_mime_types = {"video", "audio"}
     return natsort(
         map(
             lambda file_mime: file_mime[0].parts[-1],
             filter(
-                lambda file_mime: file_mime[1][0] in {"video", "audio"},
+                lambda file_mime: file_mime[1][0] in allowed_mime_types,
                 zip(files, mime_types, strict=True),
             ),
         )
