@@ -12,21 +12,15 @@ def audio_has_cover(audio):
 
     media_info = MediaInfo.parse(audio)
     d = media_info.tracks[0].to_data()  # pyright: ignore [reportGeneralTypeIssues]
-    if "cover" in d:
-        return True
-    else:
-        return False
+    return "cover" in d
 
 
 def print_image(image: str):
     if len(argv) > 2:
-        w = argv[2]
-        h = argv[3]
-        x = argv[4]
-        y = argv[5]
-        place = ["--place", f"{w}x{h}@{x}x{y}"]
+        w, h, x, y = argv[2], argv[3], argv[4], argv[5]
+        place = ("--place", f"{w}x{h}@{x}x{y}")
     else:
-        place = []
+        place = ()
     with open("/dev/tty", "w") as tty:
         run(
             [
