@@ -90,6 +90,7 @@ add_paths (){
 local added_paths=(
     '.' #current directory
     '/opt/bin' #add-on application software packages path
+    '/usr/lib/jvm/default/bin' #java
     "$XDG_DATA_HOME/cargo/bin"
     "$PYENV_ROOT/shims"
 )
