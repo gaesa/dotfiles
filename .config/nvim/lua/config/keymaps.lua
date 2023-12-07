@@ -211,3 +211,6 @@ end)
 map({ "n" }, "<C-f>", function()
     vim.cmd.FZF()
 end)
+
+-- Git
+map({ "n" }, "<leader>m", "]cdo")
