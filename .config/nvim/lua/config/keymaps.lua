@@ -117,7 +117,7 @@ end)
 
 -- Clipboard
 map({ "n", "x" }, "<leader>y", [["+]])
--- map({ "x" }, "<leader>p", [["_dP]])
+map({ "x" }, "<leader>p", [["_dP]])
 -- map({ "n", "x" }, "<leader>d", [["_d]])
 
 -- Automatically create a new file as necessary
