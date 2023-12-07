@@ -215,6 +215,9 @@ end)
 -- Surround
 map({ "n", "x" }, "s", "<NOP>")
 
+-- Git
+map({ "n" }, "<leader>m", "]cdo")
+
 -- GitHub
 map({ "n" }, "<leader>gh", function()
     local line = vim.api.nvim_get_current_line()
