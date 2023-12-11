@@ -99,11 +99,13 @@ dbus-update-activation-environment --systemd --all
 
 # Start KDE from TTY {{{
 if [[ -z "$WAYLAND_DISPLAY" ]] && [[ "$(tty)" = "/dev/tty1" ]]; then
+    # HACK
     chmod u+w "$HOME"
     # See also:
     # https://bugs.kde.org/show_bug.cgi?id=415770
     # https://bugs.kde.org/show_bug.cgi?id=417534
 
+    # HACK
     [[ ! -L "$XDG_CACHE_HOME/runtime" ]] && ln -srf "$XDG_RUNTIME_DIR" "$XDG_CACHE_HOME/runtime"
     # See also:
     # https://github.com/MusicPlayerDaemon/MPD/issues/263
