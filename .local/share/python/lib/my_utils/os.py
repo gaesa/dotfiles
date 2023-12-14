@@ -4,6 +4,14 @@ from typing import Callable
 from stat import S_IMODE
 
 
+def slice_path(
+    path: str | Path,
+    slice_obj: slice,
+) -> Path:
+    path = path if isinstance(path, Path) else Path(path)
+    return Path(*path.parts[slice_obj])
+
+
 def get_mime_type(file: str | Path) -> tuple[str, str]:
     # `xdg-mime query filetype` are better than
     # `file -Lb --mime_type` & `mimetypes.guess_type()`

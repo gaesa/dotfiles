@@ -2,7 +2,7 @@
 from subprocess import run
 from pathlib import Path
 from my_utils.seq import for_each
-from my_utils.os import get_permission
+from my_utils.os import get_permission, slice_path
 from my_utils.dirs import Xdg
 
 
@@ -36,16 +36,6 @@ def cleanup(white_list: set[str]):
     )
 
 
-def slice_path(
-    path: str | Path,
-    start: int | None = None,
-    stop: int | None = None,
-    step: int | None = None,
-):
-    path = path if isinstance(path, Path) else Path(path)
-    return str(Path(*(path.parts[slice(start, stop, step)])))
-
-
 def is_bind_mount(path: str | Path):
     mounts = set(
         map(
@@ -68,19 +58,20 @@ def get_extra_white_list(
     return file.read_text().splitlines() if file.is_file() else []
 
 
-def init_white_list(user_config_dir: str | Path):
-    return {
-        slice_path(
-            user_config_dir,
-            -1,
-        ),
-        slice_path(Xdg.user_cache_dir(), -1),
-        slice_path(
-            Xdg.user_data_dir(),
-            -2,
-            -1,
-        ),
-    }
+def init_white_list(user_config_dir: str | Path) -> set[str]:
+    return set(
+        map(
+            str,
+            (
+                slice_path(
+                    user_config_dir,
+                    slice(-1, None),
+                ),
+                slice_path(Xdg.user_cache_dir(), slice(-1, None)),
+                slice_path(Xdg.user_data_dir(), slice(-2, -1)),
+            ),
+        )
+    )
 
 
 def main():
