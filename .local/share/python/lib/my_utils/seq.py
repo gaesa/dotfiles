@@ -51,6 +51,16 @@ def tree_map(
 def flatmap(
     operation: Callable[[_T], Iterable[_U]], sequence: Iterable[_T]
 ) -> Iterator[_U]:
+    """
+    Applies a function to each element in a sequence then flattens the result.
+
+    Parameters:
+        `operation`: A function to be applied to each element in the sequence.
+        `sequence`: An iterable sequence to be mapped over.
+
+    Returns:
+        An iterator over the flattened and transformed sequence.
+    """
     return chain.from_iterable(map(operation, sequence))
 
 
