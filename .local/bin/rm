@@ -8,6 +8,11 @@ from shutil import which
 from subprocess import run
 from typing import Iterator
 
+try:
+    from my_utils.seq import for_each
+except ModuleNotFoundError:
+    sys.path.append(expanduser("~/.local/share/python/lib"))
+    from my_utils.seq import for_each
 from my_utils.os import slice_path
 
 
@@ -24,12 +29,6 @@ def parse_args(args: list[str]):
 
 
 def trash(files: list[str], check_dash):
-    try:
-        from my_utils.seq import for_each
-    except ModuleNotFoundError:
-        sys.path.append(expanduser("~/.local/share/python/lib"))
-        from my_utils.seq import for_each
-
     for_each(
         lambda file: run(["trash", "-f", file], check=True),
         filter(
