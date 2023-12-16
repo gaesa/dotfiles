@@ -10,6 +10,44 @@ def unique(sequence: Iterable[_T]) -> dict[_T, None]:
     return dict.fromkeys(sequence)
 
 
+def tree_map(
+    operation: Callable[[Any], Any],
+    sequence: Iterable[Any],
+    inner_sequence_type: Callable[[Any], Iterable[Any]] | None = None,
+) -> Iterator[Any]:
+    """
+    Applies a given operation to each element in a nested sequence structure.
+    If an element is a sub-sequence, the function is called recursively on that element.
+
+    Parameters:
+        `operation`: A function to be applied to each element in the sequence.
+        `sequence`: An iterable sequence to be mapped over.
+        `inner_sequence_type`: A function to convert inner sequences, defaults to the type of the outermost sequence.
+
+    Returns:
+        An iterator over the transformed sequence.
+    """
+
+    def iter(sequence: Iterable[Any]):
+        return map(
+            (  # `convert_type` eagerly evaluates the inner `map` object
+                lambda ele: convert_type(iter(ele))
+                if isinstance(ele, sequence_type)
+                else operation(ele)
+            ),
+            sequence,
+        )
+
+    if not isinstance(sequence, Iterable):
+        raise TypeError("`sequence` should be an instance of Iterable")
+    else:
+        sequence_type = type(sequence)
+        convert_type = (
+            sequence_type if inner_sequence_type is None else inner_sequence_type
+        )
+        return iter(sequence)
+
+
 def flatmap(
     operation: Callable[[_T], Iterable[_U]], sequence: Iterable[_T]
 ) -> Iterator[_U]:
