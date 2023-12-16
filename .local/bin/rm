@@ -1,40 +1,41 @@
 #!/usr/bin/env python3
 import pwd
 import sys
+from argparse import ArgumentParser
 from getpass import getuser
 from os import environ, getppid
-from os.path import exists, expanduser
+from pathlib import Path
 from shutil import which
 from subprocess import run
-from typing import Iterator
+from typing import Callable, Iterator
 
 try:
     from my_utils.seq import for_each
 except ModuleNotFoundError:
-    sys.path.append(expanduser("~/.local/share/python/lib"))
+    sys.path.append(str(Path("~/.local/share/python/lib").expanduser()))
     from my_utils.seq import for_each
 from my_utils.os import slice_path
 
 
-def attach_tag(type_tag, contents):
-    return (type_tag, contents)
+def parse_args() -> tuple[list[Path], bool, Callable[[], None]]:
+    parser = ArgumentParser(description="Safer 'rm' via 'trash', with a warning")
+    parser.add_argument("files", nargs="*", type=Path, default=[])
+    help_info = "for compatibility, using this option exits the program early"
+    parser.add_argument("--version", action="store_true", help=help_info)
+    parser.add_argument("--interactive", default=None, help=help_info)
+    parser.add_argument("--preserve-root", default=None, help=help_info)
+    args, _ = parser.parse_known_args()
+    exit_directly = (
+        args.version or args.interactive is not None or args.preserve_root is not None
+    )
+    return args.files, exit_directly, parser.print_help
 
 
-def parse_args(args: list[str]):
-    try:
-        double_dash_index = args.index("--")
-        return attach_tag(False, args[double_dash_index + 1 :])
-    except ValueError:
-        return attach_tag(True, args)
-
-
-def trash(files: list[str], check_dash):
+def trash(files: list[Path]):
     for_each(
         lambda file: run(["trash", "-f", file], check=True),
         filter(
-            lambda file: (not file.startswith("-")) and exists(file)
-            if check_dash
-            else exists,
+            lambda file: file.exists(),
             files,
         ),
     )
@@ -78,16 +79,21 @@ def is_in_black_list(parent_process_name: str) -> bool:
 
 
 def main():
-    process_name = get_parent_process_name()
-    in_black_list = is_in_black_list(process_name)
-    if sys.stderr.isatty() and (not in_black_list):
-        print(f"[{process_name}] Please use 'trash' when possible", file=sys.stderr)
-
-    check_dash, files = parse_args(sys.argv[1:])
-    if (which("trash") is not None) and (not in_black_list):
-        trash(files, check_dash)
+    files, exit_directly, print_help = parse_args()
+    if exit_directly:
+        print_help()
     else:
-        run([find_rm_exe(), *sys.argv[1:]], check=True)
+        process_name = get_parent_process_name()
+        msg = f"[Called by '{process_name}'] rm: Please use 'trash' when possible"
+        in_black_list = is_in_black_list(process_name)
+
+        if sys.stderr.isatty() and (not in_black_list):
+            print(msg, file=sys.stderr)
+
+        if (which("trash") is not None) and (not in_black_list):
+            trash(files)
+        else:
+            run([find_rm_exe(), *sys.argv[1:]], check=True)
 
 
 if __name__ == "__main__":
