@@ -221,32 +221,28 @@ local function setup_auto_formatting()
 
     vim.api.nvim_create_user_command("ToggleAutoFormat", toggle_state, { nargs = "?" })
 
-    -- Remove all trailing whitespace
     autocmd({ "BufWritePre" }, {
         callback = function()
-            if state then
+            local function trim_trailing_whitespace()
                 local config = vim.b.editorconfig
                 if config ~= nil and config["trim_trailing_whitespace"] == "false" then
                     return
                 else
                     vim.cmd([[silent! %s/\s\+$//e]])
                 end
-            else
-                return
             end
-        end,
-        group = group,
-    })
 
-    -- Formatter
-    autocmd({ "BufWritePre" }, {
-        callback = function()
-            if state then
+            local function formatter()
                 if vim.fn.exists(":NullFormat") ~= 0 then
                     vim.cmd.NullFormat()
                 else
                     return
                 end
+            end
+
+            if state then
+                trim_trailing_whitespace()
+                formatter()
             else
                 return
             end
