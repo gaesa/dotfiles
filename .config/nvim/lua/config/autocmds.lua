@@ -28,8 +28,7 @@ autocmd({ "FileType" }, {
 })
 
 -- HACK: sync visual selection to primary clipboard
--- Limitation: not as elegant as post-hook, not powerful as `post-command-hook` in emacs,
--- and the performace is still not good
+-- Limitation: not as elegant as post-hook like `CursorMoved` (visual selection can change without moving cursor)
 -- Issue1: https://github.com/neovim/neovim/issues/4773
 -- Issue2: https://github.com/neovim/neovim/issues/19708
 -- Pull1: https://github.com/neovim/neovim/pull/13896
