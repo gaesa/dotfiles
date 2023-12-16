@@ -5,7 +5,10 @@ from itertools import filterfalse
 
 
 def get_tracked_files(
-    path: str = ".", tree_ish: str = "HEAD", include_link: bool = True
+    path: str = ".",
+    tree_ish: str = "HEAD",
+    include_link: bool = True,
+    check_existence: bool = True,
 ) -> list[str]:
     process = run(
         ["/usr/bin/git", "ls-tree", "--full-tree", "-r", "--name-only", tree_ish, path],
@@ -14,10 +17,16 @@ def get_tracked_files(
     )
     if process.returncode == 0:
         return (  # pyright: ignore [reportGeneralTypeIssues]
-            (lambda f: list(f))
+            (lambda f: list(f) if not isinstance(f, list) else f)
             if include_link
             else (lambda f: list(filterfalse(islink, f)))
-        )(filter(exists, process.stdout.splitlines()))
+        )(
+            (
+                (lambda files: filter(exists, files))
+                if check_existence
+                else (lambda f: f)
+            )(process.stdout.splitlines())
+        )
     else:
         raise SystemExit(process.stderr.rstrip())
 
