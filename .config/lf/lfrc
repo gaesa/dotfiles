@@ -22,15 +22,19 @@ cmd on-cd &{{
     # Show current directory in window title
     printf '\033]0; %s - lf\007' "$(pwd | sd "^$HOME" '~')" >/dev/tty
 }}
+
 cmd open ${{
     opener.py "$f"
 }}
+
 cmd open-with ${{
     opener.py -i "$f"
 }}
+
 cmd mkdir ${{
     mkdir -p "$@"
 }}
+
 cmd trash &{{
     if [[ "$XDG_CURRENT_DESKTOP" == "KDE" ]]; then
         kioclient5 move $fx trash:/ &>>"$TMPDIR/trash.log"
@@ -38,18 +42,22 @@ cmd trash &{{
         trash-put $fx
     fi
 }}
+
 cmd z %{{
     result="$(zoxide query --exclude $PWD $@)"
     lf -remote "send $id cd $result"
 }}
+
 cmd zi ${{
     result="$(zoxide query -i)"
     lf -remote "send $id cd $result"
 }}
+
 cmd yank-name ${{
     result="$(basename "$f")"
     printf "%s" "${result}" | wl-copy
 }}
+
 cmd extract ${{
     set -f
     atool -x $f
