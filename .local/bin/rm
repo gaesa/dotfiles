@@ -1,9 +1,11 @@
 #!/usr/bin/env python3
+import pwd
 import sys
+from getpass import getuser
 from os import environ, getppid
 from os.path import exists, expanduser
 from shutil import which
-from subprocess import CalledProcessError, run
+from subprocess import run
 from typing import Iterator
 
 from my_utils.os import slice_path
@@ -28,27 +30,8 @@ def trash(files: list[str], check_dash):
         sys.path.append(expanduser("~/.local/share/python/lib"))
         from my_utils.seq import for_each
 
-    def p(file: str):
-        try:
-            run(["trash", "-f", file], check=True)
-        except CalledProcessError:
-            from pathlib import Path
-            from shutil import rmtree
-
-            f = Path(file)
-            try:
-                if f.is_file() or f.is_symlink():
-                    f.unlink(missing_ok=True)
-                else:
-                    rmtree(f)
-            except PermissionError as e:
-                if e.errno == 13:
-                    run(["/usr/bin/rm", "-rf", file], check=True)
-                else:
-                    raise
-
     for_each(
-        p,
+        lambda file: run(["trash", "-f", file], check=True),
         filter(
             lambda file: (not file.startswith("-")) and exists(file)
             if check_dash
@@ -58,14 +41,10 @@ def trash(files: list[str], check_dash):
     )
 
 
-def get_parent_process_name() -> str | None:
+def get_parent_process_name() -> str:
     parent_pid = getppid()
-    try:
-        with open(f"/proc/{parent_pid}/comm", "r") as f:
-            parent_process_name = f.read().rstrip()
-    except FileNotFoundError:
-        parent_process_name = None
-    return parent_process_name
+    with open(f"/proc/{parent_pid}/comm", "r") as f:
+        return f.read().rstrip()
 
 
 def find_rm_exe() -> str:
@@ -86,13 +65,27 @@ def find_rm_exe() -> str:
         return exe
 
 
+def is_in_black_list(parent_process_name: str) -> bool:
+    def get_default_shell() -> str:
+        return str(slice_path(pwd.getpwnam(getuser()).pw_shell, slice(-1, None)))
+
+    if parent_process_name in {"configure", "make", "makepkg"}:
+        return True
+    else:
+        return (
+            parent_process_name.endswith("sh")
+            and parent_process_name != get_default_shell()
+        )
+
+
 def main():
-    print(
-        f"[{get_parent_process_name()}] Please use 'trash' when possible",
-        file=sys.stderr,
-    )
+    process_name = get_parent_process_name()
+    in_black_list = is_in_black_list(process_name)
+    if sys.stderr.isatty() and (not in_black_list):
+        print(f"[{process_name}] Please use 'trash' when possible", file=sys.stderr)
+
     check_dash, files = parse_args(sys.argv[1:])
-    if which("trash") is not None:
+    if (which("trash") is not None) and (not in_black_list):
         trash(files, check_dash)
     else:
         run([find_rm_exe(), *sys.argv[1:]], check=True)
