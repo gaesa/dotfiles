@@ -3,8 +3,7 @@ from pathlib import Path
 from subprocess import run
 from argparse import ArgumentParser
 import asyncio
-import re
-from typing import Iterable
+from my_utils.seq import natsort
 from my_utils.os import get_mime_type_async
 
 
@@ -14,21 +13,6 @@ def gen_playlist_file(file: str | Path, lst: list[str]) -> None:
             f.write("\n".join(lst))
     else:
         return
-
-
-def natsort(strings: Iterable[str]) -> list[str]:
-    def key(s):
-        split_list = re.split(r"(\d+)", s)
-        split_list.pop(0) if split_list[0] == "" else None
-        split_list.pop(-1) if len(split_list) > 0 and split_list[-1] == "" else None
-        return tuple(
-            map(
-                lambda text: int(text) if text.isdigit() else text,
-                split_list,
-            )
-        )
-
-    return sorted(strings, key=key)
 
 
 async def gen_playlist(dir: Path) -> list[str]:
