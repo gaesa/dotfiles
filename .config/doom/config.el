@@ -472,6 +472,14 @@
   (pushnew! recentf-exclude exclude)
   (setq recentf-max-saved-items 20))
 
+(add-variable-watcher 'default-directory
+                      (lambda (symbol newval operation where)
+                        (when (and (not (null where))
+                                   (string= (buffer-name where) "*dashboard*")
+                                   (not (string= newval "~/")))
+                          (with-current-buffer "*dashboard*"
+                            (setq default-directory "~/")))))
+
 ;; Input method
 (use-package! fcitx
   :after evil
