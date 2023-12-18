@@ -225,23 +225,14 @@ local function setup_auto_formatting()
                 end
             end
 
-            local function retab_when(cond)
-                if cond then
-                    vim.cmd.retab({ bang = true })
-                else
-                    return
-                end
-            end
-
             if state then
-                local config = vim.b.editorconfig
+                local config, bool = vim.b.editorconfig, false
                 if config ~= nil then
-                    trim_trailing_whitespace_when(config["trim_trailing_whitespace"] ~= "false")
-                    retab_when(config["indent_style"] ~= "tab")
+                    bool = config["trim_trailing_whitespace"] ~= "false"
                 else
-                    trim_trailing_whitespace_when(true)
-                    retab_when(true)
+                    bool = true
                 end
+                trim_trailing_whitespace_when(bool)
             else
                 return
             end
