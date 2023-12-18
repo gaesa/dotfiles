@@ -155,8 +155,7 @@ def begin1(*args: Callable[[], Any]) -> Any:
     Each argument should be a function that takes no arguments. Functions are called in the order they are given.
     """
     value = args[0]()
-    for arg in args[1:]:
-        arg()
+    for_each(lambda arg: arg(), args[1:])
     return value
 
 
