@@ -168,3 +168,20 @@ async def abegin(*args: Callable[[], Any]) -> Any:
     for arg in args:
         value = await arg()
     return value
+
+
+def natsort(strings: Iterable[str]) -> list[str]:
+    import re
+
+    def key(s: str) -> tuple[int | str, ...]:
+        split_list: list[str] = re.split(r"(\d+)", s)
+        split_list.pop(0) if split_list[0] == "" else None
+        split_list.pop(-1) if len(split_list) > 0 and split_list[-1] == "" else None
+        return tuple(
+            map(
+                lambda text: int(text) if text.isdigit() else text,
+                split_list,
+            )
+        )
+
+    return sorted(strings, key=key)
