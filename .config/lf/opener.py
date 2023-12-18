@@ -186,18 +186,17 @@ def open(default_desktop: str, file: str):
     else:
 
         def choose_desktop():
-            application_paths = [
+            application_paths = (
                 expanduser(f"~/.local/share/applications/{default_desktop}"),
                 f"/usr/local/share/applications/{default_desktop}",
                 f"/usr/share/applications/{default_desktop}",
-            ]
+            )
             desktop = ConfigParser(interpolation=None)  # to make `%` raw
-            for i in range(len(application_paths)):
-                path = application_paths[i]
+            for path in application_paths:
                 if isfile(path):
                     desktop.read(path)
                     return desktop
-            raise FileNotFoundError("No .dekstop found")
+            raise FileNotFoundError("No '.dekstop' found")
 
         def parse_exec():
             # remove `%f`, `--` etc.
