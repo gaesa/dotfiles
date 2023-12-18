@@ -466,11 +466,11 @@
   (evil-define-key 'normal dashboard-mode-map
     (kbd "q") #'evil-quit))
 
-(let ((exclude (lambda (filename)
-                 (s-starts-with? (expand-file-name "~/.config/emacs")
-                                 filename))))
-  (pushnew! recentf-exclude exclude)
-  (setq recentf-max-saved-items 20))
+(let ((exclude-emacs-internal (lambda (filename)
+                                (s-starts-with? (expand-file-name "~/.config/emacs")
+                                                filename))))
+  (pushnew! recentf-exclude exclude-emacs-internal))
+(setq recentf-max-saved-items 20)
 
 (add-variable-watcher 'default-directory
                       (lambda (symbol newval operation where)
