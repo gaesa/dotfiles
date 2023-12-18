@@ -27,7 +27,9 @@ def load_theme(color, socket_list: Iterator[Path]):
 
     for path in socket_list:
         try:
-            with attach("socket", path=path) as nvim:
+            with attach(
+                "socket", path=path  # pyright: ignore [reportGeneralTypeIssues]
+            ) as nvim:
                 nvim.vars["mycolor"] = color
                 args = [str(Path("~/.config/nvim/plugin/colors.lua").expanduser())]
                 nvim.lua.vim.cmd({"cmd": "source", "args": args})
