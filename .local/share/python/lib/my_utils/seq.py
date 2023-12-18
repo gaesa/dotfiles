@@ -124,16 +124,14 @@ def fallback(*args: Callable[[], Any]) -> Any:
         value = arg()
         if cond(value):
             return value
-        else:
-            continue
+    return None
 
 
 def cond(*args: tuple[Callable[[], bool], Callable[[], Any]]) -> Any:
     for condition, action in args:
         if condition():
             return action()
-        else:
-            continue
+    return object()
 
 
 def begin(*args: Callable[[], Any]) -> Any:
