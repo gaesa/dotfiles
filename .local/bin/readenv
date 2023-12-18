@@ -1,0 +1,19 @@
+#!/usr/bin/env python3
+from os import environ
+from argparse import ArgumentParser
+
+
+def parse_args() -> str:
+    parser = ArgumentParser(description="Read environement variable")
+    parser.add_argument("env", type=str, help="The environment variable name")
+    args = parser.parse_args()
+    return args.env
+
+
+def main():
+    env = parse_args()
+    print(environ[env], end="")
+
+
+if __name__ == "__main__":
+    main()
