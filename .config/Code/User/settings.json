@@ -1,6 +1,6 @@
 {
   "editor.fontFamily": "'monospace', monospace",
-  "editor.fontSize": 18,
+  "editor.fontSize": 17,
   "editor.cursorBlinking": "solid",
   "editor.bracketPairColorization.enabled": false,
   "editor.minimap.enabled": false,
@@ -10,7 +10,7 @@
   "everforest.darkContrast": "hard",
   "window.autoDetectColorScheme": true,
   "workbench.preferredDarkColorTheme": "Everforest Dark",
-  "workbench.colorTheme": "Everforest Light",
+  "workbench.colorTheme": "Everforest Dark",
   "workbench.preferredLightColorTheme": "Everforest Light",
   "extensions.experimental.affinity": {
     "asvetliakov.vscode-neovim": 1
