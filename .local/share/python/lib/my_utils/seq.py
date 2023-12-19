@@ -100,11 +100,19 @@ def get_differences(a: Iterable[_T], b: Iterable[_T]) -> tuple[set[_T], set[_T]]
         `tuple[set[T], set[T]]`: A tuple of two sets. The first set is `a - b`, and the second set is `b - a`.
     """
 
-    a = a if isinstance(a, set) else set(a)
-    b = b if isinstance(b, set) else set(b)
+    a = a if isinstance(a, (set, frozenset, dict)) else frozenset(a)
+    b = b if isinstance(b, (set, frozenset, dict)) else frozenset(b)
     a_minus_b, b_minus_a = set(), set()
 
-    for ele in set(chain(a, b)):
+    if isinstance(a, dict):
+        if isinstance(b, dict):
+            union = {**a, **b}
+        else:
+            union = b.union(a)
+    else:
+        union = a.union(b)
+
+    for ele in union:
         if ele in a:
             if ele not in b:
                 a_minus_b.add(ele)
