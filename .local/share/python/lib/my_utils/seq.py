@@ -1,6 +1,6 @@
 from collections.abc import Sequence
-from itertools import chain, tee, filterfalse
-from typing import Callable, Iterable, Iterator, Any, TypeVar
+from itertools import chain, filterfalse, tee
+from typing import Any, Callable, Iterable, Iterator, TypeVar
 
 _T = TypeVar("_T")
 _U = TypeVar("_U")

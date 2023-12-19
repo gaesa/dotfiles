@@ -2,13 +2,14 @@
 # A stupid script that avoids repeatedly typing the script path
 # Depends On: fd, ripgrep, trash-cli, shellcheck, neovim
 
-from sys import argv
-from subprocess import run
-from os import chdir
-from os.path import basename, isfile, expanduser
-from typing import Callable, Any
-from my_utils.seq import Iterable, for_each, partition
 from functools import wraps
+from os import chdir
+from os.path import basename, expanduser, isfile
+from subprocess import run
+from sys import argv
+from typing import Any, Callable
+
+from my_utils.seq import Iterable, for_each, partition
 
 
 def ensure_length(length: int, mes: str):
@@ -205,9 +206,11 @@ def shck(param_list: list[str], dir: str):
 
 # build a list then expand it to neovim
 def edit(param_list: list[str], dir: str):
-    import editor
     from os import chmod
+
     from my_utils.os import get_permission
+
+    import editor
 
     def update_permission(permission):
         for_each(

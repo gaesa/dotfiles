@@ -1,7 +1,7 @@
-from subprocess import run
-from os.path import exists, isdir, islink, join, dirname
-from os import environ, getcwd
 from itertools import filterfalse
+from os import environ, getcwd
+from os.path import dirname, exists, isdir, islink, join
+from subprocess import run
 
 
 def get_tracked_files(

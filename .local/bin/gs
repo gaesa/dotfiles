@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
-from subprocess import run
 import sys
+from subprocess import run
 
 
 def catch_user_exception(orig_fn):
@@ -15,7 +15,9 @@ def catch_user_exception(orig_fn):
 
 @catch_user_exception
 def timed_input(prompt="", timeout: int | float = 5) -> str:
-    import os, time, multiprocessing
+    import multiprocessing
+    import os
+    import time
 
     def input_subprocess(stdin_fd):
         sys.stdin = os.fdopen(stdin_fd)

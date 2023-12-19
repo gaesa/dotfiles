@@ -1,7 +1,8 @@
 #!/usr/bin/env python3
-from uuid import uuid4
-from os import getenv, chmod
+from os import chmod, getenv
 from os.path import join
+from uuid import uuid4
+
 from my_utils.os import get_permission
 
 

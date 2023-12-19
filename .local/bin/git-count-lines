@@ -1,9 +1,10 @@
 #!/usr/bin/env python3
-from sys import argv
+from functools import reduce
+from os import getenv
 from os.path import getsize, join
 from subprocess import run
-from os import getenv
-from functools import reduce
+from sys import argv
+
 from my_utils.git import get_tracked_files
 
 

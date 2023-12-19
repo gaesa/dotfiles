@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
-from shutil import move
 from argparse import ArgumentParser
-from os.path import join, dirname
+from os.path import dirname, join
+from shutil import move
 
 
 def get_args() -> tuple[str, str]:
