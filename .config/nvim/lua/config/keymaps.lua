@@ -198,6 +198,7 @@ map({ "n" }, "<leader>sr", function()
 end)
 map({ "x" }, "<leader>sr", function()
     replace(vim.fn.getreg("*")) --The visual selection is synchronized to the primary clipboard
+    vim.cmd.normal({ args = { "<Esc>" }, bang = true })
 end)
 
 -- Manual
