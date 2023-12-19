@@ -34,7 +34,13 @@
     "imagePreview.previewEditor": true
   },
   "[python]": {
-    "editor.defaultFormatter": "ms-python.black-formatter"
+    "editor.defaultFormatter": "ms-python.black-formatter",
+    "editor.formatOnSave": true,
+    "editor.codeActionsOnSave": {
+      "source.organizeImports": "explicit"
+    }
   },
+  "isort.args": ["--profile", "black"],
+  "isort.path": ["/usr/bin/isort"],
   "black-formatter.path": ["/usr/bin/black"]
 }
