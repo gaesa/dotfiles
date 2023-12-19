@@ -1,7 +1,8 @@
 #!/usr/bin/env python3
-from sys import argv
-from subprocess import run, Popen, DEVNULL
 from os.path import splitext
+from subprocess import DEVNULL, Popen, run
+from sys import argv
+
 from my_utils.seq import for_each, partition
 
 

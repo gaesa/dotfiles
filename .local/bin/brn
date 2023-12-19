@@ -1,12 +1,13 @@
 #!/usr/bin/env python3
-from sys import stderr
 from argparse import ArgumentParser
-from subprocess import run
+from os import getenv, listdir, remove
 from os.path import isdir, join
 from shutil import move
-from os import getenv, listdir, remove
+from subprocess import run
+from sys import stderr
+
 from mktemp import mktemp
-from my_utils.seq import partition, natsort
+from my_utils.seq import natsort, partition
 
 
 def sorted_name_list(root, names) -> list[str]:

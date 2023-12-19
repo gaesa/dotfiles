@@ -1,7 +1,8 @@
 #!/usr/bin/env python3
+from argparse import Action, ArgumentParser
+
 from my_utils.git import get_tracked_dirs
-from my_utils.seq import for_each, flatmap, unique
-from argparse import ArgumentParser, Action
+from my_utils.seq import flatmap, for_each, unique
 
 
 def parse_args() -> tuple[str, list[str]]:

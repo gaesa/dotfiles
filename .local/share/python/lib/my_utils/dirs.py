@@ -1,7 +1,8 @@
 from os import getenv, getuid
-from .seq import fallback
-from .fntools import cache_single_value
 from pathlib import Path
+
+from .fntools import cache_single_value
+from .seq import fallback
 
 
 def __init():

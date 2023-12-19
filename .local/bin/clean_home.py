@@ -1,9 +1,10 @@
 #!/usr/bin/env python3
-from subprocess import run
 from pathlib import Path
-from my_utils.seq import for_each
-from my_utils.os import get_permission, slice_path
+from subprocess import run
+
 from my_utils.dirs import Xdg
+from my_utils.os import get_permission, slice_path
+from my_utils.seq import for_each
 
 
 def set_permission(file: Path, pre: int, post: int):

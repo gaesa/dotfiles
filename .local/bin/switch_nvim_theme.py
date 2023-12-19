@@ -1,9 +1,10 @@
 #!/usr/bin/env python3
 from pathlib import Path
-from pynvim import attach
 from sys import argv
 from typing import Iterator
+
 from my_utils.dirs import Xdg
+from pynvim import attach
 
 
 def get_nvim_socket_list(XDG_RUNTIME_DIR: Path) -> Iterator[Path]:

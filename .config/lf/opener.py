@@ -1,10 +1,11 @@
 #!/usr/bin/env python3
 # like `xdg-open`, but supports `open-with` and
 # running in terminal directly
+from configparser import ConfigParser, SectionProxy
+from os.path import basename, expanduser, isfile, join
 from subprocess import DEVNULL, Popen, run
 from sys import argv
-from os.path import expanduser, isfile, join, basename
-from configparser import ConfigParser, SectionProxy
+
 from my_utils.os import get_mime_type
 
 
@@ -58,8 +59,9 @@ def get_list_of_mimeapps(
 
 
 def get_default_desktops(mime_type: str, interactive=False):
-    from my_utils.dirs import Xdg
     from os import environ
+
+    from my_utils.dirs import Xdg
 
     config = ConfigParser()
     config.optionxform = (  # pyright: ignore [reportGeneralTypeIssues]

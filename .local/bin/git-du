@@ -1,7 +1,8 @@
 #!/usr/bin/env python3
-from subprocess import run
-from my_utils.git import get_tracked_files, get_git_dir
 from argparse import ArgumentParser
+from subprocess import run
+
+from my_utils.git import get_git_dir, get_tracked_files
 
 
 def du(tracked_files: list[str], all: bool, apparent_size: bool):

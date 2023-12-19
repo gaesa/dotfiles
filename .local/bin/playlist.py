@@ -1,10 +1,11 @@
 #!/usr/bin/env python3
+import asyncio
+from argparse import ArgumentParser
 from pathlib import Path
 from subprocess import run
-from argparse import ArgumentParser
-import asyncio
-from my_utils.seq import natsort
+
 from my_utils.os import get_mime_type_async
+from my_utils.seq import natsort
 
 
 def gen_playlist_file(file: str | Path, lst: list[str]) -> None:

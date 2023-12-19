@@ -1,14 +1,10 @@
 #!/usr/bin/env python3
 # Inspired by the following program
 # https://raw.githubusercontent.com/duganchen/kitty-pistol-previewer/main/vidthumb
-from os.path import (
-    isfile,
-    isdir,
-    expanduser,
-    join,
-)
 from os import makedirs
+from os.path import expanduser, isdir, isfile, join
 from sys import argv
+
 from my_utils.os import json_read, json_write
 
 
