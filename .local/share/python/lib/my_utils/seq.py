@@ -10,6 +10,15 @@ def unique(sequence: Iterable[_T]) -> dict[_T, None]:
     return dict.fromkeys(sequence)
 
 
+def nwise(sequence: Iterable[_T], n: int = 2) -> Iterator[tuple[_T, ...]]:
+    "s -> (s0, s1, ..., sn-1), (s1, s2, ..., sn), (s2, s3, ..., sn+1), ..."
+    iterables = tee(sequence, n)
+    for i, sequence in enumerate(iterables):
+        for _ in range(i):
+            next(sequence, None)
+    return zip(*iterables)
+
+
 def tree_map(
     operation: Callable[[Any], Any],
     sequence: Iterable[Any],
