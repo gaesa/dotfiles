@@ -3,14 +3,17 @@ from os.path import expanduser, isdir, join
 from subprocess import run
 
 
-def clean(path_time):
+def clean(path_time: dict[str, str], additional_options: tuple[str, ...] | None = None):
     for path, time in path_time.items():
         if isdir(path):
             run(
                 [
                     "fd",
-                    "-t",
-                    "f",
+                    *(
+                        ("-t", "f")
+                        if additional_options is None
+                        else additional_options
+                    ),
                     "--changed-before",
                     time,
                     ".",
@@ -29,6 +32,7 @@ def main():
     HOME = expanduser("~")
     neovim_swap_path = join(HOME, ".local/state/nvim/swap")
     neovim_undo_path = join(HOME, ".local/state/nvim/undo")
+    paru_cache = join(HOME, ".cache/paru/clone")
 
     path_time = {
         neovim_swap_path: "2weeks",
@@ -36,6 +40,7 @@ def main():
     }
 
     clean(path_time)
+    clean({paru_cache: "1months"}, ("-t", "d", "-d", "1"))
     run(["trash-empty", "-f", "7"], check=True)
 
 
