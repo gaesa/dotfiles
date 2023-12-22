@@ -5,14 +5,17 @@ from subprocess import run
 from clean_thumb import main as clean_thumb
 
 
-def clean(path_time):
+def clean(path_time: dict[str, str], additional_options: tuple[str, ...] | None = None):
     for path, time in path_time.items():
         if isdir(path):
             run(
                 [
                     "fd",
-                    "-t",
-                    "f",
+                    *(
+                        ("-t", "f")
+                        if additional_options is None
+                        else additional_options
+                    ),
                     "--changed-before",
                     time,
                     ".",
@@ -36,6 +39,7 @@ def clean_batch():
     okular_docdate_path = join(HOME, ".local/share/okular/docdate")
     stversions_path = join(HOME, "nt/.stversions")
     telegram_desktop_path = join(HOME, "dl/Telegram Desktop")
+    paru_cache = join(HOME, ".cache/paru/clone")
 
     path_time = {
         recent_documents_path: "1weeks",
@@ -48,6 +52,7 @@ def clean_batch():
     }
 
     clean(path_time)
+    clean({paru_cache: "1months"}, ("-t", "d", "-d", "1"))
 
 
 def main():
