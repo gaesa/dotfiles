@@ -11,6 +11,7 @@ def __init():
     STATE_HOME = ("XDG_STATE_HOME", ".local/state")
     CACHE_HOME = ("XDG_CACHE_HOME", ".cache")
 
+    # Because there is no static property, and `@functools.cached_property` is not read-only
     @cache_single_value
     def home_path() -> Path:
         return Path().home()
