@@ -140,6 +140,14 @@ require("mason-null-ls").setup({
                 end,
             }))
         end,
+
+        isort = function(_, _)
+            null_ls.register(null_ls.builtins.formatting.isort.with({
+                extra_args = function(_)
+                    return { "--profile", "black" }
+                end,
+            }))
+        end,
     },
 })
 
