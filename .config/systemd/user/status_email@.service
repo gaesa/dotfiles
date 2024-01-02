@@ -3,4 +3,4 @@ Description=status email for %i
 
 [Service]
 Type=oneshot
-ExecStart=%h/.local/bin/systemd-email david@localhost %i failure
+ExecStart=%h/.local/bin/systemd-mail %i
