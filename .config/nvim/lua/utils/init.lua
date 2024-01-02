@@ -8,8 +8,6 @@ function P(text, level, once)
     end
 end
 
-utils.string = require("utils.string")
-
 function utils.iif(predicate, consequent, alternative)
     if predicate then
         return consequent()
@@ -58,5 +56,8 @@ function utils.for_each(operation, sequence)
         end
     end
 end
+
+utils.string = require("utils.string")
+utils.win = require("utils.win")
 
 return utils
