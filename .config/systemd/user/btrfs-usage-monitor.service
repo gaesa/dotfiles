@@ -1,6 +1,6 @@
 [Unit]
 Description=Monitor the usage of btrfs partition
-OnFailure=status_email@%n.service
+OnFailure=status_mail@%n.service
 
 [Service]
 Type=simple

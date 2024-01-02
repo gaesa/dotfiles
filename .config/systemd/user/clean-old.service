@@ -1,6 +1,6 @@
 [Unit]
 Description=Clean old files
-OnFailure=status_email@%n.service
+OnFailure=status_mail@%n.service
 
 [Service]
 Type=oneshot
