@@ -1,0 +1,7 @@
+# -*- mode: snippet -*-
+# name: ci conventional commit
+# key: ci
+# --
+ci(${1:scope}): ${2:title}
+
+$0
