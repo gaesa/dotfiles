@@ -206,8 +206,63 @@ end)
 -- Manual
 map({ "n" }, "<leader>so", function()
     local input = vim.fn.input("Search option: ")
-    vim.fn.search([[^\s*]] .. input, "wz")
-    vim.cmd.normal({ args = { "^" }, bang = true })
+    if not vim.startswith(input, "-") then
+        if input ~= "" then
+            vim.notify_once("Input should starts with '-'", vim.log.levels.ERROR)
+        else
+            return
+        end
+    else
+        local gen_pattern
+        if vim.startswith(input, "--") then
+            gen_pattern = function(s)
+                return [[\v^\s+(-.*, |]] .. s .. ")"
+            end
+        else
+            gen_pattern = function(s)
+                return [[\v^\s+]] .. s
+            end
+        end
+        local pattern = gen_pattern(input)
+        vim.fn.search(pattern, "wz")
+        vim.fn.setreg("/", pattern)
+
+        local function register_search_callback_temporarily(fn)
+            local function original_search(order)
+                vim.cmd.normal({ args = { order }, bang = true })
+                vim.cmd.normal({ args = { "zz" }, bang = true })
+                vim.cmd.normal({ args = { "zv" }, bang = true })
+            end
+
+            map({ "n" }, "n", function()
+                original_search("n")
+                fn()
+            end, { buffer = true, silent = true })
+            map({ "n" }, "N", function()
+                original_search("N")
+                fn()
+            end, { buffer = true, silent = true })
+
+            local timer, previous_search = vim.loop.new_timer(), vim.fn.getreg("/")
+            timer:start(
+                0,
+                500,
+                vim.schedule_wrap(function()
+                    local current_search = vim.fn.getreg("/")
+                    if current_search ~= previous_search then
+                        previous_search = current_search
+                        vim.api.nvim_buf_del_keymap(0, "n", "n")
+                        vim.api.nvim_buf_del_keymap(0, "n", "N")
+                        timer:stop()
+                    end
+                end)
+            )
+            fn()
+        end
+        register_search_callback_temporarily(function()
+            vim.cmd.normal({ args = { "^" }, bang = true })
+        end)
+    end
 end)
 
 -- FZF
