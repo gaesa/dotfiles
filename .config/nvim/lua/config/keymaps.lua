@@ -196,12 +196,16 @@ local function replace(original)
     end
 end
 
+local function esc(mode)
+    vim.api.nvim_feedkeys(vim.api.nvim_replace_termcodes("<Esc>", true, false, true), mode, false)
+end
+
 map({ "n" }, "<leader>sr", function()
     replace(vim.fn.expand("<cword>"))
 end)
 map({ "x" }, "<leader>sr", function()
     replace(vim.fn.getreg("*")) --The depends on `autocmds.setup_primary_selection`
-    vim.cmd.normal({ args = { "<Esc>" }, bang = true })
+    esc("v")
 end)
 
 -- Search
