@@ -182,22 +182,24 @@ local function replace(original)
     if replacement == "" then
         return
     else
-        vim.cmd("%s/" .. utils.string.rstrip(escape_string(original)) .. "/" .. utils.iif(
-            vim.startswith(replacement, "''") or vim.startswith(replacement, '""'), --
-            function()
-                return string.sub(replacement, 3)
-            end,
-            function()
-                return replacement
-            end
-        ))
+        require("utils.win").with_cursor_unchanged(function()
+            vim.cmd("%s/" .. utils.string.rstrip(escape_string(original)) .. "/" .. utils.iif(
+                vim.startswith(replacement, "''") or vim.startswith(replacement, '""'), --
+                function()
+                    return string.sub(replacement, 3)
+                end,
+                function()
+                    return replacement
+                end
+            ))
+        end)
     end
 end
 map({ "n" }, "<leader>sr", function()
     replace(vim.fn.expand("<cword>"))
 end)
 map({ "x" }, "<leader>sr", function()
-    replace(vim.fn.getreg("*")) --The visual selection is synchronized to the primary clipboard
+    replace(vim.fn.getreg("*")) --The depends on `autocmds.setup_primary_selection`
     vim.cmd.normal({ args = { "<Esc>" }, bang = true })
 end)
 
