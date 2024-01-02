@@ -253,6 +253,18 @@ local function search(string, gen_pattern, callback)
     register_search_callback_temporarily()
 end
 
+map({ "n" }, "<leader>ss", function()
+    search(vim.fn.expand("<cword>"), function(s)
+        return s
+    end, false)
+end)
+map({ "x" }, "<leader>ss", function()
+    search(require("utils.string").rstrip(vim.fn.getreg("*")), function(s)
+        return s
+    end, false)
+    esc("v")
+end)
+
 -- Search/Manual
 map({ "n" }, "<leader>so", function()
     local string = vim.fn.input("Search option: ")
