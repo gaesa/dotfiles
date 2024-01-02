@@ -195,6 +195,7 @@ local function replace(original)
         end)
     end
 end
+
 map({ "n" }, "<leader>sr", function()
     replace(vim.fn.expand("<cword>"))
 end)
@@ -203,44 +204,29 @@ map({ "x" }, "<leader>sr", function()
     vim.cmd.normal({ args = { "<Esc>" }, bang = true })
 end)
 
--- Manual
-map({ "n" }, "<leader>so", function()
-    local input = vim.fn.input("Search option: ")
-    if not vim.startswith(input, "-") then
-        if input ~= "" then
-            vim.notify_once("Input should starts with '-'", vim.log.levels.ERROR)
-        else
+-- Search
+local function search(string, gen_pattern, callback)
+    local pattern = gen_pattern(string)
+    vim.fn.search(pattern)
+    vim.fn.setreg("/", pattern)
+
+    local function register_search_callback_temporarily()
+        local function original_search(order)
+            vim.cmd.normal({ args = { order }, bang = true })
+            vim.cmd.normal({ args = { "zz" }, bang = true })
+            vim.cmd.normal({ args = { "zv" }, bang = true })
+        end
+
+        if type(callback) ~= "function" then
             return
-        end
-    else
-        local gen_pattern
-        if vim.startswith(input, "--") then
-            gen_pattern = function(s)
-                return [[\v^\s+(-.*, |]] .. s .. ")"
-            end
         else
-            gen_pattern = function(s)
-                return [[\v^\s+]] .. s
-            end
-        end
-        local pattern = gen_pattern(input)
-        vim.fn.search(pattern, "wz")
-        vim.fn.setreg("/", pattern)
-
-        local function register_search_callback_temporarily(fn)
-            local function original_search(order)
-                vim.cmd.normal({ args = { order }, bang = true })
-                vim.cmd.normal({ args = { "zz" }, bang = true })
-                vim.cmd.normal({ args = { "zv" }, bang = true })
-            end
-
             map({ "n" }, "n", function()
                 original_search("n")
-                fn()
+                callback()
             end, { buffer = true, silent = true })
             map({ "n" }, "N", function()
                 original_search("N")
-                fn()
+                callback()
             end, { buffer = true, silent = true })
 
             local timer, previous_search = vim.loop.new_timer(), vim.fn.getreg("/")
@@ -257,9 +243,29 @@ map({ "n" }, "<leader>so", function()
                     end
                 end)
             )
-            fn()
+            callback()
         end
-        register_search_callback_temporarily(function()
+    end
+    register_search_callback_temporarily()
+end
+
+-- Search/Manual
+map({ "n" }, "<leader>so", function()
+    local string = vim.fn.input("Search option: ")
+    if not vim.startswith(string, "-") then
+        if string ~= "" then
+            vim.notify_once("Input should starts with '-'", vim.log.levels.ERROR)
+        else
+            return
+        end
+    else
+        search(string, function(s)
+            if vim.startswith(s, "--") then
+                return [[\v^\s+(-.*, |]] .. s .. ")"
+            else
+                return [[\v^\s+]] .. s
+            end
+        end, function()
             vim.cmd.normal({ args = { "^" }, bang = true })
         end)
     end
