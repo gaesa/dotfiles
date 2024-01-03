@@ -11,11 +11,26 @@ def unique(sequence: Iterable[_T]) -> dict[_T, None]:
 
 
 def nwise(sequence: Iterable[_T], n: int = 2) -> Iterator[tuple[_T, ...]]:
-    "s -> (s0, s1, ..., sn-1), (s1, s2, ..., sn), (s2, s3, ..., sn+1), ..."
+    """
+    Generate overlapping n-tuples from a sequence.
+
+    :param sequence: An iterable from which to produce n-tuples.
+    :param n: The size of the window (n-tuple) to use when generating the
+              sequence. Defaults to 2.
+    :return: An iterator over n-tuples of consecutive elements.
+
+    Example:
+        >>> list(nwise([1, 2, 3, 4], 2))
+        [(1, 2), (2, 3), (3, 4)]
+        >>> list(nwise("abcde", 3))
+        [('a', 'b', 'c'), ('b', 'c', 'd'), ('c', 'd', 'e')]
+    """
     iterables = tee(sequence, n)
     for i, sequence in enumerate(iterables):
-        for _ in range(i):
-            next(sequence, None)
+        for_each(
+            lambda _: next(sequence, None),  # pyright: ignore [reportGeneralTypeIssues]
+            range(i),
+        )
     return zip(*iterables)
 
 
