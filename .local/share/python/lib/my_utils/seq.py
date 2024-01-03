@@ -166,6 +166,16 @@ def cond(*args: tuple[Callable[[], bool], Callable[[], Any]]) -> Any:
     return object()
 
 
+def skip_first(sequence: Iterable[_T], k: int = 1) -> Iterator[_T]:
+    """Like `seq[k:]` or `itertools.islice(seq, k, None)`, but more time-efficient"""
+    if k < 0:
+        raise ValueError("'k' must be greater than or equal to zero")
+    else:
+        it = iter(sequence)
+        for_each(lambda _: next(it, None), range(k))
+        return it
+
+
 def begin(*args: Callable[[], Any]) -> Any:
     """
     Executes a sequence of functions in order and returns the result of the last function.
