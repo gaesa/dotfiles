@@ -3,7 +3,7 @@ from os.path import splitext
 from subprocess import DEVNULL, Popen, run
 from sys import argv
 
-from my_utils.seq import for_each, partition
+from my_utils.seq import for_each, partition, skip_first
 
 
 def open_with_nvim(files: list[str]):
@@ -32,7 +32,7 @@ def open_with_emacs(files: list[str], allow_empty: bool = False):
                 sexp += (
                     f'(split-window-right) (other-window 1) (find-file "{files[1]}") '
                 )
-                for file in files[2:]:
+                for file in skip_first(files, 2):
                     sexp += (
                         f'(split-window-below) (other-window 1) (find-file "{file}") '
                     )
