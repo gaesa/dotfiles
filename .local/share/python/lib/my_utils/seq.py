@@ -89,7 +89,7 @@ def flatmap(
 
 
 def for_each(operation: Callable[[_T], Any], sequence: Iterable[_T]) -> None:
-    "Like `map`, but doesn't construct a sequence."
+    """Like `map`, but doesn't construct a sequence."""
     for ele in sequence:
         operation(ele)
 
@@ -97,7 +97,7 @@ def for_each(operation: Callable[[_T], Any], sequence: Iterable[_T]) -> None:
 def partition(
     predicate: Callable[[_T], bool], iterable: Iterable[_T], lazy: bool = False
 ) -> tuple[Iterator[_T], Iterator[_T]] | tuple[list[_T], list[_T]]:
-    "Use a predicate to partition entries into true entries and false entries"
+    """Use a predicate to partition entries into true entries and false entries"""
     if lazy:
         it1, it2 = tee(iterable)
         return filter(
@@ -200,9 +200,7 @@ def begin1(*args: Callable[[], Any]) -> Any:
 
 
 async def abegin(*args: Callable[[], Any]) -> Any:
-    """
-    async version of `begin`
-    """
+    """async version of `begin`"""
     value = None
     for arg in args:
         value = await arg()
