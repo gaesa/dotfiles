@@ -5,34 +5,34 @@ umask 077
 # Clean env {{{
 # preserved env {{{
 typeset -A preserve=(
-    "HOME" 1
-    "USER" 1
-    "SHELL" 1
-    "TERM" 1
-    "PATH" 1
-    "MAIL" 1
-    "LOGNAME" 1
-    "MOTD_SHOWN" 1
-    "XDG_SESSION_ID" 1
-    "XDG_RUNTIME_DIR" 1
-    "DBUS_SESSION_BUS_ADDRESS" 1
-    "XDG_SESSION_TYPE" 1
-    "XDG_SESSION_CLASS" 1
-    "XDG_SEAT" 1
-    "XDG_VTNR" 1
-    "XDG_CONFIG_HOME" 1
-    "ZDOTDIR" 1 #affects ttys other than `/dev/tty1`
-    "XDG_CACHE_HOME" 1
-    "XDG_DATA_HOME" 1
-    "XDG_STATE_HOME" 1
-    "TMPDIR" 1
-    "DEBUGINFOD_URLS" 1
-    "XDG_DATA_DIRS" 1
-    "LANG" 1
-    "LANGUAGE" 1
-    "LC_PAPER" 1
-    "NIX_PROFILES" 1
-    "NIX_SSL_CERT_FILE" 1
+    'HOME' 1
+    'USER' 1
+    'SHELL' 1
+    'TERM' 1
+    'PATH' 1
+    'MAIL' 1
+    'LOGNAME' 1
+    'MOTD_SHOWN' 1
+    'XDG_SESSION_ID' 1
+    'XDG_RUNTIME_DIR' 1
+    'DBUS_SESSION_BUS_ADDRESS' 1
+    'XDG_SESSION_TYPE' 1
+    'XDG_SESSION_CLASS' 1
+    'XDG_SEAT' 1
+    'XDG_VTNR' 1
+    'XDG_CONFIG_HOME' 1
+    'ZDOTDIR' 1 #affects ttys other than `/dev/tty1`
+    'XDG_CACHE_HOME' 1
+    'XDG_DATA_HOME' 1
+    'XDG_STATE_HOME' 1
+    'TMPDIR' 1
+    'DEBUGINFOD_URLS' 1
+    'XDG_DATA_DIRS' 1
+    'LANG' 1
+    'LANGUAGE' 1
+    'LC_PAPER' 1
+    'NIX_PROFILES' 1
+    'NIX_SSL_CERT_FILE' 1
 )
 # }}}
 
