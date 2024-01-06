@@ -26,9 +26,9 @@ def nwise(sequence: Iterable[_T], n: int = 2) -> Iterator[tuple[_T, ...]]:
         [('a', 'b', 'c'), ('b', 'c', 'd'), ('c', 'd', 'e')]
     """
     iterables = tee(sequence, n)
-    for i, sequence in enumerate(iterables):
+    for i, it in enumerate(iterables):
         for_each(
-            lambda _: next(sequence, None),  # pyright: ignore [reportGeneralTypeIssues]
+            lambda _: next(it, None),  # pyright: ignore [reportGeneralTypeIssues]
             range(i),
         )
     return zip(*iterables)
