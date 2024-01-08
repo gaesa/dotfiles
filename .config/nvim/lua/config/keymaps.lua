@@ -182,7 +182,7 @@ local function replace(original)
     if replacement == "" then
         return
     else
-        require("utils.win").with_cursor_unchanged(function()
+        utils.win.with_cursor_unchanged(function()
             vim.cmd("%s/" .. utils.string.rstrip(escape_string(original)) .. "/" .. utils.iif(
                 vim.startswith(replacement, "''") or vim.startswith(replacement, '""'), --
                 function()
@@ -259,7 +259,7 @@ map({ "n" }, "<leader>ss", function()
     end, false)
 end)
 map({ "x" }, "<leader>ss", function()
-    search(require("utils.string").rstrip(vim.fn.getreg("*")), function(s)
+    search(utils.string.rstrip(vim.fn.getreg("*")), function(s)
         return s
     end, false)
     esc("v")
