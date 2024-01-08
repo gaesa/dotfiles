@@ -3,7 +3,7 @@ from subprocess import run
 
 
 def main():
-    run(["emacsclient", "-c", "--eval", "(magit-status)"])
+    run(["emacsclient", "-c", "--eval", "(magit-status)"], capture_output=True)
 
 
 if __name__ == "__main__":

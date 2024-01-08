@@ -3,7 +3,7 @@ from subprocess import run
 
 
 def main():
-    run(["emacsclient", "-c", "--eval", "(org-todo-list)"])
+    run(["emacsclient", "-c", "--eval", "(org-todo-list)"], capture_output=True)
 
 
 if __name__ == "__main__":
