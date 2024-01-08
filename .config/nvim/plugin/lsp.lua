@@ -171,7 +171,7 @@ null_ls.setup({
             desc = "Format using null-ls",
         })
         -- Default `F3` from lsp-zero doesn't support range formatting
-        vim.keymap.set({ "n", "x" }, "gq", ":NullFormat<CR>", { noremap = true })
+        vim.keymap.set({ "n", "x" }, "gq", ":NullFormat<CR>", { noremap = true, silent = true })
     end,
 
     sources = {
