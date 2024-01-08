@@ -1,0 +1,233 @@
+" basic
+set nocompatible	" avoid some problems on some platforms
+set nomodeline		" security tweak
+set nu! rnu!	" show absolute and relative number at the same time
+syntax on
+set title	" show activity on titlebar
+set laststatus=2	" always show file name
+
+" search
+set incsearch	" do incremental searching, search as you type
+" set hlsearch	" highlight searches
+set ignorecase	" ignore case when searching
+set smartcase	" no ignorecase if Uppercase char present
+
+" indent
+set autoindent smartindent shiftround
+set tabstop=4
+set shiftwidth=4
+set expandtab
+
+" keycode delay
+set timeoutlen=1000
+set ttimeoutlen=50
+
+" history
+set history=500
+
+" plugin
+" File manager https://raw.githubusercontent.com/wiki/JetBrains/ideavim/NERDTree-support.md
+set NERDTree
+let g:NERDTreeMapActivateNode = "l"
+let g:NERDTreeMapPreview = "gl"
+let g:NERDTreeMapOpenRecursively = "L"
+
+" Input method
+set keep-english-in-normal
+
+" keymap
+let mapleader = " "
+
+" Window
+nnoremap <leader>w <C-w>
+
+" Buffer
+nnoremap <leader>bd :bdel<CR>
+nnoremap <leader>bc :bdel<CR>
+nnoremap <leader>bn :bnext<CR>
+nnoremap <leader>bp :bprev<CR>
+
+" Tab
+nnoremap <leader>td :tabclose<CR>
+nnoremap <leader>tc :tabclose<CR>
+nnoremap <leader>tn :tabnext<CR>
+nnoremap <leader>tp :tabprevious<CR>
+
+" Intuitively move cursor
+" allow the cursor to remain in the same position
+nnoremap J mzJ`z
+nnoremap j gjzz
+xnoremap j gjzz
+nnoremap k gkzz
+xnoremap k gkzz
+nnoremap gj j
+xnoremap gj j
+nnoremap gk k
+xnoremap gk k
+
+" Automatically center screen on current line (zz)
+nnoremap <C-d> <C-d>zz
+nnoremap <C-u> <C-u>zz
+nnoremap <C-o> <C-o>zz
+nnoremap <C-i> <C-i>zz
+nnoremap n nzzzv
+nnoremap N Nzzzv
+nnoremap * *zzzv
+nnoremap # #zzzv
+nnoremap G Gzz
+
+" Easier to press
+nnoremap H g^
+xnoremap H g^
+onoremap H g^
+nnoremap L g$
+xnoremap L g$
+onoremap L g$
+nnoremap gT H
+xnoremap gT H
+onoremap gT H
+nnoremap gB L
+xnoremap gB L
+onoremap gB L
+nnoremap <A-d> %zz
+xnoremap <A-d> %zz
+onoremap <A-d> %zz
+
+" Emacs-like keybinding
+cnoremap <C-a> <Home> " this don't work
+tnoremap <C-a> <Home>
+inoremap <C-a> <Home>
+
+inoremap <C-e> <End>
+cnoremap <C-e> <End>
+tnoremap <C-e> <End>
+
+inoremap <C-b> <Left>
+tnoremap <C-b> <Left>
+
+inoremap <C-f> <Right>
+tnoremap <C-f> <Right>
+
+inoremap <C-p> <Up>
+cnoremap <C-p> <Up>
+tnoremap <C-p> <Up>
+
+inoremap <C-n> <Down>
+cnoremap <C-n> <Down>
+tnoremap <C-n> <Down>
+
+inoremap <A-b> <S-Left>
+cnoremap <A-b> <S-Left>
+tnoremap <A-b> <S-Left>
+
+inoremap <A-f> <S-Right>
+cnoremap <A-f> <S-Right>
+tnoremap <A-f> <S-Right>
+
+inoremap <A-d> <Esc>ldei
+inoremap <C-k> <Esc>lDa
+
+" Clipboard
+nnoremap <leader>y "+
+xnoremap <leader>y "+
+xnoremap <leader>p "_dP
+
+" Automatically create a new file as necessary
+nnoremap gf :e <cfile><CR>
+
+" Quit and Save
+nnoremap q :q<CR>
+nnoremap Q :q!<CR>
+nnoremap <leader>fs :action SaveAll<CR>
+xnoremap <leader>fs :action SaveAll<CR>
+
+" Clears and redraws screen, clears search highlighting and then zz
+nnoremap <Enter> <C-l>:noh<CR>zz<Enter>
+
+" Completion (pumvisible doesn't work at all currently)
+" See also: https://github.com/JetBrains/ideavim/blob/master/vimscript-info/FUNCTIONS_INFO.MD
+" inoremap <expr> <Space> pumvisible() ? "\<Esc>:action EditorChooseLookupItem\<CR>a" : "\<Space>"
+" inoremap <expr> <CR> pumvisible() ? "\<Esc>:action EditorChooseLookupItemReplace\<CR>a" : "\<CR>"
+" inoremap <expr> <Tab> pumvisible() ? "\<Down>" : "\<Tab>"
+" inoremap <expr> <S-Tab> pumvisible() ? "\<Up>" : "\<S-Tab>"
+
+" Actions
+" File manager
+nnoremap <leader>fm :action ActivateProjectToolWindow<CR>
+nnoremap <leader>fl :action SelectInProjectView<CR>
+nnoremap <leader>ff :action GotoFile<CR>
+nnoremap <leader>fr :action RecentFiles<CR>
+
+" Outline
+nnoremap <leader>o :action FileStructurePopup<CR>
+
+" Search & Replace
+nnoremap <leader>ss :action FindInPath<CR>
+xnoremap <leader>ss :action FindInPath<CR>
+nnoremap <leader>sr :action ReplaceInPath<CR>
+xnoremap <leader>sr :action ReplaceInPath<CR>
+
+" Move code
+xnoremap J :action MoveLineDown<CR>
+xnoremap K :action MoveLineUp<CR>
+
+" Comment
+nnoremap gcc :action CommentByLineComment<CR>
+xnoremap gc :action CommentByLineComment<CR>
+nnoremap gbb :action CommentByBlockComment<CR>
+xnoremap gb :action CommentByBlockComment<CR>
+
+" Occurrence
+nnoremap <A-n> :action FindWordAtCaret<CR><Esc>
+nnoremap <A-p> :action FindPrevWordAtCaret<CR><Esc>
+
+" Expand selection
+xnoremap <CR> :action EditorSelectWord<CR>
+nnoremap <CR> :action EditorSelectWord<CR>
+xnoremap <BS> :action EditorUnSelectWord<CR>
+nnoremap <BS> :action EditorUnSelectWord<CR>
+
+" Diagnostic
+nnoremap ]d :action GotoNextError<CR>
+nnoremap [d :action GotoPreviousError<CR>
+nnoremap gl :action ShowErrorDescription<CR>
+
+" Reformat
+nnoremap gq :action ReformatCode<CR>
+xnoremap gq :action ReformatCode<CR>
+nnoremap gQ :action ShowReformatFileDialog<CR>
+xnoremap gQ :action ShowReformatFileDialog<CR>
+
+" Rename
+nnoremap <leader>rr :action RenameElement<CR>
+nnoremap <F2> :action RenameElement<CR>
+
+" Generate
+nnoremap <leader>g :action Generate<CR>
+
+" Run & Debug
+nnoremap gr :action Run<CR>
+nnoremap <leader>dr :action Debug<CR>
+nnoremap <leader>dp :action ToggleLineBreakpoint<CR>
+
+" Notification
+nnoremap <leader>nc :action ClearAllNotifications<CR>
+
+" Focus
+nnoremap <C-c> :action HideActiveWindow<CR>
+
+" Reload
+command! Rl action IdeaVim.ReloadVimRc.reload
+
+" Other
+inoremap <C-CR> <Esc>:action EditorCompleteStatement<CR>a
+inoremap <C-d> <Esc>:action EditorDuplicate<CR>a
+
+" Autocmd
+" See also: https://youtrack.jetbrains.com/issue/VIM-1693/Add-support-for-autocmd
+" augroup config
+"     autocmd!
+"     " Jump between `<` and `>`
+"     autocmd FileType html,xml \
+"         setlocal matchpairs+=<:>
+" augroup END
