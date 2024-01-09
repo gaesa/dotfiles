@@ -158,13 +158,17 @@ map({ "n", "i" }, "<F12>", function()
     )
 end)
 
--- Buffers
-map({ "n" }, "<leader>bn", function()
-    vim.cmd.bnext()
-end)
-map({ "n" }, "<leader>bp", function()
-    vim.cmd.bprev()
-end)
+-- Buffer
+map({ "n" }, "<leader>bd", vim.cmd.bdel)
+map({ "n" }, "<leader>bc", vim.cmd.bdel)
+map({ "n" }, "<leader>bn", vim.cmd.bnext)
+map({ "n" }, "<leader>bp", vim.cmd.bprev)
+
+-- Tab
+map({ "n" }, "<leader>td", vim.cmd.tabclose)
+map({ "n" }, "<leader>tc", vim.cmd.tabclose)
+map({ "n" }, "<leader>tn", vim.cmd.tabnext)
+map({ "n" }, "<leader>tp", vim.cmd.tabprevious)
 
 -- QuickFix
 map({ "n" }, "<C-j>", "<cmd>cnext<CR>zz")
