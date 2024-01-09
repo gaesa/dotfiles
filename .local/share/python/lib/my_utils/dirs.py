@@ -5,6 +5,18 @@ from .fntools import cache_single_value
 from .seq import fallback
 
 
+class CannotInstantiateError(Exception):
+    """Raised when trying to instantiate a non-instantiable class"""
+
+    pass
+
+
+class CannotExtendError(Exception):
+    """Raised when trying to extend a non-extendable class"""
+
+    pass
+
+
 def __init():
     CONFIG_HOME = ("XDG_CONFIG_HOME", ".config")
     DATA_HOME = ("XDG_DATA_HOME", ".local/share")
@@ -39,6 +51,12 @@ def __init():
         `list[str]`. Methods ending with `path` return `Path`, and those ending
         with `paths` return `list[Path]`.
         """
+
+        def __init__(self):
+            raise CannotInstantiateError(f"cannot instantiate '{type(self).__name__}'")
+
+        def __init_subclass__(cls, **kwargs):
+            raise CannotExtendError(f"cannot extend '{cls.__name__}' class")
 
         @staticmethod
         def home() -> Path:
