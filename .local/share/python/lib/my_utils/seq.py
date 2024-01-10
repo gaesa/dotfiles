@@ -1,3 +1,4 @@
+from collections import deque
 from collections.abc import Sequence
 from itertools import chain, filterfalse, groupby, islice, tee
 from typing import Any, Callable, Iterable, Iterator, TypeVar
@@ -21,13 +22,11 @@ def nwise(sequence: Iterable[_T], n: int = 2) -> Iterator[tuple[_T, ...]]:
         >>> list(nwise("abcde", 3))
         [('a', 'b', 'c'), ('b', 'c', 'd'), ('c', 'd', 'e')]
     """
-    iterables = tee(sequence, n)
-    for i, it in enumerate(iterables):
-        for_each(
-            lambda _: next(it, None),  # pyright: ignore [reportGeneralTypeIssues]
-            range(i),
-        )
-    return zip(*iterables)
+    it = iter(sequence)
+    window = deque(islice(it, n - 1), maxlen=n)
+    for ele in it:
+        window.append(ele)
+        yield tuple(window)
 
 
 def tree_map(
