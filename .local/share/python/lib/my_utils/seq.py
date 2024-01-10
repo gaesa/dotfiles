@@ -90,6 +90,15 @@ def for_each(operation: Callable[[_T], Any], sequence: Iterable[_T]) -> None:
         operation(ele)
 
 
+def star_foreach(
+    operation: Callable[[_T, ...], Any],  # pyright: ignore
+    sequence: Iterable[Iterable[_T]],
+) -> None:
+    """Like `starmap`, but doesn't construct a sequence."""
+    for ele in sequence:
+        operation(*ele)
+
+
 def partition(
     predicate: Callable[[_T], bool], iterable: Iterable[_T], lazy: bool = False
 ) -> tuple[Iterator[_T], Iterator[_T]] | tuple[list[_T], list[_T]]:
