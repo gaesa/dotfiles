@@ -7,13 +7,12 @@ _T = TypeVar("_T")
 _U = TypeVar("_U")
 
 
-def nwise(sequence: Iterable[_T], n: int = 2) -> Iterator[tuple[_T, ...]]:
+def nwise(iterable: Iterable[_T], n: int = 2) -> Iterator[tuple[_T, ...]]:
     """
-    Generate overlapping n-tuples from a sequence.
+    Generate overlapping n-tuples from an iterable.
 
-    :param sequence: An iterable from which to produce n-tuples.
-    :param n: The size of the window (n-tuple) to use when generating the
-              sequence. Defaults to 2.
+    :param iterable: An iterable from which to produce n-tuples.
+    :param n: The size of the n-tuple. Defaults to 2.
     :return: An iterator over n-tuples of consecutive elements.
 
     Example:
@@ -22,7 +21,7 @@ def nwise(sequence: Iterable[_T], n: int = 2) -> Iterator[tuple[_T, ...]]:
         >>> list(nwise("abcde", 3))
         [('a', 'b', 'c'), ('b', 'c', 'd'), ('c', 'd', 'e')]
     """
-    it = iter(sequence)
+    it = iter(iterable)
     window = deque(islice(it, n - 1), maxlen=n)
     for ele in it:
         window.append(ele)
@@ -31,70 +30,70 @@ def nwise(sequence: Iterable[_T], n: int = 2) -> Iterator[tuple[_T, ...]]:
 
 def tree_map(
     operation: Callable[[Any], Any],
-    sequence: Iterable[Any],
-    inner_sequence_type: Callable[[Any], Iterable[Any]] | None = None,
+    iterable: Iterable[Any],
+    inner_iterable_type: Callable[[Any], Iterable[Any]] | None = None,
 ) -> Iterator[Any]:
     """
-    Applies a given operation to each element in a nested sequence structure.
-    If an element is a sub-sequence, the function is called recursively on that element.
+    Applies a given operation to each element in a nested iterable structure.
+    If an element is a sub-iterable, the function is called recursively on that element.
 
     Parameters:
-        `operation`: A function to be applied to each element in the sequence.
-        `sequence`: An iterable sequence to be mapped over.
-        `inner_sequence_type`: A function to convert inner sequences, defaults to the type of the outermost sequence.
+        `operation`: A function to be applied to each element in the iterable.
+        `iterable`: An iterable iterable to be mapped over.
+        `inner_iterable_type`: A function to convert inner iterables, defaults to the type of the outermost iterable.
 
     Returns:
-        An iterator over the transformed sequence.
+        An iterator over the transformed iterable.
     """
 
-    def iter(sequence: Iterable[Any]):
+    def iter(iterable: Iterable[Any]):
         return map(
             (  # `convert_type` eagerly evaluates the inner `map` object
                 lambda ele: convert_type(iter(ele))
-                if isinstance(ele, sequence_type)
+                if isinstance(ele, iterable_type)
                 else operation(ele)
             ),
-            sequence,
+            iterable,
         )
 
-    if not isinstance(sequence, Iterable):
-        raise TypeError("`sequence` should be an instance of Iterable")
+    if not isinstance(iterable, Iterable):
+        raise TypeError("'iterable' should be an instance of Iterable")
     else:
-        sequence_type = type(sequence)
+        iterable_type = type(iterable)
         convert_type = (
-            sequence_type if inner_sequence_type is None else inner_sequence_type
+            iterable_type if inner_iterable_type is None else inner_iterable_type
         )
-        return iter(sequence)
+        return iter(iterable)
 
 
 def flatmap(
-    operation: Callable[[_T], Iterable[_U]], sequence: Iterable[_T]
+    operation: Callable[[_T], Iterable[_U]], iterable: Iterable[_T]
 ) -> Iterator[_U]:
     """
-    Applies a function to each element in a sequence then flattens the result.
+    Applies a function to each element in an iterable then flattens the result.
 
     Parameters:
-        `operation`: A function to be applied to each element in the sequence.
-        `sequence`: An iterable sequence to be mapped over.
+        `operation`: A function to be applied to each element in the iterable.
+        `iterable`: An iterable iterable to be mapped over.
 
     Returns:
-        An iterator over the flattened and transformed sequence.
+        An iterator over the flattened and transformed iterable.
     """
-    return chain.from_iterable(map(operation, sequence))
+    return chain.from_iterable(map(operation, iterable))
 
 
-def for_each(operation: Callable[[_T], Any], sequence: Iterable[_T]) -> None:
-    """Like `map`, but doesn't construct a sequence."""
-    for ele in sequence:
+def for_each(operation: Callable[[_T], Any], iterable: Iterable[_T]) -> None:
+    """Like `map`, but doesn't construct a iterator."""
+    for ele in iterable:
         operation(ele)
 
 
 def star_foreach(
     operation: Callable[[_T, ...], Any],  # pyright: ignore
-    sequence: Iterable[Iterable[_T]],
+    iterable: Iterable[Iterable[_T]],
 ) -> None:
-    """Like `starmap`, but doesn't construct a sequence."""
-    for ele in sequence:
+    """Like `starmap`, but doesn't construct a iterator."""
+    for ele in iterable:
         operation(*ele)
 
 
@@ -151,7 +150,7 @@ def get_differences(a: Iterable[_T], b: Iterable[_T]) -> tuple[set[_T], set[_T]]
 
 
 def fallback(*args: Callable[[], Any]) -> Any:
-    """Returns the first non-empty or non-None element in a sequence, the laziness is implemented by function"""
+    """Returns the first non-empty or non-None element in an iterable, the laziness is implemented by function"""
 
     def cond(var):
         return len(var) != 0 if isinstance(var, Sequence) else var is not None
@@ -170,40 +169,40 @@ def cond(*args: tuple[Callable[[], bool], Callable[[], Any]]) -> Any:
     return object()
 
 
-def skip_first(sequence: Iterable[_T], k: int = 1) -> Iterator[_T]:
+def skip_first(iterable: Iterable[_T], k: int = 1) -> Iterator[_T]:
     """Like `seq[k:]` or `itertools.islice(seq, k, None)`, but more time-efficient"""
     if k < 0:
         raise ValueError("'k' must be greater than or equal to zero")
     else:
-        it = iter(sequence)
+        it = iter(iterable)
         for_each(lambda _: next(it, None), range(k))
         return it
 
 
-def first(sequence: Iterable[_T], k: int = 1) -> Iterator[_T]:
+def first(iterable: Iterable[_T], k: int = 1) -> Iterator[_T]:
     """An alias for `itertools.islice(seq, k)`"""
     if k < 0:
         raise ValueError("'k' must be greater than or equal to zero")
     else:
-        return islice(sequence, k)
+        return islice(iterable, k)
 
 
-def skip_last(sequence: Iterable[_T], k: int = 1) -> Iterator[_T]:
+def skip_last(iterable: Iterable[_T], k: int = 1) -> Iterator[_T]:
     if k < 0:
         raise ValueError("'k' must be greater than or equal to zero")
     else:
-        return iter(tuple(sequence)[:-k])
+        return iter(tuple(iterable)[:-k])
 
 
-def last(sequence: Iterable[_T], k: int = 1) -> Iterator[_T]:
+def last(iterable: Iterable[_T], k: int = 1) -> Iterator[_T]:
     if k < 0:
         raise ValueError("'k' must be greater than or equal to zero")
     else:
-        return iter(tuple(sequence)[-k:])
+        return iter(tuple(iterable)[-k:])
 
 
-def all_equal(sequence: Iterable[_T]) -> bool:
-    g = groupby(sequence)
+def all_equal(iterable: Iterable[_T]) -> bool:
+    g = groupby(iterable)
     first, second = object(), object()
     return (next(g, first) is first) or (next(g, second) is second)
 
