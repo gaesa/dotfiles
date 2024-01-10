@@ -1,11 +1,12 @@
 #!/usr/bin/env python3
 from base64 import standard_b64encode
+from itertools import starmap
 
 
 def serialize(payload: bytes | str = b"", **cmd: dict[str, str]) -> bytes:
     "Modified from https://github.com/kovidgoyal/kitty/blob/master/kittens/tui/images.py#L382-L397."
 
-    cmds = ",".join(map(lambda kv: f"{kv[0]}={kv[1]}", cmd.items()))
+    cmds = ",".join(starmap(lambda k, v: f"{k}={v}", cmd.items()))
     ans = [b"\033_G", cmds.encode("ascii")]
     if payload not in {"", b""}:
         ans.extend(
