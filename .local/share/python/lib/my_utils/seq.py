@@ -203,8 +203,7 @@ def last(iterable: Iterable[_T], k: int = 1) -> Iterator[_T]:
 
 def all_equal(iterable: Iterable[_T]) -> bool:
     g = groupby(iterable)
-    first, second = object(), object()
-    return (next(g, first) is first) or (next(g, second) is second)
+    return (next(g, True) is True) or (next(g, True) is True)
 
 
 def begin(*args: Callable[[], Any]) -> Any:
