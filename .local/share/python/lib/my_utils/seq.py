@@ -1,5 +1,5 @@
 from collections.abc import Sequence
-from itertools import chain, filterfalse, tee
+from itertools import chain, filterfalse, groupby, islice, tee
 from typing import Any, Callable, Iterable, Iterator, TypeVar
 
 _T = TypeVar("_T")
@@ -174,6 +174,34 @@ def skip_first(sequence: Iterable[_T], k: int = 1) -> Iterator[_T]:
         it = iter(sequence)
         for_each(lambda _: next(it, None), range(k))
         return it
+
+
+def first(sequence: Iterable[_T], k: int = 1) -> Iterator[_T]:
+    """An alias for `itertools.islice(seq, k)`"""
+    if k < 0:
+        raise ValueError("'k' must be greater than or equal to zero")
+    else:
+        return islice(sequence, k)
+
+
+def skip_last(sequence: Iterable[_T], k: int = 1) -> Iterator[_T]:
+    if k < 0:
+        raise ValueError("'k' must be greater than or equal to zero")
+    else:
+        return iter(tuple(sequence)[:-k])
+
+
+def last(sequence: Iterable[_T], k: int = 1) -> Iterator[_T]:
+    if k < 0:
+        raise ValueError("'k' must be greater than or equal to zero")
+    else:
+        return iter(tuple(sequence)[-k:])
+
+
+def all_equal(sequence: Iterable[_T]) -> bool:
+    g = groupby(sequence)
+    first, second = object(), object()
+    return (next(g, first) is first) or (next(g, second) is second)
 
 
 def begin(*args: Callable[[], Any]) -> Any:
