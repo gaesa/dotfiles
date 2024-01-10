@@ -6,10 +6,6 @@ _T = TypeVar("_T")
 _U = TypeVar("_U")
 
 
-def unique(sequence: Iterable[_T]) -> dict[_T, None]:
-    return dict.fromkeys(sequence)
-
-
 def nwise(sequence: Iterable[_T], n: int = 2) -> Iterator[tuple[_T, ...]]:
     """
     Generate overlapping n-tuples from a sequence.
