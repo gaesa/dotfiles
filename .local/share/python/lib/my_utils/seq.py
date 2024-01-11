@@ -21,11 +21,14 @@ def nwise(iterable: Iterable[_T], n: int = 2) -> Iterator[tuple[_T, ...]]:
         >>> list(nwise("abcde", 3))
         [('a', 'b', 'c'), ('b', 'c', 'd'), ('c', 'd', 'e')]
     """
-    it = iter(iterable)
-    window = deque(islice(it, n - 1), maxlen=n)
-    for ele in it:
-        window.append(ele)
-        yield tuple(window)
+    if n < 1:
+        raise ValueError("Integer 'n' must be at least 1")
+    else:
+        it = iter(iterable)
+        window = deque(islice(it, n - 1), maxlen=n)
+        for ele in it:
+            window.append(ele)
+            yield tuple(window)
 
 
 def tree_map(
