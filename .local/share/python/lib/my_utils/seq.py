@@ -23,6 +23,14 @@ def nwise(iterable: Iterable[_T], n: int = 2) -> Iterator[tuple[_T, ...]]:
     """
     if n < 1:
         raise ValueError("Integer 'n' must be at least 1")
+    elif n < 7:
+        iterators = tee(iterable, n)
+        for i, it in enumerate(iterators):
+            for_each(
+                lambda _: next(it, None),
+                range(i),
+            )
+        return zip(*iterators)
     else:
         it = iter(iterable)
         window = deque(islice(it, n - 1), maxlen=n)
