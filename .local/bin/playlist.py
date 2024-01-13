@@ -84,7 +84,7 @@ def main():
         if (not skip_play) and playlist_path.is_file():
             run(["/usr/bin/mpv", f"--playlist={playlist_path}"])
         else:
-            return
+            print("No media to play")
 
 
 if __name__ == "__main__":
