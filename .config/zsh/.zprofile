@@ -33,6 +33,9 @@ typeset -A preserve=(
     'LC_PAPER' 1
     'NIX_PROFILES' 1
     'NIX_SSL_CERT_FILE' 1
+    # C#
+    'DOTNET_CLI_HOME' 1
+    'NUGET_PACKAGES' 1
 )
 # }}}
 

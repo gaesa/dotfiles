@@ -32,6 +32,8 @@ typeset -A my_env=(
     'WGETRC' "$XDG_CONFIG_HOME/wget/wgetrc"
     'RIPGREP_CONFIG_PATH' "$XDG_CONFIG_HOME/ripgrep/ripgreprc"
     'TEXMACS_HOME_PATH' "$XDG_STATE_HOME/texmacs"
+    'NUGET_PACKAGES' "$XDG_DATA_HOME/nuget"
+    'DOTNET_CLI_HOME' "$XDG_DATA_HOME/dotnet"
     # }}}
 
     # Terminal {{{
