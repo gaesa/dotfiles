@@ -37,6 +37,10 @@ typeset -A preserve=(
     # C#
     'DOTNET_CLI_HOME' 1
     'NUGET_PACKAGES' 1
+    # Python
+    'PYTHONPATH' 1
+    'PYTHONPYCACHEPREFIX' 1
+    'PYTHONUSERBASE' 1
 )
 # }}}
 
