@@ -30,6 +30,7 @@ def cleanup(white_list: set[str]):
         filter(
             lambda file: file.name.startswith(".")
             and (not file.is_symlink())
+            and (not file.is_mount())
             and (not is_bind_mount(file))
             and (file.name not in white_list),
             Path.iterdir(Xdg.home()),
