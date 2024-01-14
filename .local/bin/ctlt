@@ -25,10 +25,10 @@ def is_active(user: list[str], unit: str) -> bool:
 def toggle_unit() -> None:
     sudo, user, unit = get_sudo_user_unit()
     run([*sudo, "systemctl", *user, "daemon-reload"], check=True)
-    if is_active(user, unit):
-        run([*sudo, "systemctl", *user, "stop", unit], check=True)
-    else:
-        run([*sudo, "systemctl", *user, "start", unit], check=True)
+    run(
+        [*sudo, "systemctl", *user, "stop" if is_active(user, unit) else "start", unit],
+        check=True,
+    )
     run(["systemctl", *user, "status", unit])
 
 
