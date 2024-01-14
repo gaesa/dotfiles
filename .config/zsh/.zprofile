@@ -31,6 +31,7 @@ typeset -A preserve=(
     'LANG' 1
     'LANGUAGE' 1
     'LC_PAPER' 1
+    # Nix
     'NIX_PROFILES' 1
     'NIX_SSL_CERT_FILE' 1
     # C#
