@@ -31,6 +31,8 @@ typeset -A my_env=(
     'ANDROID_HOME' "$XDG_DATA_HOME/android"
     'WGETRC' "$XDG_CONFIG_HOME/wget/wgetrc"
     'RIPGREP_CONFIG_PATH' "$XDG_CONFIG_HOME/ripgrep/ripgreprc"
+    'NUGET_PACKAGES' "$XDG_DATA_HOME/nuget"
+    'DOTNET_CLI_HOME' "$XDG_DATA_HOME/dotnet"
     # }}}
 
     # Terminal {{{
