@@ -1,5 +1,6 @@
 from os import getenv, getuid
 from pathlib import Path
+from typing import final
 
 from .fntools import cache_single_value
 from .seq import fallback
@@ -7,12 +8,6 @@ from .seq import fallback
 
 class CannotInstantiateError(Exception):
     """Raised when trying to instantiate a non-instantiable class"""
-
-    pass
-
-
-class CannotExtendError(Exception):
-    """Raised when trying to extend a non-extendable class"""
 
     pass
 
@@ -38,6 +33,7 @@ def __init():
         value = get(env, dir)
         return value if isinstance(value, Path) else Path(value)
 
+    @final
     class Xdg:
         """
         This class provides methods for accessing directories as per the XDG Base
@@ -54,9 +50,6 @@ def __init():
 
         def __init__(self):
             raise CannotInstantiateError(f"cannot instantiate '{type(self).__name__}'")
-
-        def __init_subclass__(cls, **kwargs):
-            raise CannotExtendError(f"cannot extend '{cls.__name__}' class")
 
         @staticmethod
         def home() -> Path:
