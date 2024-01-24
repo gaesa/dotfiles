@@ -2,7 +2,7 @@ from os import getenv, getuid
 from pathlib import Path
 from typing import final
 
-from .fntools import cache_single_value
+from .fntools import cache_single_value, non_instantiable
 from .seq import fallback
 
 
@@ -33,6 +33,7 @@ def __init():
         value = get(env, dir)
         return value if isinstance(value, Path) else Path(value)
 
+    @non_instantiable
     @final
     class Xdg:
         """
@@ -47,9 +48,6 @@ def __init():
         `list[str]`. Methods ending with `path` return `Path`, and those ending
         with `paths` return `list[Path]`.
         """
-
-        def __init__(self):
-            raise CannotInstantiateError(f"cannot instantiate '{type(self).__name__}'")
 
         @staticmethod
         def home() -> Path:

@@ -1,9 +1,10 @@
 from functools import wraps
-from typing import Any, Callable, ParamSpec, TypeVar
+from typing import Any, Callable, ParamSpec, Type, TypeVar
 
 _P = ParamSpec("_P")
 _T = TypeVar("_T")
 _U = TypeVar("_U")
+Class = TypeVar("Class", bound=type)
 
 
 def after(post_fn: Callable[[], Any], is_async: bool = False):
@@ -86,3 +87,18 @@ def debug_fn(orig_fn: Callable[_P, _T], name: str = ""):
         return value
 
     return new_fn
+
+
+class CannotInstantiateError(Exception):
+    """Raised when trying to instantiate a non-instantiable class"""
+
+    pass
+
+
+def non_instantiable(cls: Class) -> Class:
+    def __init__(_):
+        raise CannotInstantiateError(f"Cannot instantiate '{cls.__name__}'")
+
+    cls.__init__ = __init__
+
+    return cls
