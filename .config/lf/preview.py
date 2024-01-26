@@ -136,7 +136,11 @@ def fallback_to_non_image(file: str, mime_type: tuple[str, str]):
                 {
                     ("application", "xml"),
                     ("application", "json"),
+                    ("application", "yaml"),
+                    ("application", "toml"),
                     ("application", "x-shellscript"),
+                    ("application", "javascript"),
+                    ("application", "x-desktop"),
                 },
                 lambda _: preview_text(file),
             ),
