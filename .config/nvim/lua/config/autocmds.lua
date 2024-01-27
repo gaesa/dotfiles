@@ -201,6 +201,17 @@ autocmd({ "BufWritePre" }, {
 
 local function setup_auto_formatting()
     local state = true
+
+    local function notify_state()
+        local s
+        if state then
+            s = "enabled"
+        else
+            s = "disabled"
+        end
+        vim.notify("Auto formatting is " .. s, vim.log.levels.INFO)
+    end
+
     local function toggle_state(arg)
         if arg == "true" then
             state = true
@@ -209,17 +220,11 @@ local function setup_auto_formatting()
         else
             state = not state
         end
-
-        local s
-        if state then
-            s = "enabled"
-        else
-            s = "disabled"
-        end
-        vim.notify("Auto formatting is now " .. s, vim.log.levels.INFO)
+        notify_state()
     end
 
     vim.api.nvim_create_user_command("ToggleAutoFormat", toggle_state, { nargs = "?" })
+    vim.api.nvim_create_user_command("AutoFormat", notify_state, {})
 
     autocmd({ "BufWritePre" }, {
         callback = function()
