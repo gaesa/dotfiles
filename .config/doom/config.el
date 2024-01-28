@@ -1162,7 +1162,7 @@
 ;; Magit
 (with-eval-after-load 'magit
   (setf (alist-get 'unpushed magit-section-initial-visibility-alist) 'show) ;expand `Recent commits`
-  (put 'magit-log-mode 'magit-log-default-arguments '("--graph" "-n256" "--decorate" "--color")))
+  (put 'magit-log-mode 'magit-log-default-arguments '("--graph" "-n256" "--decorate" "--color" "--show-signature")))
 
 ;; Avoid a redundant newline introduced by `open-line' in `git-commit-setup'
 (add-hook 'git-commit-setup-hook (lambda ()
