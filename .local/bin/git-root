@@ -1,0 +1,6 @@
+#!/usr/bin/env python3
+from pathlib import Path
+
+from my_utils.git import get_git_dir
+
+print(Path(get_git_dir()).parent)
