@@ -98,7 +98,7 @@ def get_default_desktops(mime_type: str, interactive=False):
                     mime_section = config["MIME Cache"]
                     if mime_type in mime_section:
                         return get_desktop_name(mime_section, mime_type)
-            return fallback()
+            return fallback_to_desktop()
 
         def extract_from_user_config():
             def extract_from_added_assoc():
@@ -128,7 +128,7 @@ def get_default_desktops(mime_type: str, interactive=False):
 
         return extract_from_user_config()
 
-    def fallback():
+    def fallback_to_desktop():
         def parse_desktop_names():
             i = 0
             start = i + 21
@@ -159,7 +159,13 @@ def get_default_desktops(mime_type: str, interactive=False):
             if desktop_names != []:
                 return desktop_names if interactive else desktop_names[0]
             else:
-                return fallback_to_choice()
+                return fallback_to_text_editor()
+        else:
+            return fallback_to_text_editor()
+
+    def fallback_to_text_editor():
+        if mime_type.startswith("text") or mime_type.endswith("x-empty"):
+            return "nvim.desktop"
         else:
             return fallback_to_choice()
 
