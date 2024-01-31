@@ -16,7 +16,7 @@ def get_tracked_files(
         text=True,
     )
     if process.returncode == 0:
-        return (  # pyright: ignore [reportGeneralTypeIssues]
+        return (  # pyright: ignore [reportReturnType]
             (lambda f: list(f) if not isinstance(f, list) else f)
             if include_link
             else (lambda f: list(filterfalse(islink, f)))

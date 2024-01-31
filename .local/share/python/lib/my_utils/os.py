@@ -74,13 +74,13 @@ async def get_mime_type_async(file: str | Path) -> tuple[str, str]:
 
     string: str = (
         await run(args, text=True, check=True)
-    ).stdout.rstrip()  # pyright: ignore [reportGeneralTypeIssues, reportOptionalMemberAccess]
+    ).stdout.rstrip()  # pyright: ignore [reportAttributeAccessIssue, reportOptionalMemberAccess]
     mime_type = tuple(string.split("/", 1))
     if len(mime_type) != 2:
         if args[0] == "xdg-mime":
             new_str: str = (
                 await run(file_args, text=True, check=True)
-            ).stdout.rstrip()  # pyright: ignore [reportGeneralTypeIssues, reportOptionalMemberAccess]
+            ).stdout.rstrip()  # pyright: ignore [reportAttributeAccessIssue, reportOptionalMemberAccess]
             new_type = tuple(new_str.split("/", 1))
             if len(new_type) != 2:
                 raise ValueError(f"{file_args} returns: '{new_str}'")
