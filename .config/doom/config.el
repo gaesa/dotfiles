@@ -472,13 +472,11 @@
   (pushnew! recentf-exclude exclude-emacs-internal))
 (setq recentf-max-saved-items 20)
 
-(add-variable-watcher 'default-directory
-                      (lambda (symbol newval operation where)
-                        (when (and (not (null where))
-                                   (string= (buffer-name where) "*dashboard*")
-                                   (not (string= newval "~/")))
-                          (with-current-buffer "*dashboard*"
-                            (setq default-directory "~/")))))
+(advice-add '+workspace/kill-session :after
+            (lambda (_) (let ((dashboard "*dashboard*"))
+                          (when (not (null (get-buffer dashboard)))
+                            (with-current-buffer dashboard
+                              (setq default-directory "~/"))))))
 
 ;; Input method
 (use-package! fcitx
