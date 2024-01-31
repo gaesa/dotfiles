@@ -64,7 +64,7 @@ def get_default_desktops(mime_type: str, interactive=False):
     from my_utils.dirs import Xdg
 
     config = ConfigParser()
-    config.optionxform = (  # pyright: ignore [reportGeneralTypeIssues]
+    config.optionxform = (  # pyright: ignore [reportAttributeAccessIssue]
         str  # to make keys case-sensitive
     )
     XDG_CURRENT_DESKTOP = tuple(
@@ -261,11 +261,10 @@ def main():
         default_desktops = get_default_desktops(
             "/".join(mime_type), interactive=interactive
         )
-        open_with(
-            default_desktops, file  # pyright: ignore [reportGeneralTypeIssues]
-        ) if interactive else open(
-            default_desktops, file  # pyright: ignore [reportGeneralTypeIssues]
-        )
+        if interactive:
+            open_with(default_desktops, file)  # pyright: ignore [reportArgumentType]
+        else:
+            open(default_desktops, file)  # pyright: ignore [reportArgumentType]
 
 
 if __name__ == "__main__":

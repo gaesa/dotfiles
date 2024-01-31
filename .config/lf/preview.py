@@ -13,7 +13,7 @@ def audio_has_cover(audio):
     from pymediainfo import MediaInfo
 
     media_info = MediaInfo.parse(audio)
-    d = media_info.tracks[0].to_data()  # pyright: ignore [reportGeneralTypeIssues]
+    d = media_info.tracks[0].to_data()  # pyright: ignore [[reportAttributeAccessIssue]]
     return "cover" in d
 
 

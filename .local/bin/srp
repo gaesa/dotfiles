@@ -134,8 +134,8 @@ def rg(param_list: list[str], dir: str):
             *opts,
             (
                 substrings_to_pattern(args)
-                if len(args) > 1  # pyright: ignore [reportGeneralTypeIssues]
-                else args[0]  # pyright: ignore [reportGeneralTypeIssues]
+                if len(args) > 1  # pyright: ignore [reportArgumentType]
+                else args[0]  # pyright: ignore [reportIndexIssue]
             ),
             dir,
         ]
