@@ -5,6 +5,7 @@ from configparser import ConfigParser, SectionProxy
 from os.path import basename, expanduser, isfile, join
 from subprocess import DEVNULL, Popen, run
 from sys import argv
+from typing import Callable
 
 from my_utils.os import get_mime_type
 
@@ -79,53 +80,58 @@ def get_default_desktops(mime_type: str, interactive=False):
     )
 
     def extract_desktops():
-        def get_desktop_name_decide():
+        def make_get_desktop_name():
             def get_all(mime_section: SectionProxy, mime_type: str) -> list[str]:
                 desktop = mime_section[mime_type]
                 return desktop.rstrip(";").split(";")
 
             def get_first(mime_section: SectionProxy, mime_type: str) -> str:
                 desktop = mime_section[mime_type]
-                return desktop[: desktop.find(";")]
+                return desktop[: desktop.index(";")]
 
             return get_all if interactive else get_first
 
-        get_desktop_name = get_desktop_name_decide()
+        get_desktop_name = make_get_desktop_name()
 
-        def extract_from_system_config():
+        def extract_from_system_config() -> str | list[str]:
             for mime_config in system_configs:
                 if isfile(mime_config):
                     config.read(mime_config)
                     mime_section = config["MIME Cache"]
                     if mime_type in mime_section:
                         return get_desktop_name(mime_section, mime_type)
-            return fallback_to_desktop()
+            else:
+                return fallback_to_desktop()
 
         def extract_from_user_config():
-            def extract_from_added_assoc():
-                mime_section = config["Added Associations"]
-                if mime_type in mime_section:
-                    return get_desktop_name(mime_section, mime_type)
-                else:
-                    return extract_from_system_config()
+            def make_extract(
+                key: str, alt: Callable[[], str | list[str]]
+            ) -> Callable[[], str | list[str]]:
+                return lambda: (
+                    (
+                        lambda mime_section: (
+                            get_desktop_name(mime_section, mime_type)
+                            if mime_type in mime_section
+                            else alt()
+                        )
+                    )(config[key])
+                )
 
-            def extract_from_default_apps():
-                mime_section = config["Default Applications"]
-                if mime_type in mime_section:
-                    return get_desktop_name(mime_section, mime_type)
-                else:
-                    return extract_from_added_assoc()
-
+            extract_from_added_assoc = make_extract("Added Associations", lambda: [])
+            extract_from_default_apps = make_extract(
+                "Default Applications", extract_from_added_assoc
+            )
+            extract = (
+                extract_from_added_assoc if interactive else extract_from_default_apps
+            )
             for user_config in user_configs:
                 if isfile(user_config):
                     config.read(user_config)
-                    return (
-                        extract_from_added_assoc()
-                        if interactive
-                        else extract_from_default_apps()
-                    )
-                else:
-                    return extract_from_system_config()
+                    result = extract()
+                    if result != []:
+                        return result
+            else:
+                return extract_from_system_config()
 
         return extract_from_user_config()
 
