@@ -155,6 +155,8 @@ def get_default_desktops(mime_type: str, interactive=False):
                 capture_output=True,
                 text=True,
             ).stdout
+            if info.endswith("got 0 offers.\n"):
+                info = ""
 
             desktop_names = parse_desktop_names()
             if desktop_names != []:
