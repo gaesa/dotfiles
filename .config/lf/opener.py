@@ -10,34 +10,34 @@ from my_utils.os import get_mime_type
 
 
 def get_list_of_mimeapps(
-    XDG_CONFIG_HOME: str,
-    XDG_CURRENT_DESKTOP: tuple[str, ...],
-    XDG_CONFIG_DIRS: list[str],
-    XDG_DATA_DIRS: list[str],
+    xdg_config_home: str,
+    xdg_current_desktop: tuple[str, ...],
+    xdg_config_dirs: list[str],
+    xdg_data_dirs: list[str],
 ) -> tuple[tuple[str, ...], tuple[str, ...]]:
     from my_utils.seq import flatmap
 
     return (
         (
             *map(
-                lambda desktop: join(XDG_CONFIG_HOME, f"{desktop}-mimeapps.list"),
-                XDG_CURRENT_DESKTOP,
+                lambda desktop: join(xdg_config_home, f"{desktop}-mimeapps.list"),
+                xdg_current_desktop,
             ),
-            join(XDG_CONFIG_HOME, "mimeapps.list"),
+            join(xdg_config_home, "mimeapps.list"),
         ),
         (
             *flatmap(
                 lambda cfg_dir: tuple(
                     map(
                         lambda desktop: join(cfg_dir, f"{desktop}-mimeapps.list"),
-                        XDG_CURRENT_DESKTOP,
+                        xdg_current_desktop,
                     )
                 ),
-                XDG_CONFIG_DIRS,
+                xdg_config_dirs,
             ),
             *map(
                 lambda cfg_dir: join(cfg_dir, "mimeapps.list"),
-                XDG_CONFIG_DIRS,
+                xdg_config_dirs,
             ),
             *flatmap(
                 lambda data_dir: tuple(
@@ -45,14 +45,14 @@ def get_list_of_mimeapps(
                         lambda desktop: join(
                             data_dir, f"applications/{desktop}-mimeapps.list"
                         ),
-                        XDG_CURRENT_DESKTOP,
+                        xdg_current_desktop,
                     )
                 ),
-                XDG_DATA_DIRS,
+                xdg_data_dirs,
             ),
             *map(
                 lambda data_dir: join(data_dir, "applications/mimeapps.list"),
-                XDG_DATA_DIRS,
+                xdg_data_dirs,
             ),
         ),
     )
@@ -67,12 +67,13 @@ def get_default_desktops(mime_type: str, interactive=False):
     config.optionxform = (  # pyright: ignore [reportAttributeAccessIssue]
         str  # to make keys case-sensitive
     )
-    XDG_CURRENT_DESKTOP = tuple(
+    # noinspection PyTypeChecker
+    xdg_current_desktop = tuple(
         map(str.lower, environ["XDG_CURRENT_DESKTOP"].split(":"))
     )
     user_configs, system_configs = get_list_of_mimeapps(
         Xdg.user_config_dir(),
-        XDG_CURRENT_DESKTOP,
+        xdg_current_desktop,
         Xdg.site_config_dirs(),
         Xdg.site_data_dirs(),
     )
@@ -147,7 +148,7 @@ def get_default_desktops(mime_type: str, interactive=False):
                 start = i + 21
             return desktop_names
 
-        if XDG_CURRENT_DESKTOP[0] == "kde":
+        if xdg_current_desktop[0] == "kde":
             info = run(
                 ["ktraderclient5", "--mimetype", mime_type],
                 check=True,
