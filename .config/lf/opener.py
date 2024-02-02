@@ -204,7 +204,7 @@ def open(default_desktop: str, file: str):
                 if isfile(path):
                     desktop.read(path)
                     return desktop
-            raise FileNotFoundError("No '.dekstop' found")
+            raise FileNotFoundError("No '.desktop' found")
 
         def parse_exec():
             # remove `%f`, `--` etc.
