@@ -60,9 +60,11 @@ def tree_map(
     def iter(iterable: Iterable[Any]):
         return map(
             (  # `convert_type` eagerly evaluates the inner `map` object
-                lambda ele: convert_type(iter(ele))
-                if isinstance(ele, iterable_type)
-                else operation(ele)
+                lambda ele: (
+                    convert_type(iter(ele))
+                    if isinstance(ele, iterable_type)
+                    else operation(ele)
+                )
             ),
             iterable,
         )
