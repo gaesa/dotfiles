@@ -96,7 +96,7 @@ def flatmap(
 
 
 def for_each(operation: Callable[[_T], Any], iterable: Iterable[_T]) -> None:
-    """Like `map`, but doesn't construct a iterator."""
+    """Like `map`, but doesn't construct an iterator."""
     for ele in iterable:
         operation(ele)
 
@@ -105,7 +105,7 @@ def star_foreach(
     operation: Callable[[_T, ...], Any],  # pyright: ignore
     iterable: Iterable[Iterable[_T]],
 ) -> None:
-    """Like `starmap`, but doesn't construct a iterator."""
+    """Like `starmap`, but doesn't construct an iterator."""
     for ele in iterable:
         operation(*ele)
 
