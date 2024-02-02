@@ -147,9 +147,9 @@ def fallback_to_non_image(file: str, mime_type: tuple[str, str]):
         )
 
     case = Case(
-        default=lambda mime_type: preview_text(file)
-        if mime_type[0] == "text"
-        else fallback_to_file_cmd(file)
+        default=lambda mime_type: (
+            preview_text(file) if mime_type[0] == "text" else fallback_to_file_cmd(file)
+        )
     )
     make_archive_case()
     make_document_case()
