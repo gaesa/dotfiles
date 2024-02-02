@@ -188,7 +188,7 @@ def get_default_desktops(mime_type: str, interactive=False):
     return extract_desktops()
 
 
-def open(default_desktop: str, file: str):
+def open_with_default(default_desktop: str, file: str):
     default_program = default_desktop[: -len(".desktop")]
     if default_program in {"nvim", "mpv"}:
         # ignore Exec entry & show output in terminal
@@ -247,7 +247,7 @@ def open_with(default_desktop: list[str], file: str):
                 "by entering its corresponding number: "
             )
         )
-        open(default_desktop[choice], file)
+        open_with_default(default_desktop[choice], file)
         print()
     except (KeyboardInterrupt, EOFError):
         print()
@@ -269,7 +269,9 @@ def main():
         if interactive:
             open_with(default_desktops, file)  # pyright: ignore [reportArgumentType]
         else:
-            open(default_desktops, file)  # pyright: ignore [reportArgumentType]
+            open_with_default(
+                default_desktops, file
+            )  # pyright: ignore [reportArgumentType]
 
 
 if __name__ == "__main__":
