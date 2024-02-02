@@ -9,7 +9,7 @@ return {
             if vim.fn.has("persistent_undo") == 1 then
                 -- create the directory and any parent directories
                 -- if the location does not exist.
-                local target_path = vim.opt.undodir._value
+                local target_path = vim.opt.undodir:get()[1]
                 if vim.fn.isdirectory(target_path) == 0 then
                     vim.fn.mkdir(target_path, "p", 0700)
                 end
