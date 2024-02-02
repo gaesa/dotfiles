@@ -27,6 +27,15 @@ autocmd({ "FileType" }, {
     group = group,
 })
 
+-- Jump between `<` and `>`
+autocmd({ "FileType" }, {
+    pattern = { "html", "xml" },
+    callback = function()
+        vim.opt.matchpairs:append("<:>")
+    end,
+    group = group,
+})
+
 -- HACK: sync visual selection to primary clipboard
 -- Limitation: not as elegant as post-hook like `CursorMoved` (visual selection can change without moving cursor)
 -- Issue1: https://github.com/neovim/neovim/issues/4773
