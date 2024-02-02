@@ -233,9 +233,11 @@ def open(default_desktop: str, file: str):
 
 
 def open_with(default_desktop: list[str], file: str):
-    from my_utils.seq import for_each
+    from my_utils.seq import star_foreach
 
-    for_each(lambda id: print(f"{id[0]}. {id[1]}"), enumerate(default_desktop))
+    star_foreach(
+        lambda i, desktop: print(f"{i}. {desktop}"), enumerate(default_desktop)
+    )
     try:
         choice = int(
             input(
