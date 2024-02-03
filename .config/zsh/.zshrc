@@ -166,6 +166,9 @@ source '/usr/share/doc/pkgfile/command-not-found.zsh'
 # zoxide
 eval "$(zoxide init zsh)"
 
+# direnv
+eval "$(direnv hook zsh)"
+
 # zsh-syntax-highlighting
 # It must be sourced after all custom widgets have been created
 # (i.e., after all zle -N calls and after running compinit)
