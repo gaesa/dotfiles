@@ -1,12 +1,13 @@
 #!/usr/bin/env python3
 # yadm clone --bare --single-branch --branch <branch> <url>
 # Make sure some programs are installed and force a checkout
-from distro import name
+from os import environ, getuid
+from os.path import expanduser, join
 from platform import system
 from shutil import which
-from subprocess import run, DEVNULL
-from os import environ, getuid
-from os.path import join, expanduser
+from subprocess import DEVNULL, run
+
+from distro import name
 
 
 def get_sudo_cmd():
@@ -43,7 +44,7 @@ def check_paru(sudo_cmd):
         return
 
 
-def install_common(sudo_cmd):
+def install_common():
     packages = {
         "kitty-terminfo",
         "zoxide",
@@ -62,25 +63,9 @@ def install_common(sudo_cmd):
         "duf",
         "dust",
         "pkgfile",
+        "zsh-theme-powerlevel10k",
     }
-    if sudo_cmd != []:
-        run(["paru", "-Syu", "--needed", *packages], check=True)
-        print()
-    else:
-        aur_package = "zsh-theme-powerlevel10k-git"
-        packages.discard(aur_package)
-
-        run(["pacman", "-Syu", "--needed", *packages], check=True)
-        if (
-            run(
-                ["pacman", "-Q", aur_package], stdout=DEVNULL, stderr=DEVNULL
-            ).returncode
-            != 0
-        ):
-            print(f"`{aur_package}` is not installed")
-            print()
-        else:
-            return
+    run(["sudo", "pacman", "-Syu", "--needed", *packages], check=True)
 
 
 def set_worktree():
@@ -170,7 +155,7 @@ def main():
 
     sudo_cmd = get_sudo_cmd()
     check_paru(sudo_cmd)
-    install_common(sudo_cmd)
+    install_common()
     if branch == "main":
         install_for_main(sudo_cmd)
     else:
