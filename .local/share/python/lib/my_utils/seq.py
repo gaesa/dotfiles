@@ -223,14 +223,17 @@ def diff(a: Iterable[_T], b: Iterable[_T]) -> tuple[set[_T], set[_T], set[_T]]:
 def fallback(*args: Callable[[], Any]) -> Any:
     """Returns the first non-empty or non-None element in an iterable, the laziness is implemented by function"""
 
-    def cond(var):
-        return len(var) != 0 if isinstance(var, Sequence) else var is not None
+    def is_not_empty_or_none(arg: Any):
+        return (
+            not is_empty(arg)
+            if isinstance(arg, (Sequence, Collection))
+            else arg is not None
+        )
 
-    for arg in args:
-        value = arg()
-        if cond(value):
-            return value
-    return None
+    try:
+        return find(is_not_empty_or_none, map(lambda arg: arg(), args))
+    except StopIteration:
+        return None
 
 
 def cond(*args: tuple[Callable[[], bool], Callable[[], Any]]) -> Any:
