@@ -138,7 +138,7 @@ def get_default_desktops(mime_type: str, interactive=False):
     def fallback_to_desktop():
         def parse_desktop_names():
             i = 0
-            start = i + 21
+            start = i + 21  # "\nDesktopEntryName : '"
             desktop_names: list[str] = []
             while start < len(info):
                 if info[i:start] == "\nDesktopEntryName : '":
