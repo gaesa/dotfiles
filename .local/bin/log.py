@@ -7,13 +7,13 @@ from subprocess import CalledProcessError, run
 
 def parse_args() -> tuple[str, bool, bool, int]:
     def non_negative_int(value: str) -> int:
-        ivalue = int(value)
-        if ivalue < 0:
+        int_value = int(value)
+        if int_value < 0:
             raise argparse.ArgumentTypeError(
                 f"'{value}' is an invalid non-negative int value"
             )
         else:
-            return ivalue
+            return int_value
 
     parser = argparse.ArgumentParser(
         description="Retrieve a specific log entry based on recency from a specified systemd "
