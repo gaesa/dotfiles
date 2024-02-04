@@ -3,11 +3,11 @@ from os.path import splitext
 from subprocess import DEVNULL, Popen, run
 from sys import argv
 
-from my_utils.seq import for_each, partition, skip_first
+from my_utils.seq import for_each, is_empty, partition, skip_first
 
 
 def open_with_nvim(files: list[str]):
-    if files != []:
+    if not is_empty(files):
         p = Popen(["nvim", "-o", *files, "-c", "wincmd H"])
         return p
     else:
@@ -15,11 +15,11 @@ def open_with_nvim(files: list[str]):
 
 
 def open_with_emacs(files: list[str], allow_empty: bool = False):
-    if files == [] and (not allow_empty):
+    len_files = len(files)
+    if len_files == 0 and (not allow_empty):
         return
     else:
-        len_files = len(files)
-        if files == [] and allow_empty:
+        if len_files == 0 and allow_empty:
             sexp = "(call-interactively #'+workspace/delete)"
         else:
             sexp = (
@@ -71,7 +71,7 @@ def split_cond(
 
 def edit(files: list[str] | tuple[str, ...] | None = None):
     files = argv[1:] if files is None else files
-    if files == () or files == []:
+    if is_empty(files):
         run(["/usr/bin/nvim"])
     else:
         emacs_files, nvim_files = partition(split_cond, files)

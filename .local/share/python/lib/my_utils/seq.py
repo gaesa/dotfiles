@@ -1,10 +1,23 @@
 from collections import deque
 from collections.abc import Sequence
 from itertools import chain, filterfalse, groupby, islice, tee
-from typing import Any, Callable, Iterable, Iterator, TypeVar
+from typing import Any, Callable, Collection, Iterable, Iterator, TypeVar
 
 _T = TypeVar("_T")
 _U = TypeVar("_U")
+
+
+def is_empty(sequenceOrCollection: Sequence[Any] | Collection[Any]):
+    """
+    Checks if the given sequence or collection is empty.
+
+    Parameters:
+        sequenceOrCollection: The sequence or collection to be checked.
+
+    Returns:
+        True if the sequence or collection is empty, otherwise False.
+    """
+    return len(sequenceOrCollection) == 0
 
 
 def nwise(iterable: Iterable[_T], n: int = 2) -> Iterator[tuple[_T, ...]]:

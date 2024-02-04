@@ -5,13 +5,13 @@ from pathlib import Path
 from subprocess import run
 
 from my_utils.os import get_mime_type_async
-from my_utils.seq import natsort
+from my_utils.seq import is_empty, natsort
 
 
-def gen_playlist_file(file: str | Path, lst: list[str]) -> None:
-    if lst != []:
+def gen_playlist_file(file: str | Path, playlist: list[str]) -> None:
+    if not is_empty(playlist):
         with open(file, "w") as f:
-            f.write("\n".join(lst))
+            f.write("\n".join(playlist))
     else:
         return
 

@@ -4,7 +4,7 @@ from os import listdir, remove
 from os.path import expanduser, getmtime, isdir, isfile, join
 
 from my_utils.os import json_read, json_write, run_chdir
-from my_utils.seq import filterfalse, for_each
+from my_utils.seq import filterfalse, for_each, is_empty
 
 
 def within_one_month(old_dt: datetime, new_dt: datetime) -> bool:
@@ -84,7 +84,7 @@ def clean_by_cache_mtime(cache_dir: str, index: str) -> None:
         json_write(index, d)
 
     caches = get_old_cache()
-    return None if caches == () else pop_cache(caches)
+    return None if is_empty(caches) else pop_cache(caches)
 
 
 def clean_by_index_file(cache_dir: str, index: str):

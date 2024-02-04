@@ -2,12 +2,15 @@
 # like `xdg-open`, but supports `open-with` and
 # running in terminal directly
 from configparser import ConfigParser, SectionProxy
+from os import environ
 from os.path import basename, expanduser, isfile, join
 from subprocess import DEVNULL, Popen, run
 from sys import argv
 from typing import Callable
 
+from my_utils.dirs import Xdg
 from my_utils.os import get_mime_type
+from my_utils.seq import flatmap, is_empty, star_foreach
 
 
 def get_list_of_mimeapps(
@@ -16,7 +19,6 @@ def get_list_of_mimeapps(
     xdg_config_dirs: list[str],
     xdg_data_dirs: list[str],
 ) -> tuple[tuple[str, ...], tuple[str, ...]]:
-    from my_utils.seq import flatmap
 
     return (
         (
@@ -60,9 +62,6 @@ def get_list_of_mimeapps(
 
 
 def get_default_desktops(mime_type: str, interactive=False):
-    from os import environ
-
-    from my_utils.dirs import Xdg
 
     config = ConfigParser()
     config.optionxform = (  # pyright: ignore [reportAttributeAccessIssue]
@@ -128,7 +127,7 @@ def get_default_desktops(mime_type: str, interactive=False):
                 if isfile(user_config):
                     config.read(user_config)
                     result = extract()
-                    if result != []:
+                    if not is_empty(result):
                         return result
             else:
                 return extract_from_system_config()
@@ -165,7 +164,7 @@ def get_default_desktops(mime_type: str, interactive=False):
                 info = ""
 
             desktop_names = parse_desktop_names()
-            if desktop_names != []:
+            if not is_empty(desktop_names):
                 return desktop_names if interactive else desktop_names[0]
             else:
                 return fallback_to_text_editor()
@@ -241,7 +240,6 @@ def open_with_default(default_desktop: str, file: str):
 
 
 def open_with(default_desktop: list[str], file: str):
-    from my_utils.seq import star_foreach
 
     star_foreach(
         lambda i, desktop: print(f"{i}. {desktop}"), enumerate(default_desktop)
