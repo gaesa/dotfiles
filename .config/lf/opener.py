@@ -276,8 +276,8 @@ def main():
             open_with(default_desktops, file)  # pyright: ignore [reportArgumentType]
         else:
             open_with_default(
-                default_desktops, file
-            )  # pyright: ignore [reportArgumentType]
+                default_desktops, file  # pyright: ignore [reportArgumentType]
+            )
 
 
 if __name__ == "__main__":
