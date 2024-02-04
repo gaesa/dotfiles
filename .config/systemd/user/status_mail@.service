@@ -3,4 +3,6 @@ Description=status email for %i
 
 [Service]
 Type=oneshot
+Environment=PYTHONPATH=%h/.local/share/python/lib
+Environment=PYTHONPYCACHEPREFIX=%C/python
 ExecStart=%h/.local/bin/systemd-mail %i
