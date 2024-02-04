@@ -3,10 +3,11 @@ from argparse import ArgumentParser
 from subprocess import run
 
 from my_utils.git import get_git_dir, get_tracked_files
+from my_utils.seq import is_empty
 
 
 def du(tracked_files: list[str], all: bool, apparent_size: bool):
-    if tracked_files == []:
+    if is_empty(tracked_files):
         print("No tracked files found here")
     else:
         run(
