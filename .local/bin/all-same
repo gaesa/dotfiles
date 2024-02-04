@@ -1,0 +1,42 @@
+#!/usr/bin/env python3
+from argparse import ArgumentParser
+from concurrent.futures import ProcessPoolExecutor
+from hashlib import sha256
+from pathlib import Path
+
+from my_utils.seq import all_equal, for_each
+
+
+def parse_args() -> tuple[list[str], bool]:
+    parser = ArgumentParser(description="check if all arguments are same")
+    parser.add_argument("args", type=str, nargs="+", help="the arguments to compare")
+    parser.add_argument(
+        "-f",
+        "--file",
+        action="store_true",
+        help="treat arguments as file paths and compare using checksum",
+    )
+    args = parser.parse_args()
+    return args.args, args.file
+
+
+def get_checksum(file: str | Path) -> str:
+    sha256_hash = sha256()
+    with open(file, "rb") as f:
+        for_each(sha256_hash.update, iter(lambda: f.read(4096), b""))
+    return sha256_hash.hexdigest()
+
+
+def get_checksums(files: list[str] | list[Path]) -> tuple[str, ...]:
+    with ProcessPoolExecutor() as executor:
+        return tuple(executor.map(get_checksum, files))
+
+
+def main():
+    args, is_file = parse_args()
+    results = get_checksums(args) if is_file else args
+    print(f"The arguments are {'identical' if all_equal(results) else 'different'}.")
+
+
+if __name__ == "__main__":
+    main()
