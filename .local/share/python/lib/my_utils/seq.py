@@ -20,6 +20,51 @@ def is_empty(sequenceOrCollection: Sequence[Any] | Collection[Any]):
     return len(sequenceOrCollection) == 0
 
 
+def some(predicate: Callable[[_T], bool], iterable: Iterable[_T]) -> bool:
+    """
+    Checks if at least one element in the iterable satisfies the given predicate.
+
+    Parameters:
+        predicate: The function used to test each element.
+        iterable: The iterable to be tested.
+
+    Returns:
+        True if at least one element satisfies the predicate, otherwise False.
+    """
+    return any(map(predicate, iterable))
+
+
+def every(predicate: Callable[[_T], bool], iterable: Iterable[_T]) -> bool:
+    """
+    Checks if all elements in the iterable satisfy the given predicate.
+
+    Parameters:
+        predicate: The function used to test each element.
+        iterable: The iterable to be tested.
+
+    Returns:
+        True if all elements satisfy the predicate, otherwise False.
+    """
+    return all(map(predicate, iterable))
+
+
+def find(predicate: Callable[[_T], bool], iterable: Iterable[_T]) -> _T:
+    """
+    Finds the first element in the iterable that satisfies the given predicate.
+
+    Parameters:
+        predicate: The function used to test each element.
+        iterable: The iterable to be searched.
+
+    Returns:
+        The first element that satisfies the predicate.
+
+    Raises:
+        StopIteration: If no values in the iterable satisfy the predicate.
+    """
+    return next(filter(predicate, iterable))
+
+
 def nwise(iterable: Iterable[_T], n: int = 2) -> Iterator[tuple[_T, ...]]:
     """
     Generate overlapping n-tuples from an iterable.
