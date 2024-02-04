@@ -1,7 +1,8 @@
+import logging
 from itertools import filterfalse
 from os import environ, getcwd
 from os.path import dirname, exists, isdir, islink, join
-from subprocess import run
+from subprocess import CalledProcessError, run
 
 
 def get_tracked_files(
@@ -10,12 +11,13 @@ def get_tracked_files(
     include_link: bool = True,
     check_existence: bool = True,
 ) -> list[str]:
-    process = run(
-        ["/usr/bin/git", "ls-tree", "--full-tree", "-r", "--name-only", tree_ish, path],
+    cmd = ["git", "ls-tree", "--full-tree", "-r", "--name-only", tree_ish, path]
+    p = run(
+        cmd,
         capture_output=True,
         text=True,
     )
-    if process.returncode == 0:
+    if p.returncode == 0:
         return (  # pyright: ignore [reportReturnType]
             (lambda f: list(f) if not isinstance(f, list) else f)
             if include_link
@@ -25,10 +27,12 @@ def get_tracked_files(
                 (lambda files: filter(exists, files))
                 if check_existence
                 else (lambda f: f)
-            )(process.stdout.splitlines())
+            )(p.stdout.splitlines())
         )
     else:
-        raise SystemExit(process.stderr.rstrip())
+        e = p.stderr.rstrip()
+        logging.error(e)
+        raise CalledProcessError(p.returncode, cmd, p.stdout.rstrip(), e)
 
 
 def get_tracked_dirs(path: str = ".", tree_ish: str = "HEAD") -> list[str]:
@@ -42,13 +46,19 @@ def get_tracked_dirs(path: str = ".", tree_ish: str = "HEAD") -> list[str]:
     )
 
 
-def get_git_dir():
+def get_git_dir() -> str:
+    """
+    Get the path to the git directory.
+
+    Raises:
+        FileNotFoundError: If a git repository cannot be found.
+    """
     if "GIT_DIR" in environ:
         return environ["GIT_DIR"]
     else:
         work_tree = get_work_tree_without_config()
         if work_tree is None:
-            raise SystemExit("Can't find a git repository")
+            raise FileNotFoundError("Unable to find a git repository.")
         else:
             return join(work_tree, ".git")
 
@@ -67,7 +77,13 @@ def get_work_tree_without_config(dir: str | None = None) -> str | None:
             return None
 
 
-def get_work_tree():
+def get_work_tree() -> str:
+    """
+    Get the path to the work tree for the git directory.
+
+    Raises:
+        FileNotFoundError: If a git repository cannot be found.
+    """
     work_tree = get_work_tree_without_config()
     if work_tree is None:
         from configparser import ConfigParser
@@ -79,6 +95,6 @@ def get_work_tree():
         if "worktree" in config_core:
             return config_core["worktree"]
         else:
-            raise SystemExit("Can't find a git repository")
+            raise FileNotFoundError("Unable to find a git repository.")
     else:
         return work_tree
