@@ -11,9 +11,11 @@ def nwise(iterable: Iterable[_T], n: int = 2) -> Iterator[tuple[_T, ...]]:
     """
     Generate overlapping n-tuples from an iterable.
 
-    :param iterable: An iterable from which to produce n-tuples.
-    :param n: The size of the n-tuple. Defaults to 2.
-    :return: An iterator over n-tuples of consecutive elements.
+    Parameters:
+        iterable: An iterable from which to produce n-tuples.
+        n: The size of the n-tuple. Defaults to 2.
+
+    Returns: An iterator over n-tuples of consecutive elements.
 
     Example:
         >>> list(nwise([1, 2, 3, 4], 2))
