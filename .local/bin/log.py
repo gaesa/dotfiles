@@ -16,7 +16,8 @@ def parse_args() -> tuple[str, bool, bool, int]:
             return ivalue
 
     parser = argparse.ArgumentParser(
-        description="Retrieve a specific log entry based on recency from a specified systemd unit"
+        description="Retrieve a specific log entry based on recency from a specified systemd "
+        "unit"
     )
     parser.add_argument("unit", type=str, help="Specify the unit")
     parser.add_argument(
@@ -116,7 +117,8 @@ def get_status_header(unit: str, user: bool):
 
 def log(unit: str, user: bool, status: bool, position: int = 0) -> str:
     return (
-        f"{get_status_header(unit, user)}\n{split_logs(unit, user)[recency_to_index(position)]}"
+        f"{get_status_header(unit, user)}\n"
+        f"{split_logs(unit, user)[recency_to_index(position)]}"
         if status
         else split_logs(unit, user)[recency_to_index(position)]
     )
