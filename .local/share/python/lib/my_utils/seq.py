@@ -48,6 +48,12 @@ def every(predicate: Callable[[_T], bool], iterable: Iterable[_T]) -> bool:
     return all(map(predicate, iterable))
 
 
+class NoSuchElementException(Exception):
+    """Exception to be raised when unable to find required elements."""
+
+    pass
+
+
 def find(predicate: Callable[[_T], bool], iterable: Iterable[_T]) -> _T:
     """
     Finds the first element in the iterable that satisfies the given predicate.
@@ -60,9 +66,14 @@ def find(predicate: Callable[[_T], bool], iterable: Iterable[_T]) -> _T:
         The first element that satisfies the predicate.
 
     Raises:
-        StopIteration: If no values in the iterable satisfy the predicate.
+        NoSuchElementException: If no values in the iterable satisfy the predicate.
     """
-    return next(filter(predicate, iterable))
+    try:
+        return next(filter(predicate, iterable))
+    except StopIteration as e:
+        raise NoSuchElementException(
+            "No values in the iterable satisfy the predicate"
+        ) from e
 
 
 def nwise(iterable: Iterable[_T], n: int = 2) -> Iterator[tuple[_T, ...]]:
@@ -232,7 +243,7 @@ def fallback(*args: Callable[[], Any]) -> Any:
 
     try:
         return find(is_not_empty_or_none, map(lambda arg: arg(), args))
-    except StopIteration:
+    except NoSuchElementException:
         return None
 
 
