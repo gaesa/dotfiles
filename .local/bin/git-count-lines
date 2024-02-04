@@ -5,12 +5,13 @@ from os.path import getsize, join
 from subprocess import run
 from sys import argv
 
+from more_itertools import ilen
 from my_utils.git import get_tracked_files
 
 
 def count_line(file: str) -> int:
     with open(file, "rb") as f:
-        return sum(1 for _ in f)
+        return ilen(f)
 
 
 def get_total_count(files: list[str]) -> tuple[int, str, dict[str, int]]:
