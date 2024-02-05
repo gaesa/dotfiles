@@ -273,17 +273,64 @@ def first(iterable: Iterable[_T], k: int = 1) -> Iterator[_T]:
 
 
 def skip_last(iterable: Iterable[_T], k: int = 1) -> Iterator[_T]:
+    """
+    Returns an iterator that skips the last `k` elements from the given iterable.
+
+    Parameters:
+        `iterable`: The input iterable.
+        `k`: Number of elements to skip from the end. Default is 1.
+
+    Returns:
+        `Iterator[_T]`: Iterator with the specified elements skipped.
+
+    Raises:
+        `ValueError`: If `k` is negative.
+
+    Example:
+        >>> list(skip_last([1, 2, 3, 4, 5], 2))
+        [1, 2, 3]
+    """
     if k < 0:
         raise ValueError("'k' must be greater than or equal to zero")
+    elif k == 0:
+        return iter(iterable)
     else:
-        return iter(tuple(iterable)[:-k])
+        it, window = iter(iterable), deque(maxlen=k)
+        try:
+            for_each(lambda _: window.append(next(it)), range(k))
+            for ele in it:
+                yield window.popleft()
+                window.append(ele)
+        except StopIteration:
+            return iter(())
 
 
 def last(iterable: Iterable[_T], k: int = 1) -> Iterator[_T]:
+    """
+    Returns an iterator containing the last `k` elements from the given iterable.
+
+    Parameters:
+        `iterable`: The input iterable.
+        `k`: Number of elements to include from the end. Default is 1.
+
+    Returns:
+        `Iterator[_T]`: Iterator with the specified last elements.
+
+    Raises:
+        `ValueError`: If `k` is negative.
+
+    Example:
+        >>> list(last([1, 2, 3, 4, 5], 2))
+        [4, 5]
+    """
     if k < 0:
         raise ValueError("'k' must be greater than or equal to zero")
+    elif k == 0:
+        return iter(())
     else:
-        return iter(tuple(iterable)[-k:])
+        window = deque(maxlen=k)
+        for_each(window.append, iterable)
+        return iter(window)
 
 
 def all_equal(iterable: Iterable[_T]) -> bool:
