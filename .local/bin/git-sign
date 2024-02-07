@@ -1,0 +1,48 @@
+#!/usr/bin/env python3
+from argparse import ArgumentParser, ArgumentTypeError
+from subprocess import run
+
+
+def positive_int(value: str) -> int:
+    int_value = int(value)
+    if int_value < 1:
+        raise ArgumentTypeError(f"{value} must be a positive integer")
+    else:
+        return int_value
+
+
+def parse_args() -> int:
+    parser = ArgumentParser(description="Sign the most recent commits using GPG")
+    parser.add_argument(
+        "count",
+        type=positive_int,
+        nargs="?",
+        default=1,
+        help="Number of most recent commits to sign (default: 1)",
+    )
+    return parser.parse_args().count
+
+
+def sign(count: int = 1):
+    if count < 1:
+        raise ValueError(f"count ({count}) must be a positive integer")
+    else:
+        run(
+            [
+                "git",
+                "rebase",
+                "--exec",
+                "git commit --amend --no-edit -S",
+                f"HEAD~{count}",
+            ],
+            check=True,
+        )
+
+
+def main():
+    count = parse_args()
+    sign(count)
+
+
+if __name__ == "__main__":
+    main()
