@@ -7,9 +7,9 @@ from os import chdir
 from os.path import basename, expanduser, isfile
 from subprocess import run
 from sys import argv
-from typing import Any, Callable
+from typing import Any, Callable, Iterable
 
-from my_utils.seq import Iterable, for_each, partition
+from my_utils.seq import for_each, partition
 
 
 def ensure_length(length: int, mes: str):
