@@ -11,7 +11,6 @@
 [init]
     defaultBranch = main
 [core]
-    pager = cat -- | less # fix annoying `✘ PIPE`
     # `--mouse` can fix scrolling, but it alse
     # disable the text selection with mouse unless
     # press shift

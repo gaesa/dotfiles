@@ -71,6 +71,9 @@ compdef "_files _directories" trash
 
 # Get files completion from specific path
 compdef "_files -W $HOME/.local/bin" srp
+
+# Git
+compdef g=git
 # }}}
 
 # Input {{{
