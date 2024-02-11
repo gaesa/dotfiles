@@ -31,7 +31,6 @@ alias pf="pkgfile"
 alias pm="pacman"
 alias ctl="systemctl"
 
-alias g="git"
 alias zp="z $HOME/dm/pj"
 alias cf="yadm"
 alias cfg="e $XDG_CONFIG_HOME/git/config"
