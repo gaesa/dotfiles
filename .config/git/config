@@ -1,13 +1,13 @@
 [credential]
     helper = /usr/lib/git-core/git-credential-libsecret
 [gpg]
-	format = ssh
+    format = ssh
 [gpg "ssh"]
-	allowedSignersFile = ~/.config/git/allowed_signers
+    allowedSignersFile = ~/.config/git/allowed_signers
 [user]
     name = gaesa
     email = 71256557+gaesa@users.noreply.github.com
-	signingkey = ~/.config/ssh/id_ed25519_github.pub
+    signingkey = ~/.config/ssh/id_ed25519_github.pub
 [init]
     defaultBranch = main
 [core]
