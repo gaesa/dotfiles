@@ -1,6 +1,8 @@
 #!/usr/bin/env python3
-# A stupid script that avoids repeatedly typing the script path
-# Depends On: fd, ripgrep, trash-cli, shellcheck, neovim
+"""
+A stupid script that avoids repeatedly typing the script path
+Depends On: fd, ripgrep, trash-cli, shellcheck, neovim
+"""
 
 from functools import wraps
 from os import chdir
