@@ -31,7 +31,7 @@ def get_cmd(CURRENT_FILE: str, XDG: tuple[Path, Path, Path]) -> list[str | Path]
         dir_lf = Path(prefix, *Path(XDG_CONFIG_HOME, "lf").parts[1:])
         dir_utils = Path(prefix, *Path(XDG_DATA_HOME, "python/lib/my_utils").parts[1:])
         dir_usr = Path(prefix, "usr")
-        return bind(None, (dir_lf, dir_utils, dir_usr))
+        return bind(None, (*((dir_lf,) if dir_lf.is_dir() else ()), dir_utils, dir_usr))
 
     XDG_CACHE_HOME, XDG_CONFIG_HOME, XDG_DATA_HOME = XDG
     preview = Path(XDG_CONFIG_HOME, "lf/preview.py")
