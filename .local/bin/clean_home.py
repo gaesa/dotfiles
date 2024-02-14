@@ -80,6 +80,7 @@ def main():
     user_config_dir = Xdg.user_config_dir()
     white_list = init_white_list(user_config_dir)
     white_list.update(get_extra_white_list(user_config_dir))
+    white_list.add(".identity")  # for systemd-homed
     cleanup(white_list)
 
 
