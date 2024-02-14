@@ -1,11 +1,12 @@
 #!/usr/bin/env python3
-from subprocess import run
 from pathlib import Path
+from subprocess import run
 from sys import argv
-from typing import Iterable, Literal
 from tempfile import gettempdir
-from my_utils.seq import flatmap
+from typing import Iterable, Literal
+
 from my_utils.dirs import Xdg
+from my_utils.seq import flatmap
 
 
 def get_cmd(CURRENT_FILE: str, XDG: tuple[Path, Path, Path]) -> list[str | Path]:
