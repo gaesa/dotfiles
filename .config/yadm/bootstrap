@@ -48,6 +48,7 @@ def install_common():
     packages = {
         "kitty-terminfo",
         "zoxide",
+        "direnv",
         "fzf",
         "zsh",
         "zsh-completions",
