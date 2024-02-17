@@ -69,7 +69,7 @@ def is_in_black_list(parent_process_name: str) -> bool:
     def get_default_shell() -> str:
         return str(slice_path(pwd.getpwnam(getuser()).pw_shell, slice(-1, None)))
 
-    if parent_process_name in {"configure", "make", "makepkg"}:
+    if parent_process_name in {"configure", "make", "makepkg", "git-mergetool"}:
         return True
     else:
         return (
