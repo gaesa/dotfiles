@@ -82,10 +82,10 @@ detect_ssh() {
     fi
 }
 
-if [[ $USER == "root" ]]; then
+if [[ "$USER" == "root" ]]; then
     source "$ZDOTDIR/.zshenv"
     unset -f detect_ssh
-    echo
+    printf "\n"
 elif detect_ssh; then
     source "$ZDOTDIR/.zshenv"
     unset -f detect_ssh
