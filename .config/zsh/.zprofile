@@ -105,6 +105,26 @@ dbus-update-activation-environment --systemd --all
 # }}}
 #env >/tmp/env-post.log
 
+# Source .zshenv after `sudo -i` or `ssh` {{{
+detect_ssh() {
+    output="$(loginctl session-status)"
+    session_id=${output%% *} # first word is the session_id
+    if [[ "$(loginctl show-session -P Service $session_id)" == "sshd" ]]; then
+        return 0
+    else
+        return 1
+    fi
+}
+
+if $(detect_ssh); then
+    source "$ZDOTDIR/.zshenv"
+    unset -f detect_ssh
+    printf "\n"
+else
+    unset -f detect_ssh
+fi
+# }}}
+
 # Start KDE from TTY {{{
 if [[ -z "$WAYLAND_DISPLAY" ]] && [[ "$(tty)" = "/dev/tty1" ]]; then
     # HACK
