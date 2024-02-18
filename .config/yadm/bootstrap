@@ -1,6 +1,9 @@
 #!/usr/bin/env python3
-# yadm clone --bare --single-branch --branch <branch> <url>
-# Make sure some programs are installed and force a checkout
+"""
+yadm clone --bare --single-branch --branch <branch> <url>
+Make sure some programs are installed and force a checkout
+"""
+
 from os import environ, getuid
 from os.path import expanduser, join
 from platform import system
