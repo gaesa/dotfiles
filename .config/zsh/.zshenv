@@ -55,6 +55,10 @@ typeset -A my_env=(
     'PYTHON_KEYRING_BACKEND' 'keyring.backends.null.Keyring'
     'PYENV_ROOT' "$XDG_DATA_HOME/pyenv"
     # }}}
+
+    # JS/TS {{{
+    'PNPM_HOME' "$XDG_DATA_HOME/pnpm"
+    # }}}
 )
 for key val in "${(@kv)my_env}"; do
     export "$key"="$val"
@@ -95,6 +99,7 @@ local added_paths=(
     '/usr/lib/jvm/default/bin' #java
     "$XDG_DATA_HOME/cargo/bin"
     "$PYENV_ROOT/shims"
+    "$XDG_DATA_HOME/pnpm"
 )
 add_paths added_paths
 unset -f add_paths && unset added_paths
