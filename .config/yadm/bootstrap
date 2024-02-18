@@ -59,17 +59,19 @@ def install_common():
         "zsh-syntax-highlighting",
         "zsh-theme-powerlevel10k-git",
         "zsh-autosuggestions",
+        "tree",
         "fd",
         "ripgrep",
         "trash-cli",
         "neovim",
         "python-pynvim",
+        "bat",
         "duf",
         "dust",
         "pkgfile",
-        "zsh-theme-powerlevel10k",
+        "htop-vim",
     }
-    run(["sudo", "pacman", "-Syu", "--needed", *packages], check=True)
+    run(["paru", "-Syu", "--needed", *packages], check=True)
 
 
 def set_worktree():
@@ -120,28 +122,39 @@ def update_submodule():
         return
 
 
-def install_for_main(sudo_cmd):
-    run([*sudo_cmd, "pacman", "-Syu", "--needed", "kitty"], check=True)
-
-    want_lf_installed = input(":: Install lf? [Y/n] ")
-    if want_lf_installed in {"y", "Y", ""}:
-        run(
-            [
-                *sudo_cmd,
-                "pacman",
-                "-Syu",
-                "--needed",
-                "lf",
-                "ffmpegthumbnailer",
-                "atool",
-            ],
-            check=True,
-        )
-        print()
-    elif want_lf_installed in {"n", "N"}:
-        return
-    else:
-        raise SystemExit("Invalid parameter")
+def install_for_main():
+    run(
+        [
+            "paru",
+            "-Syu",
+            "--needed",
+            "kitty",
+            "lf",
+            "ffmpegthumbnailer",
+            "python-pymediainfo",
+            "atool",
+            "emacs-wayland",
+            "koi",
+            "flameshot",
+            "pnpm",
+            "ts-node",
+            "ttf-nerd-fonts-symbols",
+            "ttf-nerd-fonts-symbols-mono",
+            "ttf-jetbrains-mono",
+            "noto-fonts",
+            "noto-fonts-cjk",
+            "noto-fonts-emoji",
+            "python-black",
+            "python-poetry",
+            "pyenv",
+            "python-pipx",
+            "mpv",
+            "mpv-mpris",
+            "mpd",
+            "ncmpcpp",
+        ],
+        check=True,
+    )
 
 
 def main():
@@ -161,7 +174,7 @@ def main():
     check_paru(sudo_cmd)
     install_common()
     if branch == "main":
-        install_for_main(sudo_cmd)
+        install_for_main()
     else:
         return
 
