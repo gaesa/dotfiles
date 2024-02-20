@@ -40,7 +40,7 @@ def main():
     }
 
     clean(path_time)
-    clean({paru_cache: "1months"}, ("-t", "d", "-d", "1"))
+    clean({paru_cache: "3days"}, ("-t", "d", "-d", "1"))
     run(["trash-empty", "-f", "7"], check=True)
 
 
