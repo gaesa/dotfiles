@@ -78,17 +78,17 @@ def get_default_desktops(mime_type: str, interactive=False):
     )
 
     def extract_using_desktop_scheme():
-        def parse_desktop_names():
+        def parse_desktop_names(raw_info: str):
             i = 0
             start = i + 21  # "\nDesktopEntryName : '"
             desktop_names: list[str] = []
-            while start < len(info):
-                if info[i:start] == "\nDesktopEntryName : '":
+            while start < len(raw_info):
+                if raw_info[i:start] == "\nDesktopEntryName : '":
                     i = start
-                    while info[i] != "'":
+                    while raw_info[i] != "'":
                         i += 1
                     end = i
-                    desktop_name = info[start:end] + ".desktop"
+                    desktop_name = raw_info[start:end] + ".desktop"
                     desktop_names.append(desktop_name)
                     i = end + 2
                 else:
@@ -97,16 +97,16 @@ def get_default_desktops(mime_type: str, interactive=False):
             return desktop_names
 
         if xdg_current_desktop[0] == "kde":
-            info = run(
+            raw_info = run(
                 ["ktraderclient5", "--mimetype", mime_type],
                 check=True,
                 capture_output=True,
                 text=True,
             ).stdout
-            if info.endswith("got 0 offers.\n"):
-                info = ""
 
-            desktop_names = parse_desktop_names()
+            desktop_names = parse_desktop_names(
+                "" if raw_info.endswith("got 0 offers.\n") else raw_info
+            )
             if not is_empty(desktop_names):
                 return desktop_names if interactive else desktop_names[0]
             else:
