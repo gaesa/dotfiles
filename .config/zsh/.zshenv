@@ -97,9 +97,9 @@ local added_paths=(
     '.' #current directory
     '/opt/bin' #add-on application software packages path
     '/usr/lib/jvm/default/bin' #java
-    "$XDG_DATA_HOME/cargo/bin"
+    "$CARGO_HOME/bin"
     "$PYENV_ROOT/shims"
-    "$XDG_DATA_HOME/pnpm"
+    "$PNPM_HOME"
 )
 add_paths added_paths
 unset -f add_paths && unset added_paths
