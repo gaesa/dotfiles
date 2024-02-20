@@ -62,7 +62,6 @@ def get_list_of_mimeapps(
 
 
 def get_default_desktops(mime_type: str, interactive=False):
-
     config = ConfigParser()
     config.optionxform = (  # pyright: ignore [reportAttributeAccessIssue]
         str  # to make keys case-sensitive
@@ -78,7 +77,44 @@ def get_default_desktops(mime_type: str, interactive=False):
         Xdg.site_data_dirs(),
     )
 
-    def extract_desktops():
+    def extract_using_desktop_scheme():
+        def parse_desktop_names():
+            i = 0
+            start = i + 21  # "\nDesktopEntryName : '"
+            desktop_names: list[str] = []
+            while start < len(info):
+                if info[i:start] == "\nDesktopEntryName : '":
+                    i = start
+                    while info[i] != "'":
+                        i += 1
+                    end = i
+                    desktop_name = info[start:end] + ".desktop"
+                    desktop_names.append(desktop_name)
+                    i = end + 2
+                else:
+                    i += 1
+                start = i + 21
+            return desktop_names
+
+        if xdg_current_desktop[0] == "kde":
+            info = run(
+                ["ktraderclient5", "--mimetype", mime_type],
+                check=True,
+                capture_output=True,
+                text=True,
+            ).stdout
+            if info.endswith("got 0 offers.\n"):
+                info = ""
+
+            desktop_names = parse_desktop_names()
+            if not is_empty(desktop_names):
+                return desktop_names if interactive else desktop_names[0]
+            else:
+                return extract_from_mimelist()
+        else:
+            return extract_from_mimelist()
+
+    def extract_from_mimelist():
         def make_get_desktop_name():
             def get_all(mime_section: SectionProxy, mime_type: str) -> list[str]:
                 desktop = mime_section[mime_type]
@@ -100,7 +136,7 @@ def get_default_desktops(mime_type: str, interactive=False):
                     if mime_type in mime_section:
                         return get_desktop_name(mime_section, mime_type)
             else:
-                return fallback_to_desktop()
+                return fallback_to_text_editor()
 
         def extract_from_user_config():
             def make_extract(
@@ -134,43 +170,6 @@ def get_default_desktops(mime_type: str, interactive=False):
 
         return extract_from_user_config()
 
-    def fallback_to_desktop():
-        def parse_desktop_names():
-            i = 0
-            start = i + 21  # "\nDesktopEntryName : '"
-            desktop_names: list[str] = []
-            while start < len(info):
-                if info[i:start] == "\nDesktopEntryName : '":
-                    i = start
-                    while info[i] != "'":
-                        i += 1
-                    end = i
-                    desktop_name = info[start:end] + ".desktop"
-                    desktop_names.append(desktop_name)
-                    i = end + 2
-                else:
-                    i += 1
-                start = i + 21
-            return desktop_names
-
-        if xdg_current_desktop[0] == "kde":
-            info = run(
-                ["ktraderclient5", "--mimetype", mime_type],
-                check=True,
-                capture_output=True,
-                text=True,
-            ).stdout
-            if info.endswith("got 0 offers.\n"):
-                info = ""
-
-            desktop_names = parse_desktop_names()
-            if not is_empty(desktop_names):
-                return desktop_names if interactive else desktop_names[0]
-            else:
-                return fallback_to_text_editor()
-        else:
-            return fallback_to_text_editor()
-
     def fallback_to_text_editor():
         if mime_type.startswith("text") or mime_type.endswith("x-empty"):
             return "nvim.desktop"
@@ -190,7 +189,7 @@ def get_default_desktops(mime_type: str, interactive=False):
             print()
             raise SystemExit(0)
 
-    return extract_desktops()
+    return extract_using_desktop_scheme()
 
 
 def open_with_default(default_desktop: str, file: str):
