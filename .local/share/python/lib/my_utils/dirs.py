@@ -6,12 +6,6 @@ from .fntools import cache_single_value, non_instantiable
 from .seq import fallback
 
 
-class CannotInstantiateError(Exception):
-    """Raised when trying to instantiate a non-instantiable class"""
-
-    pass
-
-
 def __init():
     CONFIG_HOME = ("XDG_CONFIG_HOME", ".config")
     DATA_HOME = ("XDG_DATA_HOME", ".local/share")
