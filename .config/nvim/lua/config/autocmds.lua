@@ -138,7 +138,7 @@ autocmd({ "BufRead" }, {
     callback = function(args)
         local function detect_compact_file()
             local lines = vim.api.nvim_buf_get_lines(0, 0, -1, false)
-            return #lines == 1 and #lines[1] > 200
+            return #lines == 1 and #lines[1] > 500
         end
         -- local function make_plugin_stop(plugin, stop)
         --     return function()
