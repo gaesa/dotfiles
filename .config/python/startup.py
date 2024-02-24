@@ -1,22 +1,18 @@
 import atexit
-from os import getenv
 import readline
-from os.path import join, expanduser
-from my_utils.seq import fallback
+from pathlib import Path
+
+from my_utils.dirs import Xdg
 
 
 def main():
-    histfile = join(
-        fallback(
-            lambda: getenv("XDG_STATE_HOME"), lambda: expanduser("~/.local/state")
-        ),
-        "python/history",
-    )
-
-    readline.read_history_file(histfile)
-    readline.set_history_length(1000)
-
-    atexit.register(readline.write_history_file, histfile)
+    histfile = Path(Xdg.user_state_path(), "python/history")
+    if histfile.is_file():
+        readline.read_history_file(histfile)
+        readline.set_history_length(1000)
+        atexit.register(readline.write_history_file, histfile)
+    else:
+        return
 
 
 if __name__ == "__main__":
