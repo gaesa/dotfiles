@@ -1,5 +1,5 @@
 # Enabling visualization
-visualizer_data_source = "~/.cache/runtime/mpd/fifo"
+visualizer_data_source = "~/.local/state/runtime/mpd/fifo"
 visualizer_output_name = "visualizer"
 visualizer_in_stereo = "yes"
 visualizer_type = "spectrum"
