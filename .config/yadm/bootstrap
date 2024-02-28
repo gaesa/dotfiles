@@ -5,10 +5,10 @@ Make sure some programs are installed and force a checkout
 """
 
 from os import environ, getuid
-from os.path import expanduser, join
+from pathlib import Path
 from platform import system
 from shutil import which
-from subprocess import DEVNULL, run
+from subprocess import run
 
 from distro import name
 
@@ -41,7 +41,7 @@ def check_paru(sudo_cmd):
             cwd=dir,
             check=True,
         )
-        run(["makepkg", "-si"], cwd=join(dir, "paru"), check=True)
+        run(["makepkg", "-si"], cwd=Path(dir, "paru"), check=True)
         print()
     else:
         return
@@ -75,7 +75,7 @@ def install_common():
 
 
 def set_worktree():
-    run(["yadm", "config", "core.worktree", expanduser("~")], check=True)
+    run(["yadm", "config", "core.worktree", Path.home()], check=True)
 
 
 def hide_untracked():
@@ -84,9 +84,7 @@ def hide_untracked():
 
 def validate_upstream_branch(branch):
     returncode = run(
-        ["yadm", "config", "--get", "remote.origin.fetch"],
-        stdout=DEVNULL,
-        stderr=DEVNULL,
+        ["yadm", "config", "--get", "remote.origin.fetch"], capture_output=True
     ).returncode
     if returncode != 0:
         run(["yadm", "remote", "set-branches", "origin", branch], check=True)
