@@ -155,6 +155,18 @@ def install_for_main():
     )
 
 
+def misc_for_main():
+    def create_symlink():
+        src = Path("~/.local/state/runtime").expanduser()
+        if not src.exists():
+            des = Path(f"/run/user/{getuid()}")
+            src.symlink_to(des, True)
+        else:
+            return
+
+    create_symlink()
+
+
 def main():
     check_os()
     set_worktree()
@@ -173,6 +185,7 @@ def main():
     install_common()
     if branch == "main":
         install_for_main()
+        misc_for_main()
     else:
         return
 
