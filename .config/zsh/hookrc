@@ -54,7 +54,7 @@ _git_pre_exec() {
     local remainder="${1#* }"
     local option="${remainder%% *}"
 
-    if [[ -v git_cmds["${cmd}"] && "${git_cmds[$cmd]}" == true ]] || [[ "${cmd}" == 'git-'* ]]; then
+    if [[ -n "${cmd}" && -v git_cmds["${cmd}"] && "${git_cmds[$cmd]}" == true ]] || [[ "${cmd}" == 'git-'* ]]; then
         if [[ "$(pwd)" == "${HOME}" ]]; then
             if [[ -v option ]]; then
                 if [[ -v options["${option}"] && "${options[$option]}" == true ]]; then
