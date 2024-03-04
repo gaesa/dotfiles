@@ -254,6 +254,25 @@ def cond(*args: tuple[Callable[[], bool], Callable[[], Any]]) -> Any:
     return object()
 
 
+def limit(iterable: Iterable[_T], k: int) -> Iterator[_T]:
+    """
+    Returns an iterator consisting of the elements of this iterable,
+    truncated to be no longer than `k` in length.
+    """
+    if k < 0:
+        raise ValueError("'k' must be greater than or equal to zero")
+    else:
+        it = iter(iterable)
+        upper_limit = (
+            len(iterable) if isinstance(iterable, Collection) else float("inf")
+        )
+        for _ in range(min(k, upper_limit)):  # pyright: ignore [reportArgumentType]
+            try:
+                yield next(it)
+            except StopIteration:
+                return
+
+
 def skip_first(iterable: Iterable[_T], k: int = 1) -> Iterator[_T]:
     """Like `seq[k:]` or `itertools.islice(seq, k, None)`, but more time-efficient"""
     if k < 0:
