@@ -7,17 +7,17 @@ _T = TypeVar("_T")
 _U = TypeVar("_U")
 
 
-def is_empty(sequence_or_collection: Sequence[Any] | Collection[Any]):
+def is_empty(collection: Collection[Any]):
     """
-    Checks if the given sequence or collection is empty.
+    Checks if the given collection is empty.
 
     Parameters:
-        sequenceOrCollection: The sequence or collection to be checked.
+        collection: The collection to be checked.
 
     Returns:
-        True if the sequence or collection is empty, otherwise False.
+        True if the collection is empty, otherwise False.
     """
-    return len(sequence_or_collection) == 0
+    return len(collection) == 0
 
 
 def some(predicate: Callable[[_T], bool], iterable: Iterable[_T]) -> bool:
