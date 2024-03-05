@@ -12,7 +12,7 @@ from my_utils.seq import natsort, partition
 
 def sorted_name_list(root, names) -> list[str]:
     dirs, files = partition(lambda name: isdir(join(root, name)), names)
-    return natsort(dirs) + natsort(files)
+    return sorted(dirs, key=natsort) + sorted(files, key=natsort)
 
 
 def save_name_list(name_list, name_record):
