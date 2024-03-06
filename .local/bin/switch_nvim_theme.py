@@ -29,7 +29,7 @@ def load_theme(color, socket_list: Iterator[Path]):
     for path in socket_list:
         try:
             with attach(
-                "socket", path=path  # pyright: ignore [reportGeneralTypeIssues]
+                "socket", path=path  # pyright: ignore [reportArgumentType]
             ) as nvim:
                 nvim.vars["mycolor"] = color
                 lua_exp = "require('plugins.colors')[1].init()"
