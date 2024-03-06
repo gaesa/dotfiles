@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
+from collections.abc import Iterator
 from pathlib import Path
 from sys import argv
-from typing import Iterator
 
 from my_utils.dirs import Xdg
 from pynvim import attach

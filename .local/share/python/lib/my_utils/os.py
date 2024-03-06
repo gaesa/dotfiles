@@ -1,7 +1,7 @@
+from collections.abc import Callable
 from os import chdir, getcwd, stat
 from pathlib import Path
 from stat import S_IMODE
-from typing import Callable
 
 
 def slice_path(

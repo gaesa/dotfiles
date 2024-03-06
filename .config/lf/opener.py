@@ -1,12 +1,12 @@
 #!/usr/bin/env python3
 # like `xdg-open`, but supports `open-with` and
 # running in terminal directly
+from collections.abc import Callable
 from configparser import ConfigParser, SectionProxy
 from os import environ
 from os.path import basename, expanduser, isfile, join
 from subprocess import DEVNULL, Popen, run
 from sys import argv
-from typing import Callable
 
 from my_utils.dirs import Xdg
 from my_utils.os import get_mime_type

@@ -4,12 +4,13 @@ A stupid script that avoids repeatedly typing the script path
 Depends On: fd, ripgrep, trash-cli, shellcheck, neovim
 """
 
+from collections.abc import Callable, Iterable
 from functools import wraps
 from os import chdir
 from os.path import basename, expanduser, isfile
 from subprocess import run
 from sys import argv
-from typing import Any, Callable, Iterable
+from typing import Any
 
 from my_utils.seq import for_each, partition
 

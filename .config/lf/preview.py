@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
+from collections.abc import Callable
 from os.path import getsize
 from subprocess import run
 from sys import argv
-from typing import Callable
 
 from my_utils.os import get_mime_type
 
