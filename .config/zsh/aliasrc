@@ -1,9 +1,9 @@
 #!/usr/bin/zsh
 alias sudo='sudo '
-alias ls='ls -F --color=auto --group-directories-first'
-alias la='ls -F -A --color=auto --group-directories-first'
-alias ll='ls -lhF --color=auto --group-directories-first'
-alias lla='ls -lhF -A --color=auto --group-directories-first'
+alias ls='lsd --group-directories-first'
+alias la='lsd -A --group-directories-first'
+alias ll='command ls -lhF --color=auto --group-directories-first'
+alias lla='command ls -lhF -A --color=auto --group-directories-first'
 alias ip='ip --color=auto'
 alias mkdir='mkdir -p'
 alias rm='rm -r'
