@@ -1,7 +1,7 @@
 from collections import deque
-from collections.abc import Sequence
+from collections.abc import Callable, Collection, Iterable, Iterator
 from itertools import chain, filterfalse, groupby, islice, tee
-from typing import Any, Callable, Collection, Iterable, Iterator, TypeVar
+from typing import Any, TypeVar
 
 _T = TypeVar("_T")
 _U = TypeVar("_U")
@@ -235,11 +235,7 @@ def fallback(*args: Callable[[], Any]) -> Any:
     """Returns the first non-empty or non-None element in an iterable, the laziness is implemented by function"""
 
     def is_not_empty_or_none(arg: Any):
-        return (
-            not is_empty(arg)
-            if isinstance(arg, (Sequence, Collection))
-            else arg is not None
-        )
+        return not is_empty(arg) if isinstance(arg, Collection) else arg is not None
 
     try:
         return find(is_not_empty_or_none, map(lambda arg: arg(), args))

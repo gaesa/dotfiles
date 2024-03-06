@@ -2,12 +2,12 @@
 import pwd
 import sys
 from argparse import ArgumentParser
+from collections.abc import Callable, Iterator
 from getpass import getuser
 from os import environ, getppid
 from pathlib import Path
 from shutil import which
 from subprocess import run
-from typing import Callable, Iterator
 
 try:
     from my_utils.seq import for_each
