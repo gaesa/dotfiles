@@ -13,10 +13,12 @@ def after(post_fn: Callable[[], Any], is_async: bool = False):
         if is_async:
 
             @wraps(orig_fn)
-            async def new_fn(  # pyright: ignore [reportGeneralTypeIssues]
+            async def new_fn(  # pyright: ignore [reportRedeclaration]
                 *args, **kwargs
             ) -> _T:
-                value = await orig_fn(*args, **kwargs)
+                value = await orig_fn(  # pyright: ignore [reportGeneralTypeIssues]
+                    *args, **kwargs
+                )
                 await post_fn()
                 return value
 
@@ -28,7 +30,7 @@ def after(post_fn: Callable[[], Any], is_async: bool = False):
                 post_fn()
                 return value
 
-        return new_fn
+        return new_fn  # pyright: ignore [reportReturnType]
 
     return decorator
 
@@ -38,11 +40,13 @@ def before(pre_fn: Callable[[], Any], is_async: bool = False):
         if is_async:
 
             @wraps(orig_fn)
-            async def new_fn(  # pyright: ignore [reportGeneralTypeIssues]
+            async def new_fn(  # pyright: ignore [reportRedeclaration]
                 *args, **kwargs
             ) -> _T:
                 await pre_fn()
-                return await orig_fn(*args, **kwargs)
+                return await orig_fn(  # pyright: ignore [reportGeneralTypeIssues]
+                    *args, **kwargs
+                )
 
         else:
 
@@ -51,7 +55,7 @@ def before(pre_fn: Callable[[], Any], is_async: bool = False):
                 pre_fn()
                 return orig_fn(*args, **kwargs)
 
-        return new_fn
+        return new_fn  # pyright: ignore [reportReturnType]
 
     return decorator
 
@@ -62,7 +66,7 @@ def filter_return(filter_fn: Callable[[_T], _U]):
         def new_fn(*args, **kwargs) -> _U:
             return filter_fn(orig_fn(*args, **kwargs))
 
-        return new_fn
+        return new_fn  # pyright: ignore [reportReturnType]
 
     return decorator
 
