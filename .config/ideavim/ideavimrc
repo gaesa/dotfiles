@@ -181,6 +181,9 @@ xnoremap gb :action CommentByBlockComment<CR>
 nnoremap <A-n> :action FindWordAtCaret<CR><Esc>
 nnoremap <A-p> :action FindPrevWordAtCaret<CR><Esc>
 
+" Parameter info
+imap <A-p> <Action>(ParameterInfo)
+
 " Expand selection
 xnoremap <CR> :action EditorSelectWord<CR>
 nnoremap <CR> :action EditorSelectWord<CR>
