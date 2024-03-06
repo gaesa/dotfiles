@@ -80,9 +80,10 @@ def cache_single_value(orig_fn: Callable[_P, _T]):
 def debug_fn(orig_fn: Callable[_P, _T], name: str = ""):
     @wraps(orig_fn)
     def new_fn(*args, **kwargs) -> _T:
-        print("args:", args, "kwargs:", kwargs) if name == "" else print(
-            f"name: {name}", f"args: {args}", f"kwargs: {kwargs}", sep="\n"
-        )
+        if name == "":
+            print("args:", args, "kwargs:", kwargs)
+        else:
+            print(f"name: {name}", f"args: {args}", f"kwargs: {kwargs}", sep="\n")
         value = orig_fn(*args, **kwargs)
         print("returned value:", value, end="\n" * 2)
         return value
