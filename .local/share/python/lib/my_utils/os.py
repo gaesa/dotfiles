@@ -12,7 +12,9 @@ def slice_path(
     return Path(*path.parts[slice_obj])
 
 
-def get_mime_type(file: str | Path) -> tuple[str, str]:
+def get_mime_type(
+    file: str | Path, exts_for_file_cmd: set[str] = {".ts", ".bak", ".txt", ".TXT"}
+) -> tuple[str, str]:
     # `xdg-mime query filetype` are better than
     # `file -Lb --mime_type` & `mimetypes.guess_type()`
     # although both of them are not perfect
@@ -27,7 +29,7 @@ def get_mime_type(file: str | Path) -> tuple[str, str]:
     file_args = ["file", "-Lb", "--mime-type", "--", file]
     args = (
         file_args
-        if extension in {".ts", ".bak", ".txt", ".TXT"}
+        if extension in exts_for_file_cmd
         else [
             "xdg-mime",
             "query",
@@ -54,7 +56,9 @@ def get_mime_type(file: str | Path) -> tuple[str, str]:
         return mime_type
 
 
-async def get_mime_type_async(file: str | Path) -> tuple[str, str]:
+async def get_mime_type_async(
+    file: str | Path, exts_for_file_cmd: set[str] = {".ts", ".bak", ".txt", ".TXT"}
+) -> tuple[str, str]:
     from .aio import run
 
     file = file if isinstance(file, Path) else Path(file)
@@ -63,7 +67,7 @@ async def get_mime_type_async(file: str | Path) -> tuple[str, str]:
     file_args = ["file", "-Lb", "--mime-type", "--", file]
     args = (
         file_args
-        if extension in {".ts", ".bak", ".txt", ".TXT"}
+        if extension in exts_for_file_cmd
         else [
             "xdg-mime",
             "query",
