@@ -1,14 +1,14 @@
 #!/usr/bin/env python3
+import sys
 from argparse import ArgumentParser
-from os import getenv, listdir, remove
+from os import getenv, listdir
 from os.path import isdir, join
 from shutil import move
 from subprocess import run
-from sys import stderr
+from tempfile import NamedTemporaryFile
+from typing import IO
 
 from my_utils.iters import natsort, partition
-
-from mktemp import mktemp  # pyright: ignore [reportMissingImports]
 
 
 def sorted_name_list(root: str, names: list[str]) -> list[str]:
@@ -16,17 +16,19 @@ def sorted_name_list(root: str, names: list[str]) -> list[str]:
     return sorted(dirs, key=natsort) + sorted(files, key=natsort)
 
 
-def save_name_list(name_list, name_record):
-    with open(name_record, "w") as f:
-        f.write("\n".join(name_list))
+def save_name_list(name_list: list[str], name_record: IO[str]):
+    name_record.write("\n".join(name_list))
+    name_record.seek(0)
 
 
-def rename_edit(name_record):
+def rename_edit(name_record: str):
     editor = getenv("EDITOR", "nvim")
     run([editor, name_record], check=True)
 
 
-def rename_move(dir, name_list, name_record, _symbols_deleted={" ", "-"}):
+def rename_move(
+    dir: str, name_list: list[str], name_record: str, _symbols_deleted={" ", "-"}
+):
     with open(name_record, "r") as f:
         lines = f.read().splitlines()
     if len(lines) == len(name_list):
@@ -41,7 +43,6 @@ def rename_move(dir, name_list, name_record, _symbols_deleted={" ", "-"}):
                     else:
                         move(src_path, join(dir, lines[i]))
     else:
-        remove(name_record)
         mes = (
             "WARNING: Some lines have been deleted, "
             "this operation is not allowed\n"
@@ -65,15 +66,15 @@ def main():
     for path in dirs:
         if isdir(path):
             name_list = sorted_name_list(path, listdir(path))
-            name_record = mktemp(prefix="rename")
-            save_name_list(name_list, name_record)
+            # `delete_on_close` is avaiable in python3.12
+            # it defaults to `True`, which is not desirable
+            with NamedTemporaryFile(mode="w+", prefix="rename-") as f:
+                save_name_list(name_list, f)
 
-            rename_edit(name_record)
-            rename_move(path, name_list, name_record)
-
-            remove(name_record)
+                rename_edit(f.name)
+                rename_move(path, name_list, f.name)
         else:
-            print(f"The given directory '{path}' doesn't exist", file=stderr)
+            print(f"The given directory '{path}' doesn't exist", file=sys.stderr)
 
 
 if __name__ == "__main__":
