@@ -54,7 +54,7 @@ async def get_mime_type_async(
 ) -> tuple[str, str]:
     from xdg import Mime
 
-    from .aio import run
+    from .aio import asyncio, run
 
     def xdg_mime(file: Path) -> tuple[str, str]:
         mime = Mime.get_type2(file)
@@ -76,9 +76,9 @@ async def get_mime_type_async(
             else:
                 return mime
         else:
-            return xdg_mime(file)
+            return await asyncio.to_thread(xdg_mime, file)
     else:
-        return xdg_mime(file)
+        return await asyncio.to_thread(xdg_mime, file)
 
 
 def get_file_id(
