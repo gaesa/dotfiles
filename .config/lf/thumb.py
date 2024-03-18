@@ -1,11 +1,36 @@
 #!/usr/bin/env python3
-# Inspired by the following program
-# https://raw.githubusercontent.com/duganchen/kitty-pistol-previewer/main/vidthumb
-from os import makedirs
-from os.path import expanduser, isdir, isfile, join
+"""
+See also:
+https://raw.githubusercontent.com/duganchen/kitty-pistol-previewer/main/vidthumb
+"""
+import hashlib
+from pathlib import Path
 from sys import argv
 
-from my_utils.os import json_read, json_write
+
+def get_file_id(
+    file_path: Path,
+    algorithm: str = "sha256",
+    chunk_size: int = 65536,
+    entire: bool = False,
+) -> str:
+    stats = file_path.stat()
+    mtime, size = stats.st_mtime_ns, stats.st_size
+    hash_obj = hashlib.new(algorithm, str(f"{mtime}{size}").encode())
+    with open(file_path, "rb") as f:
+        if entire:
+            chunks = iter(lambda: f.read(chunk_size), b"")
+            for chunk in chunks:
+                hash_obj.update(chunk)
+        else:
+            head_chunk = f.read(chunk_size)
+            hash_obj.update(head_chunk)
+
+            if size > chunk_size:
+                f.seek(-chunk_size, 2)  # 2 means "relative to the end of the file"
+                tail_chunk = f.read(chunk_size)
+                hash_obj.update(tail_chunk)
+    return hash_obj.hexdigest()
 
 
 def gen_thumb(media: str, thumb_path: str, mime_type: tuple[str, str] | None = None):
@@ -96,65 +121,28 @@ def gen_thumb(media: str, thumb_path: str, mime_type: tuple[str, str] | None = N
         exit_with_msg()
 
 
-def prepare(cache_dir, index):
-    def check_dir(dir):
-        if not isdir(dir):
-            makedirs(dir, mode=0o700)
-        else:
-            return
-
-    def check_index(index):
-        if not isfile(index):
-            json_write(index, [{}, {}])
-        else:
-            return
-
-    check_dir(cache_dir)
-    check_index(index)
+def prepare(cache_dir: Path):
+    cache_dir.mkdir(mode=0o700, parents=True, exist_ok=True)
 
 
-def upd_index_and_get_thumb(index, media):
-    def upd():
-        if need_upd_index:
-            media_to_thumb[media] = thumb
-            d[1][thumb] = media
-            json_write(index, d)
-        else:
-            return
-
-    d = json_read(index)
-    media_to_thumb = d[0]
-    if media in media_to_thumb:
-        need_upd_index = False
-        thumb = media_to_thumb[media]
-    else:
-        need_upd_index = True
-
-        from uuid import uuid4
-
-        thumb = str(uuid4()) + ".jpg"
-    upd()
-    return thumb
-
-
-def upd_thumb(media: str, thumb_path: str, mime_type: tuple[str, str] | None = None):
-    if isfile(thumb_path):
+def create_thumb_if_necessary(
+    media: str, thumb_path: Path, mime_type: tuple[str, str] | None = None
+):
+    if (thumb_path).is_file():
         return
     else:
-        gen_thumb(media, thumb_path, mime_type)
+        gen_thumb(media, str(thumb_path), mime_type)
 
 
 def main(file: str | None = None, mime_type: tuple[str, str] | None = None):
     file = argv[1] if file is None else file
 
-    index_root = expanduser("~/.cache/lf_thumb")
-    cache_root = join(index_root, "img")
-    index = join(index_root, "index.json")
-    prepare(cache_root, index)
+    cache_root = Path("~/.cache/lf_thumb").expanduser()
+    prepare(cache_root)
 
-    thumb = upd_index_and_get_thumb(index, file)
-    thumb_path = join(cache_root, thumb)
-    upd_thumb(file, thumb_path, mime_type)
+    thumb = f"{get_file_id(Path(file))}.jpg"
+    thumb_path = Path(cache_root, thumb)
+    create_thumb_if_necessary(file, thumb_path, mime_type)
 
     return thumb_path
 

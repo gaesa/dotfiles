@@ -1,10 +1,8 @@
 #!/usr/bin/env python3
 from datetime import datetime
-from os import listdir, remove
-from os.path import expanduser, getmtime, isdir, isfile, join
+from pathlib import Path
 
-from my_utils.os import json_read, json_write, run_chdir
-from my_utils.seq import filterfalse, for_each, is_empty
+from my_utils.stream import Stream
 
 
 def within_one_month(old_dt: datetime, new_dt: datetime) -> bool:
@@ -57,74 +55,23 @@ def within_one_month(old_dt: datetime, new_dt: datetime) -> bool:
         return False
 
 
-def clean_by_cache_mtime(cache_dir: str, index: str) -> None:
-    """Remove old cache files, and delete the corresponding JSON contents"""
-
-    @run_chdir(cache_dir)
-    def get_old_cache() -> tuple[str, ...]:
-        return tuple(
-            filter(
-                lambda file: not within_one_month(
-                    datetime.fromtimestamp(getmtime(file)), datetime.now()
-                ),
-                listdir(),
+def clean_by_cache_mtime(cache_dir: Path):
+    now = datetime.now()
+    (
+        Stream(cache_dir.iterdir())
+        .filterfalse(
+            lambda path: within_one_month(
+                datetime.fromtimestamp(path.stat().st_mtime), now
             )
         )
-
-    @run_chdir(cache_dir)
-    def pop_cache(caches: tuple[str, ...]) -> None:
-        def p(cache: str):
-            remove(cache)
-            media = cache_to_media.pop(cache)
-            media_to_cache.pop(media)
-
-        d: list[dict[str, str]] = json_read(index)
-        [media_to_cache, cache_to_media] = d
-        for_each(p, caches)
-        json_write(index, d)
-
-    caches = get_old_cache()
-    return None if is_empty(caches) else pop_cache(caches)
-
-
-def clean_by_index_file(cache_dir: str, index: str):
-    @run_chdir(cache_dir)
-    def handle_nonexistent_media():
-        def p(media):
-            cache = media_to_cache.pop(media)
-            cache_to_media.pop(cache)
-            remove(cache) if isfile(cache) else None
-
-        for_each(p, filterfalse(isfile, tuple(media_to_cache.keys())))
-
-    @run_chdir(cache_dir)
-    def handle_nonexistent_cache():
-        def p(cache):
-            media = cache_to_media.pop(cache)
-            media_to_cache.pop(media)
-
-        for_each(p, filterfalse(isfile, tuple(cache_to_media.keys())))
-
-    d: list[dict[str, str]] = json_read(index)
-    [media_to_cache, cache_to_media] = d
-    length = len(media_to_cache)
-
-    handle_nonexistent_media()
-    handle_nonexistent_cache()
-    if len(media_to_cache) != length:
-        json_write(index, d)
-    else:
-        return
+        .for_each(lambda path: path.unlink(missing_ok=True))
+    )
 
 
 def main():
-    index_root = expanduser("~/.cache/lf_thumb")
-    cache_root = join(index_root, "img")
-    index = join(index_root, "index.json")
-
-    if isdir(cache_root) and isfile(index):
-        clean_by_cache_mtime(cache_root, index)
-        clean_by_index_file(cache_root, index)
+    cache_root = Path("~/.cache/lf_thumb").expanduser()
+    if cache_root.is_dir():
+        clean_by_cache_mtime(cache_root)
     else:
         return
 
