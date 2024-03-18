@@ -2,8 +2,8 @@
 from pathlib import Path
 from subprocess import run
 
+from my_utils.iters import for_each
 from my_utils.os import get_permission, slice_path
-from my_utils.seq import for_each
 from xdg import BaseDirectory
 
 

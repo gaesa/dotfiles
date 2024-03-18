@@ -12,7 +12,8 @@ from subprocess import run
 from sys import argv
 from typing import Any
 
-from my_utils.seq import for_each, partition
+from my_utils.iters import for_each, partition
+from my_utils.stream import Stream
 
 
 def ensure_length(length: int, mes: str):
@@ -128,7 +129,7 @@ def fd(param_list: list[str], dir: str):
 @namespace.put
 @ensure_one_parameter
 def rg(param_list: list[str], dir: str):
-    opts, args = partition(lambda s: s.startswith("-"), param_list)
+    opts, args = partition(lambda s: s.startswith("-"), param_list, lazy=False)
     run(
         [
             "rg",
@@ -160,7 +161,7 @@ def rg(param_list: list[str], dir: str):
 @ensure_one_parameter
 def tr(param_list: list[str], dir: str):
     chdir(dir)
-    return for_each(
+    for_each(
         lambda file: run(["trash", file], check=True),
         param_list,
     )
@@ -201,7 +202,7 @@ def lc(param_list: list[str], dir: str):
 @ensure_one_parameter
 def shck(param_list: list[str], dir: str):
     chdir(dir)
-    return for_each(
+    for_each(
         lambda file: run(["shellcheck", "-x", "-o", "all", file]),
         param_list,
     )
@@ -213,15 +214,13 @@ def edit(param_list: list[str], dir: str):
 
     from my_utils.os import get_permission
 
-    import editor
+    import editor  # pyright: ignore [reportMissingImports]
 
     def update_permission(permission):
-        for_each(
+        Stream(param_list).filter(
+            lambda file: isfile(file) and get_permission(file) != permission,
+        ).for_each(
             lambda file: chmod(file, permission),
-            filter(
-                lambda file: isfile(file) and get_permission(file) != permission,
-                param_list,
-            ),
         )
 
     chdir(dir)

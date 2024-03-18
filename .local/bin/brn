@@ -6,12 +6,13 @@ from shutil import move
 from subprocess import run
 from sys import stderr
 
-from mktemp import mktemp
-from my_utils.seq import natsort, partition
+from my_utils.iters import natsort, partition
+
+from mktemp import mktemp  # pyright: ignore [reportMissingImports]
 
 
-def sorted_name_list(root, names) -> list[str]:
-    dirs, files = partition(lambda name: isdir(join(root, name)), names)
+def sorted_name_list(root: str, names: list[str]) -> list[str]:
+    dirs, files = partition(lambda name: isdir(join(root, name)), names, lazy=False)
     return sorted(dirs, key=natsort) + sorted(files, key=natsort)
 
 

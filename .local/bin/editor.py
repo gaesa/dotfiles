@@ -2,7 +2,7 @@
 from subprocess import run
 from sys import argv
 
-from my_utils.seq import is_empty
+from my_utils.iters import is_empty
 
 
 def edit(files: list[str] | tuple[str, ...] | None = None):

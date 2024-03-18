@@ -5,9 +5,11 @@ from __future__ import annotations
 import itertools
 import operator
 from collections import Counter, deque
-from collections.abc import Callable, Collection, Hashable, Iterable, Iterator, Sized
+from collections.abc import Callable, Hashable, Iterable, Iterator
 from functools import reduce
 from typing import Any, Generic, Literal, Protocol, TypeVar, final, overload
+
+from my_utils import iters
 
 T = TypeVar("T")
 U1 = TypeVar("U1")
@@ -213,16 +215,11 @@ class Stream(Generic[T], metaclass=__StrictClassMethodOfStream):
     def partition(
         self, predicate: Callable[[T], bool], lazy: bool = True
     ) -> tuple[Stream[T], Stream[T]] | tuple[list[T], list[T]]:
-        if lazy:
-            it1, it2 = itertools.tee(self.__iterable)
-            return Stream(filter(predicate, it1)), Stream(
-                itertools.filterfalse(predicate, it2)
-            )
-        else:
-            lst1, lst2 = [], []
-            for ele in self.__iterable:
-                (lst1 if predicate(ele) else lst2).append(ele)
-            return lst1, lst2
+        return (  # pyright: ignore [reportReturnType]
+            iters.partition(predicate, self.__iterable, lazy)
+            if not lazy
+            else tuple(map(Stream, iters.partition(predicate, self.__iterable, lazy)))
+        )
 
     @overload
     def zip(
@@ -276,7 +273,7 @@ class Stream(Generic[T], metaclass=__StrictClassMethodOfStream):
     @overload
     def flatten(self: Stream[frozenset[U1]]) -> Stream[U1]: ...
     @overload
-    def flatten(self: Stream[dict[U1, U2]]) -> Stream[U1]: ...
+    def flatten(self: Stream[dict[U1, Any]]) -> Stream[U1]: ...
     @overload
     def flatten(self: Stream[deque[U1]]) -> Stream[U1]: ...
     @overload
@@ -307,7 +304,7 @@ class Stream(Generic[T], metaclass=__StrictClassMethodOfStream):
         Returns:
             A new stream over the flattened and transformed stream.
         """
-        return Stream(itertools.chain.from_iterable(map(operation, self.__iterable)))
+        return Stream(iters.flatmap(operation, self.__iterable))
 
     def compress(self, selectors: Iterable[T]) -> Stream[T]:
         return Stream(itertools.compress(self.__iterable, selectors))
@@ -335,12 +332,7 @@ class Stream(Generic[T], metaclass=__StrictClassMethodOfStream):
 
     def drop_first(self, k: int = 1) -> Stream[T]:
         """Like `list[k:]` or `itertools.islice(seq, k, None)`, but more time-efficient"""
-        if k < 0:
-            raise ValueError("'k' must be greater than or equal to zero")
-        else:
-            it = iter(self.__iterable)
-            deque(zip(itertools.repeat(None, k), it), maxlen=0)
-            return Stream(it)
+        return Stream(iters.drop_first(self.__iterable, k))
 
     def take_first(self, k: int = 1) -> Stream[T]:
         """An alias for `itertools.islice(seq, k)`"""
@@ -534,16 +526,18 @@ class Stream(Generic[T], metaclass=__StrictClassMethodOfStream):
 
     def for_each(self, operation: Callable[[T], Any]) -> None:
         """Like `map`, but doesn't construct an iterator."""
-        for_each(operation, self.__iterable)
+        iters.for_each(operation, self.__iterable)
 
     def star_foreach(
         self, operation: Callable[[T, ...], Any]  # pyright: ignore
     ) -> None:
         """Like `starmap`, but doesn't construct an iterator."""
-        star_foreach(operation, self.__iterable)  # pyright: ignore [reportArgumentType]
+        iters.star_foreach(
+            operation, self.__iterable  # pyright: ignore [reportArgumentType]
+        )
 
     def count(self) -> int:
-        return count(self.__iterable)
+        return iters.count(self.__iterable)
 
     def is_empty(self) -> bool:
         """
@@ -552,7 +546,7 @@ class Stream(Generic[T], metaclass=__StrictClassMethodOfStream):
         Returns:
             True if the iterable is empty, otherwise False.
         """
-        return is_empty(self.__iterable)
+        return iters.is_empty(self.__iterable)
 
     def sum(self: Stream[int] | Stream[float], start: int = 0) -> T:
         return sum(self.__iterable, start)  # pyright: ignore [reportReturnType]
@@ -662,220 +656,3 @@ class Stream(Generic[T], metaclass=__StrictClassMethodOfStream):
 
     def collects(self, operation: Callable[[Iterable[T]], Iterable[U1]]) -> Stream[U1]:
         return Stream(operation(self.__iterable))
-
-
-def count(iterable: Iterable[T]) -> int:
-    counter = itertools.count()
-    deque(zip(iterable, counter), maxlen=0)
-    return next(counter)
-
-
-def is_empty(iterable: Iterable[Any]) -> bool:
-    return (len(iterable) if isinstance(iterable, Sized) else count(iterable)) == 0
-
-
-def startswith(collection: Collection[T], iterable: Iterable[T]) -> bool:
-    len_coll = len(collection)
-    if len_coll == 0:
-        return count(iterable) == 0
-    else:
-        if isinstance(iterable, Sized):  # assume sized iterable is not lazy
-            len_iter = len(iterable)
-            it = iterable
-        else:
-            it = tuple(iterable)
-            len_iter = len(it)
-        len_diff = len_coll - len_iter
-
-        if len_diff < 0:
-            return False
-        else:
-            return (
-                next(
-                    filter(
-                        lambda eles: eles[0] != eles[1],
-                        zip(collection, it),
-                    ),
-                    True,
-                )
-                is True
-            )
-
-
-def endswith(collection: Collection[T], iterable: Iterable[T]) -> bool:
-    len_coll = len(collection)
-    if len_coll == 0:
-        return count(iterable) == 0
-    else:
-        if isinstance(iterable, Sized):  # assume sized iterable is not lazy
-            len_iter = len(iterable)
-            it = iterable
-        else:
-            it = tuple(iterable)
-            len_iter = len(it)
-        len_diff = len_coll - len_iter
-
-        if len_diff < 0:
-            return False
-        else:
-            return (
-                Stream(collection)
-                .drop_first(len_diff)
-                .zip(it)
-                .all_match(lambda eles: eles[0] == eles[1])
-            )
-
-
-def for_each(operation: Callable[[T], Any], iterable: Iterable[T]) -> None:
-    """Like `map`, but doesn't construct an iterator."""
-    for ele in iterable:
-        operation(ele)
-
-
-def star_foreach(
-    operation: Callable[[T, ...], Any],  # pyright: ignore
-    iterable: Iterable[tuple[T, ...]],
-) -> None:
-    """Like `starmap`, but doesn't construct an iterator."""
-    for ele in iterable:
-        operation(*ele)
-
-
-def tree_map(
-    operation: Callable[[Any], Any],
-    iterable: Iterable[Any],
-    inner_iterable_type: Callable[[Any], Iterable[Any]] | None = None,
-) -> Iterator[Any]:
-    """
-    Applies a given operation to each element in a nested stream structure.
-    If an element is a sub-iterable, the function is called recursively on that element.
-
-    Parameters:
-        `operation`: A function to be applied to each element in the stream.
-        `inner_iterable_type`: A function to convert inner iterables, defaults to Stream.
-
-    Returns:
-        A Stream over the transformed stream.
-    """
-    if not isinstance(iterable, Iterable):
-        raise TypeError("'iterable' should be an instance of Iterable")
-    else:
-
-        def iteration(iterable: Iterable[Any]) -> Iterator[Any]:
-            return map(
-                (  # `convert_type` eagerly evaluates the inner `map` object
-                    lambda ele: (
-                        convert_type(iteration(ele))
-                        if isinstance(ele, iterable_type)
-                        else operation(ele)
-                    )
-                ),
-                iterable,
-            )
-
-        iterable_type = type(iterable)
-        convert_type = (
-            iterable_type if inner_iterable_type is None else inner_iterable_type
-        )
-        return iteration(iterable)
-
-
-def diff(a: Iterable[T], b: Iterable[T]) -> tuple[set[T], set[T], set[T]]:
-    """
-    Compute the differences and intersection between two iterables.
-
-    It is usually less efficient than using python's built-in set operations
-    (like `&` for intersection and `-` for difference), which are highly optimized.
-
-    Parameters:
-        `a (Iterable[T])`: The first iterable.
-        `b (Iterable[T])`: The second iterable.
-
-    Returns:
-        `tuple[set[T], set[T]]`: A tuple of two sets.
-        The first set is `a - b`, the second set is `b - a`, the third set is `a & b`.
-    """
-
-    a = a if isinstance(a, (set, frozenset, dict)) else frozenset(a)
-    b = b if isinstance(b, (set, frozenset, dict)) else frozenset(b)
-    a_minus_b, b_minus_a, intersection = set(), set(), set()
-
-    for ele in itertools.chain(a, b):
-        if ele in a:
-            if ele not in b:
-                a_minus_b.add(ele)
-            else:
-                intersection.add(ele)
-        else:
-            b_minus_a.add(ele)
-
-    return a_minus_b, b_minus_a, intersection
-
-
-def fallback(*args: Callable[[], Any]) -> Any:
-    """
-    Returns the first non-empty or non-None element in an iterable,
-    the laziness is implemented by function
-    """
-
-    def is_not_empty_or_none(arg: Any):
-        return (not is_empty(arg)) if isinstance(arg, Iterable) else arg is not None
-
-    try:
-        return Stream(args).map(lambda arg: arg()).find(is_not_empty_or_none)
-    except NoSuchElementException:
-        return None
-
-
-def cond(*args: tuple[Callable[[], bool], Callable[[], Any]]) -> Any:
-    for condition, action in args:
-        if condition():
-            return action()
-    return object()
-
-
-def begin(*args: Callable[[], Any]) -> Any:
-    """
-    Executes a sequence of functions in order and returns the result of the last function.
-
-    Each argument should be a function that takes no arguments.
-    Functions are called in the order they are given.
-    """
-    value = None
-    for arg in args:
-        value = arg()
-    return value
-
-
-def begin1(*args: Callable[[], Any]) -> Any:
-    """
-    Executes a sequence of functions in order and returns the result of the first function.
-
-    Each argument should be a function that takes no arguments.
-    Functions are called in the order they are given.
-    """
-    value = args[0]()
-    for_each(lambda arg: arg(), args[1:])
-    return value
-
-
-async def abegin(*args: Callable[[], Any]) -> Any:
-    """async version of `begin`"""
-    value = None
-    for arg in args:
-        value = await arg()
-    return value
-
-
-def natsort(s: str) -> tuple[int | str, ...]:
-    import re
-
-    split_list: list[str] = re.split(r"(\d+)", s)
-    split_list.pop(0) if split_list[0] == "" else None
-    split_list.pop(-1) if len(split_list) > 0 and split_list[-1] == "" else None
-    return tuple(
-        map(
-            lambda text: int(text) if text.isdigit() else text,
-            split_list,
-        )
-    )
