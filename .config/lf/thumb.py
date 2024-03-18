@@ -3,34 +3,10 @@
 See also:
 https://raw.githubusercontent.com/duganchen/kitty-pistol-previewer/main/vidthumb
 """
-import hashlib
 from pathlib import Path
 from sys import argv
 
-
-def get_file_id(
-    file_path: Path,
-    algorithm: str = "sha256",
-    chunk_size: int = 65536,
-    entire: bool = False,
-) -> str:
-    stats = file_path.stat()
-    mtime, size = stats.st_mtime_ns, stats.st_size
-    hash_obj = hashlib.new(algorithm, str(f"{mtime}{size}").encode())
-    with open(file_path, "rb") as f:
-        if entire:
-            chunks = iter(lambda: f.read(chunk_size), b"")
-            for chunk in chunks:
-                hash_obj.update(chunk)
-        else:
-            head_chunk = f.read(chunk_size)
-            hash_obj.update(head_chunk)
-
-            if size > chunk_size:
-                f.seek(-chunk_size, 2)  # 2 means "relative to the end of the file"
-                tail_chunk = f.read(chunk_size)
-                hash_obj.update(tail_chunk)
-    return hash_obj.hexdigest()
+from my_utils.os import get_file_id
 
 
 def gen_thumb(

@@ -81,18 +81,31 @@ async def get_mime_type_async(
         return xdg_mime(file)
 
 
-def json_read(file: str | Path):
-    import json
+def get_file_id(
+    file_path: Path,
+    algorithm: str = "sha256",
+    chunk_size: int = 65536,
+    entire: bool = False,
+) -> str:
+    import hashlib
 
-    with open(file, "r") as f:
-        return json.load(f)
+    stats = file_path.stat()
+    mtime, size = stats.st_mtime_ns, stats.st_size
+    hash_obj = hashlib.new(algorithm, str(f"{mtime}{size}").encode())
+    with open(file_path, "rb") as f:
+        if entire:
+            chunks = iter(lambda: f.read(chunk_size), b"")
+            for chunk in chunks:
+                hash_obj.update(chunk)
+        else:
+            head_chunk = f.read(chunk_size)
+            hash_obj.update(head_chunk)
 
-
-def json_write(file: str | Path, data: list | dict, mode: str = "w") -> None:
-    import json
-
-    with open(file, mode) as f:
-        json.dump(data, f, indent=2, ensure_ascii=False)
+            if size > chunk_size:
+                f.seek(-chunk_size, 2)  # 2 means "relative to the end of the file"
+                tail_chunk = f.read(chunk_size)
+                hash_obj.update(tail_chunk)
+    return hash_obj.hexdigest()
 
 
 def get_permission(file: str | Path):
