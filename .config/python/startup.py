@@ -2,11 +2,18 @@ import atexit
 import readline
 from pathlib import Path
 
-from my_utils.dirs import Xdg
+try:
+    from xdg import BaseDirectory
+except ModuleNotFoundError:
+    import sys
+
+    sys.path.append(f"/usr/lib/python3.11/site-packages")
+
+    from xdg import BaseDirectory
 
 
 def main():
-    histfile = Path(Xdg.user_state_path(), "python/history")
+    histfile = Path(BaseDirectory.xdg_state_home, "python/history")
     if histfile.is_file():
         readline.read_history_file(histfile)
         readline.set_history_length(1000)

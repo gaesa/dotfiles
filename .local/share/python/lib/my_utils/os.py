@@ -21,79 +21,64 @@ def get_mime_type(
     # problematic extensions:
     # `.md` (with CJK character), `.ts`,
     # `.m4a`, `.tm`, `.xopp`, `.org`, `.scm`
+
     from subprocess import run
+
+    from xdg import Mime
+
+    def xdg_mime(file: Path) -> tuple[str, str]:
+        mime = Mime.get_type2(file)
+        return mime.media, mime.subtype  # pyright: ignore [reportAttributeAccessIssue]
 
     file = file if isinstance(file, Path) else Path(file)
     extension = file.suffix
 
-    file_args = ["file", "-Lb", "--mime-type", "--", file]
-    args = (
-        file_args
-        if extension in exts_for_file_cmd
-        else [
-            "xdg-mime",
-            "query",
-            "filetype",
-            f"./{file}" if str(file).startswith("-") else file,
-        ]
-    )
-
-    string = run(args, capture_output=True, text=True, check=True).stdout.rstrip()
-    mime_type = tuple(string.split("/", 1))
-    if len(mime_type) != 2:
-        if args[0] == "xdg-mime":
-            new_str = run(
-                file_args, capture_output=True, text=True, check=True
-            ).stdout.rstrip()
-            new_type = tuple(new_str.split("/", 1))
-            if len(new_type) != 2:
-                raise ValueError(f"{file_args} returns: '{new_str}'")
+    if extension in exts_for_file_cmd:
+        file_args = ["file", "-Lb", "--mime-type", "--", file]
+        p = run(file_args, capture_output=True, text=True)
+        if p.returncode == 0:
+            raw_out = p.stdout.rstrip()
+            mime = tuple(raw_out.split("/", 1))
+            if len(mime) != 2:
+                raise ValueError(f"{file_args} returns: '{raw_out}'")
             else:
-                return new_type
+                return mime
         else:
-            raise ValueError(f"{file_args} returns: '{string}'")
+            return xdg_mime(file)
     else:
-        return mime_type
+        return xdg_mime(file)
 
 
 async def get_mime_type_async(
     file: str | Path, exts_for_file_cmd: set[str] = {".ts", ".bak", ".txt", ".TXT"}
 ) -> tuple[str, str]:
+    from xdg import Mime
+
     from .aio import run
+
+    def xdg_mime(file: Path) -> tuple[str, str]:
+        mime = Mime.get_type2(file)
+        return mime.media, mime.subtype  # pyright: ignore [reportAttributeAccessIssue]
 
     file = file if isinstance(file, Path) else Path(file)
     extension = file.suffix
 
-    file_args = ["file", "-Lb", "--mime-type", "--", file]
-    args = (
-        file_args
-        if extension in exts_for_file_cmd
-        else [
-            "xdg-mime",
-            "query",
-            "filetype",
-            f"./{file}" if str(file).startswith("-") else file,
-        ]
-    )
-
-    string: str = (
-        await run(args, text=True, check=True)
-    ).stdout.rstrip()  # pyright: ignore [reportAttributeAccessIssue, reportOptionalMemberAccess]
-    mime_type = tuple(string.split("/", 1))
-    if len(mime_type) != 2:
-        if args[0] == "xdg-mime":
-            new_str: str = (
-                await run(file_args, text=True, check=True)
-            ).stdout.rstrip()  # pyright: ignore [reportAttributeAccessIssue, reportOptionalMemberAccess]
-            new_type = tuple(new_str.split("/", 1))
-            if len(new_type) != 2:
-                raise ValueError(f"{file_args} returns: '{new_str}'")
+    if extension in exts_for_file_cmd:
+        file_args = ["file", "-Lb", "--mime-type", "--", file]
+        p = await run(file_args, text=True)
+        raw_out = (
+            p.stdout.rstrip()  # pyright: ignore [reportAttributeAccessIssue, reportOptionalMemberAccess]
+        )
+        if p.returncode == 0:
+            mime = tuple(raw_out.split("/", 1))
+            if len(mime) != 2:
+                raise ValueError(f"{file_args} returns: '{raw_out}'")
             else:
-                return new_type
+                return mime
         else:
-            raise ValueError(f"{file_args} returns: '{string}'")
+            return xdg_mime(file)
     else:
-        return mime_type
+        return xdg_mime(file)
 
 
 def json_read(file: str | Path):

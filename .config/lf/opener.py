@@ -8,9 +8,9 @@ from os.path import basename, expanduser, isfile, join
 from subprocess import DEVNULL, Popen, run
 from sys import argv
 
-from my_utils.dirs import Xdg
 from my_utils.os import get_mime_type
 from my_utils.seq import flatmap, is_empty, star_foreach
+from xdg import BaseDirectory
 
 
 def get_list_of_mimeapps(
@@ -71,10 +71,10 @@ def get_default_desktops(mime_type: str, interactive=False):
         map(str.lower, environ["XDG_CURRENT_DESKTOP"].split(":"))
     )
     user_configs, system_configs = get_list_of_mimeapps(
-        Xdg.user_config_dir(),
+        BaseDirectory.xdg_config_home,
         xdg_current_desktop,
-        Xdg.site_config_dirs(),
-        Xdg.site_data_dirs(),
+        BaseDirectory.xdg_config_dirs,
+        BaseDirectory.xdg_data_dirs,
     )
 
     def extract_using_desktop_scheme():

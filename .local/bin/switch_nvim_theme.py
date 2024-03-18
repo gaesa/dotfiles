@@ -3,8 +3,8 @@ from collections.abc import Iterator
 from pathlib import Path
 from sys import argv
 
-from my_utils.dirs import Xdg
 from pynvim import attach
+from xdg import BaseDirectory
 
 
 def get_nvim_socket_list(XDG_RUNTIME_DIR: Path) -> Iterator[Path]:
@@ -43,7 +43,7 @@ def load_theme(color, socket_list: Iterator[Path]):
 
 
 def main():
-    XDG_RUNTIME_DIR = Xdg.user_runtime_path()
+    XDG_RUNTIME_DIR = Path(BaseDirectory.get_runtime_dir())
     socket_list = get_nvim_socket_list(XDG_RUNTIME_DIR)
 
     if len(argv) < 2:

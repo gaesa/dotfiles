@@ -5,8 +5,8 @@ from sys import argv
 from tempfile import gettempdir
 from typing import Iterable, Literal
 
-from my_utils.dirs import Xdg
 from my_utils.seq import flatmap
+from xdg import BaseDirectory
 
 
 def get_cmd(CURRENT_FILE: str, XDG: tuple[Path, Path, Path]) -> list[str | Path]:
@@ -64,9 +64,9 @@ def get_cmd(CURRENT_FILE: str, XDG: tuple[Path, Path, Path]) -> list[str | Path]
 
 
 def main():
-    XDG_DATA_HOME = Xdg.user_data_path()
-    XDG_CACHE_HOME = Xdg.user_cache_path()
-    XDG_CONFIG_HOME = Xdg.user_config_path()
+    XDG_DATA_HOME = Path(BaseDirectory.xdg_data_home)
+    XDG_CACHE_HOME = Path(BaseDirectory.xdg_cache_home)
+    XDG_CONFIG_HOME = Path(BaseDirectory.xdg_config_home)
     TMPDIR = gettempdir()
 
     with open(Path(TMPDIR, "lf.log"), "w") as log_file:
