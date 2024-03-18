@@ -2,9 +2,13 @@
 from pathlib import Path
 from subprocess import run
 
-from my_utils.dirs import Xdg
 from my_utils.os import get_permission, slice_path
 from my_utils.seq import for_each
+from xdg import BaseDirectory
+
+
+class Config:
+    home = Path.home()
 
 
 def set_permission(file: Path, pre: int, post: int):
@@ -23,7 +27,7 @@ def trash(file: str | Path):
     run(["trash", file], check=True)
 
 
-@set_permission(Xdg.home(), 0o710, 0o510)
+@set_permission(Config.home, 0o710, 0o510)
 def cleanup(white_list: set[str]):
     for_each(
         trash,
@@ -33,7 +37,7 @@ def cleanup(white_list: set[str]):
             and (not file.is_mount())
             and (not is_bind_mount(file))
             and (file.name not in white_list),
-            Path.iterdir(Xdg.home()),
+            Path.iterdir(Config.home),
         ),
     )
 
@@ -69,15 +73,15 @@ def init_white_list(user_config_dir: str | Path) -> set[str]:
                     user_config_dir,
                     slice(-1, None),
                 ),
-                slice_path(Xdg.user_cache_dir(), slice(-1, None)),
-                slice_path(Xdg.user_data_dir(), slice(-2, -1)),
+                slice_path(BaseDirectory.xdg_cache_home, slice(-1, None)),
+                slice_path(BaseDirectory.xdg_data_home, slice(-2, -1)),
             ),
         )
     )
 
 
 def main():
-    user_config_dir = Xdg.user_config_dir()
+    user_config_dir = BaseDirectory.xdg_config_home
     white_list = init_white_list(user_config_dir)
     white_list.update(get_extra_white_list(user_config_dir))
     white_list.add(".identity")  # for systemd-homed
