@@ -28,8 +28,8 @@ def serialize(payload: bytes | str = b"", **cmd: dict[str, str]) -> bytes:
 def main():
     # `sys.stdout` doesn't work as expected here, we have to access the low-level device `/dev/tty` directly.
     with open("/dev/tty", "w") as tty:
-        tty.buffer.write(
-            serialize(a="d", d="A")  # pyright: ignore [reportGeneralTypeIssues]
+        tty.buffer.write(  # pyright: ignore [reportCallIssue]
+            serialize(a="d", d="A")  # pyright: ignore [reportArgumentType]
         )
 
 
