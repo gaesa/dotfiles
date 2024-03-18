@@ -1,15 +1,16 @@
 #!/usr/bin/env python3
+import sys
 from collections.abc import Callable
-from os.path import getsize
+from os import getenv
+from pathlib import Path
 from subprocess import run
-from sys import argv
 
 from my_utils.os import get_mime_type
 
 import thumb
 
 
-def audio_has_cover(audio):
+def audio_has_cover(audio: str | Path):
     from pymediainfo import MediaInfo
 
     media_info = MediaInfo.parse(audio)
@@ -17,27 +18,30 @@ def audio_has_cover(audio):
     return "cover" in d
 
 
-def print_image(image: str):
-    if len(argv) > 2:
-        w, h, x, y = argv[2], argv[3], argv[4], argv[5]
+def print_image(image: str | Path):
+    if len(sys.argv) > 2:
+        w, h, x, y = sys.argv[2:6]
         place = ("--place", f"{w}x{h}@{x}x{y}")
     else:
         place = ()
-    with open("/dev/tty", "w") as tty:
-        run(
-            [
-                "kitten",
-                "icat",
-                "--stdin",
-                "no",
-                "--transfer-mode",
-                "memory",
-                *place,
-                image,
-            ],
-            check=True,
-            stdout=tty,
-        )
+    if getenv("SKIP_IMAGE", "F") == "T":
+        return
+    else:
+        with open("/dev/tty", "w") as tty:
+            run(
+                [
+                    "kitten",
+                    "icat",
+                    "--stdin",
+                    "no",
+                    "--transfer-mode",
+                    "memory",
+                    *place,
+                    image,
+                ],
+                check=True,
+                stdout=tty,
+            )
 
 
 class Case:
@@ -62,7 +66,7 @@ class Case:
         return None if self.__default is None else self.__default(x)
 
 
-def fallback_to_non_image(file: str, mime_type: tuple[str, str]):
+def fallback_to_non_image(file: Path, mime_type: tuple[str, str]):
     def make_archive_case():
         case.append(
             {
@@ -157,7 +161,7 @@ def fallback_to_non_image(file: str, mime_type: tuple[str, str]):
     case.run(mime_type)
 
 
-def preview_text(file):
+def preview_text(file: str | Path):
     # `lf` can't show output for a line of long string
     # See: https://github.com/gokcehan/lf/pull/1447
     line_length_limit = 200
@@ -173,7 +177,7 @@ def preview_text(file):
         print(s)
 
 
-def fallback_to_file_cmd(file):
+def fallback_to_file_cmd(file: str | Path):
     print("----- File Type Classification -----")
     res = run(  # to correct the strange print order
         ["file", "-Lb", file], check=True, capture_output=True, text=True
@@ -181,17 +185,17 @@ def fallback_to_file_cmd(file):
     print(res, end="")
 
 
-def print_pure_image(file: str):
+def print_pure_image(file: str | Path):
     print_image(file)
     raise SystemExit(1)
 
 
-def print_cache_image(file: str, mime_type: tuple[str, str]):
+def print_cache_image(file: Path, mime_type: tuple[str, str]):
     print_image(thumb.main(file=file, mime_type=mime_type))
     raise SystemExit(1)
 
 
-def fallback(file: str, mime_type: tuple[str, str]):
+def fallback(file: Path, mime_type: tuple[str, str]):
     mime_type_main = mime_type[0]
     if mime_type_main == "video":
         print_cache_image(file, mime_type)
@@ -209,9 +213,9 @@ def fallback(file: str, mime_type: tuple[str, str]):
 
 
 def main():
-    file = argv[1]
+    file = Path(sys.argv[1])
 
-    if getsize(file) == 0:
+    if file.stat().st_size == 0:
         fallback_to_file_cmd(file)
     else:
         mime_type = get_mime_type(file)

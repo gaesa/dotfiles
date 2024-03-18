@@ -33,7 +33,9 @@ def get_file_id(
     return hash_obj.hexdigest()
 
 
-def gen_thumb(media: str, thumb_path: str, mime_type: tuple[str, str] | None = None):
+def gen_thumb(
+    media: str | Path, thumb_path: str | Path, mime_type: tuple[str, str] | None = None
+):
     from subprocess import DEVNULL, run
 
     def gen_for_video():
@@ -75,7 +77,7 @@ def gen_thumb(media: str, thumb_path: str, mime_type: tuple[str, str] | None = N
                 "-singlefile",
                 "-jpeg",
                 media,
-                thumb_path[:-4],  # remove `.jpg`
+                str(thumb_path).removesuffix(".jpg"),
             ],
             check=True,
             stdout=DEVNULL,
@@ -126,21 +128,21 @@ def prepare(cache_dir: Path):
 
 
 def create_thumb_if_necessary(
-    media: str, thumb_path: Path, mime_type: tuple[str, str] | None = None
+    media: Path, thumb_path: Path, mime_type: tuple[str, str] | None = None
 ):
     if (thumb_path).is_file():
         return
     else:
-        gen_thumb(media, str(thumb_path), mime_type)
+        gen_thumb(media, thumb_path, mime_type)
 
 
-def main(file: str | None = None, mime_type: tuple[str, str] | None = None):
-    file = argv[1] if file is None else file
+def main(file: Path | None = None, mime_type: tuple[str, str] | None = None):
+    file = Path(argv[1]) if file is None else file
 
     cache_root = Path("~/.cache/lf_thumb").expanduser()
     prepare(cache_root)
 
-    thumb = f"{get_file_id(Path(file))}.jpg"
+    thumb = f"{get_file_id(file)}.jpg"
     thumb_path = Path(cache_root, thumb)
     create_thumb_if_necessary(file, thumb_path, mime_type)
 
