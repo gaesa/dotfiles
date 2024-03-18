@@ -4,8 +4,8 @@ from argparse import ArgumentParser
 from pathlib import Path
 from subprocess import run
 
+from my_utils.iters import is_empty, natsort
 from my_utils.os import get_mime_type_async
-from my_utils.seq import is_empty, natsort
 
 
 def gen_playlist_file(file: str | Path, playlist: list[str]) -> None:

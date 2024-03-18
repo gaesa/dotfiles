@@ -3,7 +3,8 @@ from os.path import splitext
 from subprocess import DEVNULL, Popen, run
 from sys import argv
 
-from my_utils.seq import for_each, is_empty, partition, skip_first
+from my_utils.iters import drop_first, is_empty, partition
+from my_utils.stream import Stream
 
 
 def open_with_nvim(files: list[str]):
@@ -32,7 +33,7 @@ def open_with_emacs(files: list[str], allow_empty: bool = False):
                 sexp += (
                     f'(split-window-right) (other-window 1) (find-file "{files[1]}") '
                 )
-                for file in skip_first(files, 2):
+                for file in drop_first(files, 2):
                     sexp += (
                         f'(split-window-below) (other-window 1) (find-file "{file}") '
                     )
@@ -51,9 +52,8 @@ def open_with_emacs(files: list[str], allow_empty: bool = False):
 
 
 def wait_editor(*editors: Popen[bytes] | None):
-    for_each(
+    Stream(editors).filter(lambda editor: editor is not None).for_each(
         lambda editor: editor.wait(),  # pyright: ignore [reportOptionalMemberAccess]
-        filter(lambda editor: editor is not None, editors),
     )
 
 
@@ -74,7 +74,7 @@ def edit(files: list[str] | tuple[str, ...] | None = None):
     if is_empty(files):
         run(["/usr/bin/nvim"])
     else:
-        emacs_files, nvim_files = partition(split_cond, files)
+        emacs_files, nvim_files = partition(split_cond, files, lazy=False)
         nvim, emacs = open_with(
             nvim_files, emacs_files  # pyright: ignore [reportArgumentType]
         )

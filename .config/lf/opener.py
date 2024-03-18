@@ -8,8 +8,8 @@ from os.path import basename, expanduser, isfile, join
 from subprocess import DEVNULL, Popen, run
 from sys import argv
 
+from my_utils.iters import flatmap, is_empty, star_foreach
 from my_utils.os import get_mime_type
-from my_utils.seq import flatmap, is_empty, star_foreach
 from xdg import BaseDirectory
 
 
@@ -239,7 +239,6 @@ def open_with_default(default_desktop: str, file: str):
 
 
 def open_with(default_desktop: list[str], file: str):
-
     star_foreach(
         lambda i, desktop: print(f"{i}. {desktop}"), enumerate(default_desktop)
     )

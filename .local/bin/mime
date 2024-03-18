@@ -2,6 +2,6 @@
 from sys import argv
 
 from my_utils.os import get_mime_type
-from my_utils.seq import skip_first
+from my_utils.stream import Stream
 
-print("/".join(get_mime_type(" ".join(skip_first(argv, 1)))))
+print("/".join(get_mime_type(Stream(argv).drop_first().join_to_str(" "))))

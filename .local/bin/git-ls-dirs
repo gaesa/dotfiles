@@ -1,9 +1,8 @@
 #!/usr/bin/env python3
 from argparse import Action, ArgumentParser
 
-from more_itertools import unique_everseen
 from my_utils.git import get_tracked_dirs
-from my_utils.seq import flatmap, for_each
+from my_utils.stream import Stream
 
 
 def parse_args() -> tuple[str, list[str]]:
@@ -36,14 +35,16 @@ def parse_args() -> tuple[str, list[str]]:
         help="The name of a tree-ish object (default: HEAD)",
     )
     args = parser.parse_args()
-    return args.path, list(unique_everseen(args.tree_ish))
+    return args.path, Stream(args.tree_ish).unique_everseen().to_list()
 
 
 def main():
     path, tree_ish = parse_args()
-    for_each(
-        print,
-        unique_everseen(flatmap(lambda obj: get_tracked_dirs(path, obj), tree_ish)),
+    (
+        Stream(tree_ish)
+        .flatmap(lambda obj: get_tracked_dirs(path, obj))
+        .unique_everseen()
+        .for_each(print)
     )
 
 

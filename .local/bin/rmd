@@ -4,7 +4,7 @@ from pathlib import Path
 from shutil import rmtree
 from sys import stderr
 
-from my_utils.seq import for_each
+from my_utils.iters import for_each
 
 
 def parse_args():

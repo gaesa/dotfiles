@@ -4,7 +4,8 @@ from concurrent.futures import ProcessPoolExecutor
 from hashlib import sha256
 from pathlib import Path
 
-from my_utils.seq import all_equal, for_each
+from my_utils.iters import for_each
+from my_utils.stream import Stream
 
 
 def parse_args() -> tuple[list[str], bool]:
@@ -35,7 +36,9 @@ def get_checksums(files: list[str] | list[Path]) -> tuple[str, ...]:
 def main():
     args, is_file = parse_args()
     results = get_checksums(args) if is_file else args
-    print(f"The arguments are {'identical' if all_equal(results) else 'different'}.")
+    print(
+        f"The arguments are {'identical' if Stream(results).all_equal() else 'different'}."
+    )
 
 
 if __name__ == "__main__":

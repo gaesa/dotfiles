@@ -5,7 +5,7 @@ from sys import argv
 from tempfile import gettempdir
 from typing import Iterable, Literal
 
-from my_utils.seq import flatmap
+from my_utils.iters import flatmap
 from xdg import BaseDirectory
 
 

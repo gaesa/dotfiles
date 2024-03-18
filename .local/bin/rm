@@ -10,10 +10,10 @@ from shutil import which
 from subprocess import run
 
 try:
-    from my_utils.seq import for_each
+    from my_utils.iters import for_each
 except ModuleNotFoundError:
     sys.path.append(str(Path("~/.local/share/python/lib").expanduser()))
-    from my_utils.seq import for_each
+    from my_utils.iters import for_each
 
 from my_utils.os import slice_path
 
