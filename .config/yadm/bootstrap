@@ -65,6 +65,7 @@ def install_common():
         "trash-cli",
         "neovim",
         "python-pynvim",
+        "python-pyxdg",
         "bat",
         "duf",
         "dust",
