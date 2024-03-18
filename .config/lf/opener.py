@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+#!/usr/bin/python3
 # like `xdg-open`, but supports `open-with` and
 # running in terminal directly
 from collections.abc import Callable
