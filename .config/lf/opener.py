@@ -132,9 +132,10 @@ def get_default_desktops(mime_type: str, interactive=False):
             for mime_config in system_configs:
                 if isfile(mime_config):
                     config.read(mime_config)
-                    mime_section = config["MIME Cache"]
-                    if mime_type in mime_section:
-                        return get_desktop_name(mime_section, mime_type)
+                    if "MIME Cache" in config:
+                        mime_section = config["MIME Cache"]
+                        if mime_type in mime_section:
+                            return get_desktop_name(mime_section, mime_type)
             else:
                 return fallback_to_text_editor()
 
