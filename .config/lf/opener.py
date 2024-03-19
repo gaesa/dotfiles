@@ -96,7 +96,7 @@ def get_default_desktops(mime_type: str, interactive=False):
                 start = i + 21
             return desktop_names
 
-        if xdg_current_desktop[0] == "kde":
+        if xdg_current_desktop[0] == "kde" and int(environ["KDE_SESSION_VERSION"]) < 6:
             raw_info = run(
                 ["ktraderclient5", "--mimetype", mime_type],
                 check=True,
