@@ -106,7 +106,7 @@ def prepare(cache_dir: Path):
 def create_thumb_if_necessary(
     media: Path, thumb_path: Path, mime_type: tuple[str, str] | None = None
 ):
-    if (thumb_path).is_file():
+    if thumb_path.is_file():
         return
     else:
         gen_thumb(media, thumb_path, mime_type)
