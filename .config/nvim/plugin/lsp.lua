@@ -67,7 +67,11 @@ cmp.setup({
     },
     window = {
         -- completion = cmp.config.window.bordered(),
-        documentation = cmp.config.window.bordered(),
+        -- `55734c8b70b69fb29d451ea30eaecd1d25100fad` of `nvim-cmp` introduces unexpected visual effect change
+        documentation = require("utils.funs").filter_return(cmp.config.window.bordered, function(tbl)
+            tbl.winhighlight = "Normal:Normal,FloatBorder:Normal,CursorLine:Visual,Search:None"
+            return tbl
+        end)(),
     },
     sources = {
         { name = "nvim_lsp" },
