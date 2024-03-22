@@ -13,7 +13,7 @@ def slice_path(
 
 
 def get_mime_type(
-    file: str | Path, exts_for_file_cmd: set[str] = {".ts", ".bak", ".txt", ".TXT"}
+    file: str | Path, exts_for_file_cmd: set[str] = {".ts", ".bak", ".txt"}
 ) -> tuple[str, str]:
     # `xdg-mime query filetype` are better than
     # `file -Lb --mime_type` & `mimetypes.guess_type()`
@@ -31,7 +31,7 @@ def get_mime_type(
         return mime.media, mime.subtype  # pyright: ignore [reportAttributeAccessIssue]
 
     file = file if isinstance(file, Path) else Path(file)
-    extension = file.suffix
+    extension = file.suffix.lower()
 
     if extension in exts_for_file_cmd:
         file_args = ["file", "-Lb", "--mime-type", "--", file]
@@ -50,7 +50,7 @@ def get_mime_type(
 
 
 async def get_mime_type_async(
-    file: str | Path, exts_for_file_cmd: set[str] = {".ts", ".bak", ".txt", ".TXT"}
+    file: str | Path, exts_for_file_cmd: set[str] = {".ts", ".bak", ".txt"}
 ) -> tuple[str, str]:
     from xdg import Mime
 
@@ -61,7 +61,7 @@ async def get_mime_type_async(
         return mime.media, mime.subtype  # pyright: ignore [reportAttributeAccessIssue]
 
     file = file if isinstance(file, Path) else Path(file)
-    extension = file.suffix
+    extension = file.suffix.lower()
 
     if extension in exts_for_file_cmd:
         file_args = ["file", "-Lb", "--mime-type", "--", file]
