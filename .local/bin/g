@@ -5,21 +5,40 @@ See also: https://public-inbox.org/git/87v9b8d6zx.fsf@evledraar.gmail.com/T/
 """
 
 import sys
+from collections.abc import Callable
 from subprocess import run
+
+
+def suppress_err_status_when(
+    returncode: int, argv: list[str], predicate: Callable[[int, list[str]], bool]
+) -> None:
+    if predicate(returncode, argv):
+        return
+    else:
+        raise SystemExit(returncode)
 
 
 def main():
     argv = sys.argv
     p = run(["git", *argv[1:]])
-    returncode = p.returncode
-
-    if returncode != 0:
-        if returncode == 141 and argv[1] in {"l", "log"}:
-            return
-        else:
-            raise SystemExit(returncode)
-    else:
-        return
+    code_range = {141, -13}
+    subcmd = {
+        "l",
+        "log",
+        "lf",
+        "lfs",
+        "lfa",
+        "lfsa",
+        "ls",
+        "la",
+        "lsa",
+    }
+    suppress_err_status_when(
+        p.returncode,
+        argv,
+        predicate=lambda code, argv: code == 0
+        or (code in code_range and argv[1] in subcmd),
+    )
 
 
 if __name__ == "__main__":
