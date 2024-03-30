@@ -1,0 +1,50 @@
+#!/usr/bin/env python3
+"""
+An aria2-based downloader that supports downloading files from GitHub, facilitated by a dedicated option.
+"""
+from argparse import ArgumentParser
+from collections.abc import Iterable
+from dataclasses import dataclass
+from subprocess import run
+from typing import final
+
+
+@final
+@dataclass(frozen=True, kw_only=True)
+class Arguments:
+    links: list[str]
+    dir: str | None
+    github: bool
+
+
+def parse_args() -> Arguments:
+    parser = ArgumentParser(description="Download files from given links")
+    parser.add_argument("links", nargs="+", help="Links to the files")
+    parser.add_argument("--dir", type=str, help="Directory to save the files")
+    parser.add_argument(
+        "--github", action="store_true", help="Specify if the link is from GitHub"
+    )
+    return Arguments(**vars(parser.parse_args()))
+
+
+def transform_github_link(link: str) -> str:
+    return link.replace("github.com", "raw.githubusercontent.com").replace("/blob", "")
+
+
+def download_to(links: Iterable[str], directory: str | None) -> None:
+    run(
+        ["aria2c", *links, *((f"--dir={directory}",) if directory is not None else ())],
+        check=True,
+    )
+
+
+def main():
+    args = parse_args()
+    download_to(
+        map(transform_github_link, args.links) if args.github else args.links,
+        args.dir,
+    )
+
+
+if __name__ == "__main__":
+    main()
