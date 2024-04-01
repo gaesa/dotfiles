@@ -1,1 +1,0 @@
-../../.config/lf/thumb.py

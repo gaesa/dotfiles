@@ -1,0 +1,12 @@
+[binds]
+ro = ["/usr/bin", "/usr/share", "/usr/lib", "/usr/lib64", "~/.config/lf/preview.py", "~/.config/lf/opener.py", "~/.config/bat/config", "~/.local/share/python/lib/my_utils"]
+dev = ["/dev/tty", "/dev/null", "/dev/shm"]
+rw = ["~/.cache/kitty-thumbnails", "~/.cache/python"]
+symlinks = [["/usr/bin", "/bin"], ["/usr/lib64", "/lib64"]]
+
+[files]
+program = "./preview"
+log = "$TMPDIR/lf.log"
+
+[options]
+proc = true
