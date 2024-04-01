@@ -5,6 +5,8 @@ set nu! rnu!	" show absolute and relative number at the same time
 syntax on
 set title	" show activity on titlebar
 set laststatus=2	" always show file name
+set visualbell
+set noerrorbells
 
 " search
 set incsearch	" do incremental searching, search as you type
