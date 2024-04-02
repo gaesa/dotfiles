@@ -50,6 +50,7 @@ lsp.set_sign_icons({
 -- https://github.com/VonHeikemen/lsp-zero.nvim/blob/v2.x/doc/md/api-reference.md#configurename-opts
 lsp.configure("clangd", {
     capabilities = { "utf-16" },
+    filetypes = { "c", "cpp", "objc", "objcpp", "cuda" }, -- no 'proto'
 })
 
 lsp.setup()
