@@ -14,6 +14,7 @@ alias trr="trash-restore"
 alias se='sudo -e'
 alias sc='sudo --preserve-env=WAYLAND_DISPLAY,XDG_RUNTIME_DIR'
 alias sec='sudo -e --preserve-env=WAYLAND_DISPLAY,XDG_RUNTIME_DIR'
+alias clr='clear'
 
 alias log="command log"
 
