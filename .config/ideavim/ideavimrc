@@ -168,6 +168,7 @@ nnoremap <leader>ss :action FindInPath<CR>
 xnoremap <leader>ss :action FindInPath<CR>
 nnoremap <leader>sr :action ReplaceInPath<CR>
 xnoremap <leader>sr :action ReplaceInPath<CR>
+nnoremap <leader>rr :action Replace<CR>
 
 " Move code
 xnoremap J :action MoveLineDown<CR>
@@ -204,7 +205,7 @@ nnoremap gQ :action ShowReformatFileDialog<CR>
 xnoremap gQ :action ShowReformatFileDialog<CR>
 
 " Rename
-nnoremap <leader>rr :action RenameElement<CR>
+nnoremap <leader>rn :action RenameElement<CR>
 nnoremap <F2> :action RenameElement<CR>
 
 " Generate
