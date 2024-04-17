@@ -36,7 +36,7 @@ def trash(files: list[Path]):
     for_each(
         lambda file: run(["trash", "-f", file], check=True),
         filter(
-            lambda file: file.exists(),
+            lambda file: file.exists() and str(file) != ".",
             files,
         ),
     )
