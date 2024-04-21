@@ -130,6 +130,18 @@ class Stream(Generic[T], metaclass=__StrictClassMethodOfStream):
     def __iter__(self) -> Iterator[T]:
         return self.__iterable
 
+    @overload
+    def __next__(self) -> T: ...
+    @overload
+    def __next__(self, default: U1) -> T | U1: ...
+
+    def __next__(self, default: U1 = _MissingDefault) -> T | U1:
+        return (
+            next(self.__iterable, default)
+            if default is not _MissingDefault
+            else next(self.__iterable)
+        )
+
     def __str__(self) -> str:
         return f"<Stream object at {hex(id(self))}>"
 
