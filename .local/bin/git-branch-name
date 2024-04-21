@@ -8,8 +8,7 @@ def get_name(tree_ish: str = "HEAD") -> str:
         ["git", "name-rev", "--name-only", tree_ish], capture_output=True, text=True
     )
     output = result.stdout.rstrip()
-    tilde_index = output.rfind("~")
-    return output if tilde_index == -1 else output[:tilde_index]
+    return output.removesuffix("~")
 
 
 def parse_args() -> str:
