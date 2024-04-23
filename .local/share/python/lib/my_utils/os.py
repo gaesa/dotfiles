@@ -2,6 +2,7 @@ from collections.abc import Callable
 from os import chdir, getcwd, stat
 from pathlib import Path
 from stat import S_IMODE
+from typing import Literal
 
 
 def slice_path(
@@ -83,10 +84,62 @@ async def get_mime_type_async(
 
 def get_file_id(
     file_path: Path,
-    algorithm: str = "sha256",
-    chunk_size: int = 65536,
+    algorithm: Literal[
+        "sha1",
+        "sha224",
+        "sha256",
+        "sha384",
+        "sha512",
+        "sha3_224",
+        "sha3_256",
+        "sha3_384",
+        "sha3_512",
+        "shake_128",
+        "shake_256",
+        "blake2",
+        "blake2s",
+        "md5",
+    ] = "sha256",
     entire: bool = False,
+    chunk_size: int = 256 * 1024,  # 0.25 MiB
+    chunk_count: int = 3,
 ) -> str:
+    def get_sample_points(
+        total_size: int, chunk_size: int, chunk_count: int
+    ) -> list[int]:
+        if total_size < 0 or chunk_size <= 0 or chunk_count <= 0:
+            raise ValueError(
+                f"total_size: {total_size}, chunk_size: {chunk_size}, chunk_count: {chunk_count}"
+            )
+        else:
+            if total_size <= chunk_size:
+                return [0]
+            else:
+                count, offset = chunk_count, chunk_size // 2
+                match count:
+                    case 1:
+                        return [total_size // 2 - offset]
+                    case 2:
+                        interval = total_size // 3
+                        return [
+                            max(0, interval - offset),
+                            max(0, interval * 2 - offset),
+                        ]
+                    case 3:
+                        return [0, total_size // 2 - offset, total_size - chunk_size]
+                    case _:
+                        extra_slot_count = count - 2
+                        interval = total_size // (extra_slot_count + 1)
+                        lst = [0] * count
+                        lst.extend(
+                            map(
+                                lambda factor: max(0, factor * interval - offset),
+                                range(1, extra_slot_count + 1),
+                            )
+                        )
+                        lst.append(total_size - chunk_size)
+                        return lst
+
     import hashlib
 
     stats = file_path.stat()
@@ -101,13 +154,9 @@ def get_file_id(
             for chunk in chunks:
                 hasher.update(chunk)
         else:
-            head_chunk = f.read(chunk_size)
-            hasher.update(head_chunk)
-
-            if size > chunk_size:
-                f.seek(-chunk_size, 2)  # 2 means "relative to the end of the file"
-                tail_chunk = f.read(chunk_size)
-                hasher.update(tail_chunk)
+            for pos in get_sample_points(size, chunk_size, chunk_count):
+                f.seek(pos)
+                hasher.update(f.read(chunk_size))
     return hasher.hexdigest()
 
 
