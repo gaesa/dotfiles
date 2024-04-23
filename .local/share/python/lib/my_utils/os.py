@@ -91,21 +91,24 @@ def get_file_id(
 
     stats = file_path.stat()
     mtime, size = stats.st_mtime_ns, stats.st_size
-    hash_obj = hashlib.new(algorithm, str(f"{mtime}{size}").encode())
+    hasher = hashlib.new(
+        algorithm, data=mtime.to_bytes(length=16, byteorder="little", signed=False)
+    )
+    hasher.update(size.to_bytes(length=8, byteorder="little", signed=False))
     with open(file_path, "rb") as f:
         if entire:
             chunks = iter(lambda: f.read(chunk_size), b"")
             for chunk in chunks:
-                hash_obj.update(chunk)
+                hasher.update(chunk)
         else:
             head_chunk = f.read(chunk_size)
-            hash_obj.update(head_chunk)
+            hasher.update(head_chunk)
 
             if size > chunk_size:
                 f.seek(-chunk_size, 2)  # 2 means "relative to the end of the file"
                 tail_chunk = f.read(chunk_size)
-                hash_obj.update(tail_chunk)
-    return hash_obj.hexdigest()
+                hasher.update(tail_chunk)
+    return hasher.hexdigest()
 
 
 def get_permission(file: str | Path):
