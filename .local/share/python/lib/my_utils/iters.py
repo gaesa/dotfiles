@@ -1,13 +1,10 @@
 import itertools
 from collections import deque
 from collections.abc import Callable, Collection, Iterable, Iterator, Sized
-from typing import Any, Literal, TypeVar, overload
-
-T = TypeVar("T")
-U = TypeVar("U")
+from typing import Any, Literal, overload
 
 
-def count(iterable: Iterable[T]) -> int:
+def count[T](iterable: Iterable[T]) -> int:
     counter = itertools.count()
     deque(zip(iterable, counter), maxlen=0)
     return next(counter)
@@ -17,7 +14,7 @@ def is_empty(iterable: Iterable[Any]) -> bool:
     return (len(iterable) if isinstance(iterable, Sized) else count(iterable)) == 0
 
 
-def startswith(collection: Collection[T], iterable: Iterable[T]) -> bool:
+def startswith[T](collection: Collection[T], iterable: Iterable[T]) -> bool:
     len_coll = len(collection)
     if len_coll == 0:
         return count(iterable) == 0
@@ -45,7 +42,7 @@ def startswith(collection: Collection[T], iterable: Iterable[T]) -> bool:
             )
 
 
-def endswith(collection: Collection[T], iterable: Iterable[T]) -> bool:
+def endswith[T](collection: Collection[T], iterable: Iterable[T]) -> bool:
     from my_utils.stream import Stream
 
     len_coll = len(collection)
@@ -71,13 +68,15 @@ def endswith(collection: Collection[T], iterable: Iterable[T]) -> bool:
             )
 
 
-def for_each(operation: Callable[[T], Any], iterable: Iterable[T]) -> None:
+def for_each[T](operation: Callable[[T], Any], iterable: Iterable[T]) -> None:
     """Like `map`, but doesn't construct an iterator."""
     for ele in iterable:
         operation(ele)
 
 
-def star_foreach(
+def star_foreach[
+    T
+](
     operation: Callable[[T, ...], Any],  # pyright: ignore
     iterable: Iterable[tuple[T, ...]],
 ) -> None:
@@ -86,9 +85,9 @@ def star_foreach(
         operation(*ele)
 
 
-def flatmap(
-    operation: Callable[[T], Iterable[U]], iterable: Iterable[T]
-) -> Iterator[U]:
+def flatmap[
+    T, U
+](operation: Callable[[T], Iterable[U]], iterable: Iterable[T]) -> Iterator[U]:
     """
     Applies a function to each element in the iterable then flattens the result.
 
@@ -140,7 +139,7 @@ def tree_map(
         return iteration(iterable)
 
 
-def drop_first(iterable: Iterable[T], k: int = 1) -> Iterator[T]:
+def drop_first[T](iterable: Iterable[T], k: int = 1) -> Iterator[T]:
     """Like `list[k:]` or `itertools.islice(seq, k, None)`, but more time-efficient"""
     if k < 0:
         raise ValueError("'k' must be greater than or equal to zero")
@@ -151,20 +150,26 @@ def drop_first(iterable: Iterable[T], k: int = 1) -> Iterator[T]:
 
 
 @overload
-def partition(
+def partition[
+    T
+](
     predicate: Callable[[T], bool], iterable: Iterable[T], lazy: Literal[True] = True
 ) -> tuple[Iterator[T], Iterator[T]]: ...
 
 
 @overload
-def partition(
+def partition[
+    T
+](
     predicate: Callable[[T], bool], iterable: Iterable[T], lazy: Literal[False] = False
 ) -> tuple[list[T], list[T]]: ...
 
 
-def partition(
-    predicate: Callable[[T], bool], iterable: Iterable[T], lazy: bool = True
-) -> tuple[Iterator[T], Iterator[T]] | tuple[list[T], list[T]]:
+def partition[
+    T
+](predicate: Callable[[T], bool], iterable: Iterable[T], lazy: bool = True) -> (
+    tuple[Iterator[T], Iterator[T]] | tuple[list[T], list[T]]
+):
     if lazy:
         it1, it2 = itertools.tee(iterable)
         return filter(predicate, it1), itertools.filterfalse(predicate, it2)
@@ -175,7 +180,7 @@ def partition(
         return lst1, lst2
 
 
-def diff(a: Iterable[T], b: Iterable[T]) -> tuple[set[T], set[T], set[T]]:
+def diff[T](a: Iterable[T], b: Iterable[T]) -> tuple[set[T], set[T], set[T]]:
     """
     Compute the differences and intersection between two iterables.
 

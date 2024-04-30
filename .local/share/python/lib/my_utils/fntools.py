@@ -1,21 +1,16 @@
 from collections.abc import Callable
 from functools import wraps
-from typing import Any, ParamSpec, TypeVar
-
-_P = ParamSpec("_P")
-_T = TypeVar("_T")
-_U = TypeVar("_U")
-Class = TypeVar("Class", bound=type)
+from typing import Any
 
 
 def after(post_fn: Callable[[], Any], is_async: bool = False):
-    def decorator(orig_fn: Callable[_P, _T]) -> Callable[_P, _T]:
+    def decorator[**P, T](orig_fn: Callable[P, T]) -> Callable[P, T]:
         if is_async:
 
             @wraps(orig_fn)
             async def new_fn(  # pyright: ignore [reportRedeclaration]
                 *args, **kwargs
-            ) -> _T:
+            ) -> T:
                 value = await orig_fn(  # pyright: ignore [reportGeneralTypeIssues]
                     *args, **kwargs
                 )
@@ -25,7 +20,7 @@ def after(post_fn: Callable[[], Any], is_async: bool = False):
         else:
 
             @wraps(orig_fn)
-            def new_fn(*args, **kwargs) -> _T:
+            def new_fn(*args, **kwargs) -> T:
                 value = orig_fn(*args, **kwargs)
                 post_fn()
                 return value
@@ -36,13 +31,13 @@ def after(post_fn: Callable[[], Any], is_async: bool = False):
 
 
 def before(pre_fn: Callable[[], Any], is_async: bool = False):
-    def decorator(orig_fn: Callable[_P, _T]) -> Callable[_P, _T]:
+    def decorator[**P, T](orig_fn: Callable[P, T]) -> Callable[P, T]:
         if is_async:
 
             @wraps(orig_fn)
             async def new_fn(  # pyright: ignore [reportRedeclaration]
                 *args, **kwargs
-            ) -> _T:
+            ) -> T:
                 await pre_fn()
                 return await orig_fn(  # pyright: ignore [reportGeneralTypeIssues]
                     *args, **kwargs
@@ -51,7 +46,7 @@ def before(pre_fn: Callable[[], Any], is_async: bool = False):
         else:
 
             @wraps(orig_fn)
-            def new_fn(*args, **kwargs) -> _T:
+            def new_fn(*args, **kwargs) -> T:
                 pre_fn()
                 return orig_fn(*args, **kwargs)
 
@@ -60,10 +55,10 @@ def before(pre_fn: Callable[[], Any], is_async: bool = False):
     return decorator
 
 
-def filter_return(filter_fn: Callable[[_T], _U]):
-    def decorator(orig_fn: Callable[_P, _T]) -> Callable[_P, _T]:
+def filter_return[T, U](filter_fn: Callable[[T], U]):
+    def decorator[**P](orig_fn: Callable[P, T]) -> Callable[P, T]:
         @wraps(orig_fn)
-        def new_fn(*args, **kwargs) -> _U:
+        def new_fn(*args, **kwargs) -> U:
             return filter_fn(orig_fn(*args, **kwargs))
 
         return new_fn  # pyright: ignore [reportReturnType]
@@ -71,8 +66,8 @@ def filter_return(filter_fn: Callable[[_T], _U]):
     return decorator
 
 
-def cache_single_value(orig_fn: Callable[_P, _T]):
-    def new_fn(*args, **kwargs) -> _T:
+def cache_single_value[**P, T](orig_fn: Callable[P, T]):
+    def new_fn(*args, **kwargs) -> T:
         value = orig_fn(*args, **kwargs)
         container[0] = lambda *_, **__: value
         return value
@@ -81,9 +76,9 @@ def cache_single_value(orig_fn: Callable[_P, _T]):
     return wraps(orig_fn)(lambda *args, **kwargs: container[0](*args, **kwargs))
 
 
-def debug_fn(orig_fn: Callable[_P, _T], name: str = ""):
+def debug_fn[**P, T](orig_fn: Callable[P, T], name: str = ""):
     @wraps(orig_fn)
-    def new_fn(*args, **kwargs) -> _T:
+    def new_fn(*args, **kwargs) -> T:
         if name == "":
             print("args:", args, "kwargs:", kwargs)
         else:
@@ -101,10 +96,10 @@ class CannotInstantiateError(Exception):
     pass
 
 
-def non_instantiable(cls: Class) -> Class:
+def non_instantiable[Class: type](cls: Class) -> Class:
     def __init__(_):
         raise CannotInstantiateError(f"Cannot instantiate '{cls.__name__}'")
 
-    cls.__init__ = __init__
+    cls.__init__ = __init__  # pyright: ignore [reportAttributeAccessIssue]
 
     return cls
