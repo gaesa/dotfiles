@@ -14,7 +14,7 @@ def slice_path(
 
 
 def get_mime_type(
-    file: str | Path, exts_for_file_cmd: set[str] = {".ts", ".bak", ".txt"}
+    file: str | Path, exts_for_file_cmd: set[str] = {".bak", ".txt"}
 ) -> tuple[str, str]:
     # `xdg-mime query filetype` are better than
     # `file -Lb --mime_type` & `mimetypes.guess_type()`
@@ -25,11 +25,22 @@ def get_mime_type(
 
     from subprocess import run
 
-    from xdg import Mime
-
     def xdg_mime(file: Path) -> tuple[str, str]:
-        mime = Mime.get_type2(file)
-        return mime.media, mime.subtype  # pyright: ignore [reportAttributeAccessIssue]
+        file_str = str(file)
+        stdout = run(
+            [
+                "xdg-mime",
+                "query",
+                "filetype",
+                f"./{file_str}" if file_str.startswith("-") else file_str,
+            ],
+            capture_output=True,
+            text=True,
+            check=True,
+        ).stdout.rstrip()
+        lst = stdout.split("/", maxsplit=1)
+        assert len(lst) == 2
+        return (lst[0], lst[1])
 
     file = file if isinstance(file, Path) else Path(file)
     extension = file.suffix.lower()
@@ -51,15 +62,27 @@ def get_mime_type(
 
 
 async def get_mime_type_async(
-    file: str | Path, exts_for_file_cmd: set[str] = {".ts", ".bak", ".txt"}
+    file: str | Path, exts_for_file_cmd: set[str] = {".bak", ".txt"}
 ) -> tuple[str, str]:
-    from xdg import Mime
+    from .aio import run
 
-    from .aio import asyncio, run
-
-    def xdg_mime(file: Path) -> tuple[str, str]:
-        mime = Mime.get_type2(file)
-        return mime.media, mime.subtype  # pyright: ignore [reportAttributeAccessIssue]
+    async def xdg_mime(file: Path) -> tuple[str, str]:
+        file_str = str(file)
+        stdout = (
+            await run(
+                [
+                    "xdg-mime",
+                    "query",
+                    "filetype",
+                    f"./{file_str}" if file_str.startswith("-") else file_str,
+                ],
+                text=True,
+                check=True,
+            )
+        ).stdout.rstrip()  # pyright: ignore [reportAttributeAccessIssue, reportOptionalMemberAccess]
+        lst = stdout.split("/", maxsplit=1)
+        assert len(lst) == 2
+        return (lst[0], lst[1])
 
     file = file if isinstance(file, Path) else Path(file)
     extension = file.suffix.lower()
@@ -77,9 +100,9 @@ async def get_mime_type_async(
             else:
                 return mime
         else:
-            return await asyncio.to_thread(xdg_mime, file)
+            return await xdg_mime(file)
     else:
-        return await asyncio.to_thread(xdg_mime, file)
+        return await xdg_mime(file)
 
 
 def get_file_id(
