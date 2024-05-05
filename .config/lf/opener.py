@@ -137,7 +137,7 @@ def get_default_desktops(mime_type: str, interactive=False):
                         if mime_type in mime_section:
                             return get_desktop_name(mime_section, mime_type)
             else:
-                return fallback_to_text_editor()
+                return fallback_to_default()
 
         def extract_from_user_config():
             def make_extract(
@@ -171,9 +171,11 @@ def get_default_desktops(mime_type: str, interactive=False):
 
         return extract_from_user_config()
 
-    def fallback_to_text_editor():
+    def fallback_to_default():
         if mime_type.startswith("text") or mime_type.endswith("x-empty"):
             return "nvim.desktop"
+        elif mime_type.startswith("video"):
+            return "mpv.desktop"
         else:
             return fallback_to_choice()
 
