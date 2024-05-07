@@ -172,7 +172,7 @@ def get_default_desktops(mime_type: str, interactive=False):
         return extract_from_user_config()
 
     def fallback_to_default():
-        if mime_type == "text/x-empty" or mime_type == "application/x-powershell":
+        if mime_type.startswith("text") or mime_type == "application/x-powershell":
             return "nvim.desktop"
         elif mime_type.startswith("video"):
             return "mpv.desktop"
