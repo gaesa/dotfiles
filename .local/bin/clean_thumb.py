@@ -69,7 +69,7 @@ def clean_by_cache_mtime(cache_dir: Path):
 
 
 def main():
-    cache_root = Path("~/.cache/lf_thumb").expanduser()
+    cache_root = Path("~/.cache/kitty-thumbnails").expanduser()
     if cache_root.is_dir():
         clean_by_cache_mtime(cache_root)
     else:
