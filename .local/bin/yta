@@ -1,0 +1,24 @@
+#!/usr/bin/env python3
+import sys
+from collections.abc import Iterable
+
+from my_utils.iters import drop_first
+from yt import search_and_play
+
+
+def play(duration: int, keyword: Iterable[str], limit: int = 5):
+    search_and_play(
+        " ".join(keyword),
+        limit=limit,
+        profile="audio",
+        format="bestaudio",
+        duration=duration,
+    )
+
+
+def main():
+    play(duration=25 * 60, keyword=drop_first(sys.argv))
+
+
+if __name__ == "__main__":
+    main()

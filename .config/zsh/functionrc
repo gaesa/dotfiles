@@ -1,10 +1,5 @@
 #!/usr/bin/zsh
 
-# yt-dlp audio with search
-function yta() {
-    command mpv --profile=audio --ytdl-format=bestaudio ytdl://ytsearch:"$*"
-}
-
 # Replace diff with git diff
 function diff() {
     command git diff --no-index "$1" "$2"
