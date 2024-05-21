@@ -1,7 +1,9 @@
 #!/usr/bin/env python3
+from dataclasses import dataclass
 from email.mime.text import MIMEText
 from getpass import getuser
 from smtplib import SMTP
+from typing import final
 
 
 def send_mail(to: str, subject: str, body: str, from_: str | None = None):
@@ -15,32 +17,41 @@ def send_mail(to: str, subject: str, body: str, from_: str | None = None):
         s.send_message(msg)
 
 
-def parse_args():
-    from argparse import ArgumentParser
+@final
+@dataclass(frozen=True, kw_only=True)
+class Cli:
+    from_: str
+    to: str
+    subject: str
+    body: str
 
-    parser = ArgumentParser(description="Send an email.")
-    parser.add_argument(
-        "--from",
-        dest="from_",
-        type=str,
-        help="Email sender",
-    )
-    parser.add_argument(
-        "--to", dest="to", type=str, required=True, help="Email recipient"
-    )
-    parser.add_argument(
-        "--subject", dest="subject", type=str, required=True, help="Email subject"
-    )
-    parser.add_argument(
-        "--body", dest="body", type=str, required=True, help="Email body"
-    )
-    args = parser.parse_args()
-    return args
+    @classmethod
+    def parse(cls) -> "Cli":
+        from argparse import ArgumentParser
+
+        parser = ArgumentParser(description="Send an email.")
+        parser.add_argument(
+            "--from",
+            dest="from_",
+            type=str,
+            help="Email sender",
+        )
+        parser.add_argument(
+            "--to", dest="to", type=str, required=True, help="Email recipient"
+        )
+        parser.add_argument(
+            "--subject", dest="subject", type=str, required=True, help="Email subject"
+        )
+        parser.add_argument(
+            "--body", dest="body", type=str, required=True, help="Email body"
+        )
+        args = parser.parse_args()
+        return Cli(**vars(args))
 
 
 def main():
-    args = parse_args()
-    send_mail(from_=args.from_, to=args.to, subject=args.subject, body=args.body)
+    cli = Cli.parse()
+    send_mail(from_=cli.from_, to=cli.to, subject=cli.subject, body=cli.body)
 
 
 if __name__ == "__main__":

@@ -1,6 +1,8 @@
 #!/usr/bin/env python3
 from argparse import ArgumentParser
+from dataclasses import dataclass
 from subprocess import run
+from typing import final
 
 
 def get_name(tree_ish: str = "HEAD") -> str:
@@ -11,21 +13,27 @@ def get_name(tree_ish: str = "HEAD") -> str:
     return output.removesuffix("~")
 
 
-def parse_args() -> str:
-    parser = ArgumentParser(description="Get branch name")
-    parser.add_argument(
-        "tree_ish",
-        type=str,
-        default="HEAD",
-        nargs="?",
-        help="The name of a tree-ish object (default: HEAD)",
-    )
-    args = parser.parse_args()
-    return args.tree_ish
+@final
+@dataclass(frozen=True, kw_only=True)
+class Cli:
+    tree_ish: str
+
+    @classmethod
+    def parse(cls) -> "Cli":
+        parser = ArgumentParser(description="Get branch name")
+        parser.add_argument(
+            "tree_ish",
+            type=str,
+            default="HEAD",
+            nargs="?",
+            help="The name of a tree-ish object (default: HEAD)",
+        )
+        args = parser.parse_args()
+        return cls(tree_ish=args.tree_ish)
 
 
 def main():
-    tree_ish = parse_args()
+    tree_ish = Cli.parse().tree_ish
     print(get_name(tree_ish))
 
 

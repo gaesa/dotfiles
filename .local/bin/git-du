@@ -1,6 +1,8 @@
 #!/usr/bin/env python3
 from argparse import ArgumentParser
+from dataclasses import dataclass
 from subprocess import run
+from typing import final
 
 from my_utils.git import get_git_dir, get_tracked_files
 from my_utils.iters import is_empty
@@ -20,30 +22,42 @@ def du(tracked_files: list[str], all: bool, apparent_size: bool):
         )
 
 
-def parse_args() -> tuple[str, bool, bool]:
-    parser = ArgumentParser(description="Disk usage of tracked files")
-    parser.add_argument(
-        "-a",
-        "--all",
-        action="store_true",
-        help="Include files inside 'git-dir' as well",
-    )
-    parser.add_argument(
-        "-s",
-        "--apparent-size",
-        action="store_true",
-        help="Use file length instead of blocks",
-    )
-    parser.add_argument(
-        "path", type=str, nargs="?", default=".", help="The path to get tracked files"
-    )
-    args = parser.parse_args()
-    return args.path, args.all, args.apparent_size
+@final
+@dataclass(frozen=True, kw_only=True)
+class Cli:
+    path: str
+    all: bool
+    apparent_size: bool
+
+    @classmethod
+    def parse(cls) -> "Cli":
+        parser = ArgumentParser(description="Disk usage of tracked files")
+        parser.add_argument(
+            "-a",
+            "--all",
+            action="store_true",
+            help="Include files inside 'git-dir' as well",
+        )
+        parser.add_argument(
+            "-s",
+            "--apparent-size",
+            action="store_true",
+            help="Use file length instead of blocks",
+        )
+        parser.add_argument(
+            "path",
+            type=str,
+            nargs="?",
+            default=".",
+            help="The path to get tracked files",
+        )
+        args = parser.parse_args()
+        return cls(**vars(args))
 
 
 def main():
-    path, all, apparent_size = parse_args()
-    du(get_tracked_files(path, include_link=False), all, apparent_size)
+    cli = Cli.parse()
+    du(get_tracked_files(cli.path, include_link=False), cli.all, cli.apparent_size)
 
 
 if __name__ == "__main__":

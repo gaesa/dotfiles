@@ -3,11 +3,13 @@ import pwd
 import sys
 from argparse import ArgumentParser
 from collections.abc import Callable, Iterator
+from dataclasses import dataclass
 from getpass import getuser
 from os import environ, getppid
 from pathlib import Path
 from shutil import which
 from subprocess import run
+from typing import final
 
 try:
     from my_utils.iters import for_each
@@ -18,18 +20,30 @@ except ModuleNotFoundError:
 from my_utils.os import slice_path
 
 
-def parse_args() -> tuple[list[Path], bool, Callable[[], None]]:
-    parser = ArgumentParser(description="Safer 'rm' via 'trash', with a warning")
-    parser.add_argument("files", nargs="*", type=Path, default=[])
-    help_info = "for compatibility, using this option exits the program early"
-    parser.add_argument("--version", action="store_true", help=help_info)
-    parser.add_argument("--interactive", default=None, help=help_info)
-    parser.add_argument("--preserve-root", default=None, help=help_info)
-    args, _ = parser.parse_known_args()
-    exit_directly = (
-        args.version or args.interactive is not None or args.preserve_root is not None
-    )
-    return args.files, exit_directly, parser.print_help
+@final
+@dataclass(frozen=True, kw_only=True)
+class Cli:
+    files: list[Path]
+    exit_directly: bool
+    print_help: Callable[[], None]
+
+    @classmethod
+    def parse(cls) -> "Cli":
+        parser = ArgumentParser(description="Safer 'rm' via 'trash', with a warning")
+        parser.add_argument("files", nargs="*", type=Path, default=[])
+        help_info = "for compatibility, using this option exits the program early"
+        parser.add_argument("--version", action="store_true", help=help_info)
+        parser.add_argument("--interactive", default=None, help=help_info)
+        parser.add_argument("--preserve-root", default=None, help=help_info)
+        args, _ = parser.parse_known_args()
+        exit_directly = (
+            args.version
+            or args.interactive is not None
+            or args.preserve_root is not None
+        )
+        return cls(
+            files=args.files, exit_directly=exit_directly, print_help=parser.print_help
+        )
 
 
 def trash(files: list[Path]):
@@ -80,9 +94,9 @@ def is_in_black_list(parent_process_name: str) -> bool:
 
 
 def main():
-    files, exit_directly, print_help = parse_args()
-    if exit_directly:
-        print_help()
+    cli = Cli.parse()
+    if cli.exit_directly:
+        cli.print_help()
     else:
         process_name = get_parent_process_name()
         msg = f"[Called by '{process_name}'] rm: Please use 'trash' when possible"
@@ -92,7 +106,7 @@ def main():
             print(msg, file=sys.stderr)
 
         if (which("trash") is not None) and (not in_black_list):
-            trash(files)
+            trash(cli.files)
         else:
             run([find_rm_exe(), *sys.argv[1:]], check=True)
 

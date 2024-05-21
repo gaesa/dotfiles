@@ -1,6 +1,9 @@
 #!/usr/bin/env python3
 from argparse import ArgumentParser, ArgumentTypeError
 from subprocess import run
+from typing import final
+
+from pydantic import BaseModel, PositiveInt
 
 
 def positive_int(value: str) -> int:
@@ -11,16 +14,24 @@ def positive_int(value: str) -> int:
         return int_value
 
 
-def parse_args() -> int:
-    parser = ArgumentParser(description="Sign the most recent commits using GPG")
-    parser.add_argument(
-        "count",
-        type=positive_int,
-        nargs="?",
-        default=1,
-        help="Number of most recent commits to sign (default: 1)",
-    )
-    return parser.parse_args().count
+@final
+class Cli(BaseModel):
+    count: PositiveInt
+
+    class Config:
+        frozen = True
+
+    @classmethod
+    def parse(cls) -> "Cli":
+        parser = ArgumentParser(description="Sign the most recent commits using GPG")
+        parser.add_argument(
+            "count",
+            type=positive_int,
+            nargs="?",
+            default=1,
+            help="Number of most recent commits to sign (default: 1)",
+        )
+        return cls(count=parser.parse_args().count)
 
 
 def sign(count: int = 1):
@@ -40,8 +51,8 @@ def sign(count: int = 1):
 
 
 def main():
-    count = parse_args()
-    sign(count)
+    cli = Cli.parse()
+    sign(cli.count)
 
 
 if __name__ == "__main__":

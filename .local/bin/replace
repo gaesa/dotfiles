@@ -2,29 +2,44 @@
 import re
 import sys
 from argparse import ArgumentParser
+from typing import final
+
+from pydantic import BaseModel, Field, PositiveInt
 
 
-def get_args() -> tuple[str, str, int]:
-    parser = ArgumentParser(description="A CLI program to replace regex patterns")
-    parser.add_argument("pattern", type=str, help="The regex pattern to be replaced")
-    parser.add_argument(
-        "replacement", type=str, help="The string to replace the pattern with"
-    )
-    parser.add_argument(
-        "-m",
-        "--max-count",
-        type=int,
-        default=0,
-        help="The maximum number of replacements",
-    )
-    args = parser.parse_args()
-    return args.pattern, args.replacement, args.max_count
+@final
+class Cli(BaseModel):
+    pattern: str = Field(..., min_length=1)
+    replacement: str = Field(..., min_length=1)
+    max_count: PositiveInt
+
+    class Config:
+        frozen = True
+
+    @classmethod
+    def parse(cls) -> "Cli":
+        parser = ArgumentParser(description="A CLI program to replace regex patterns")
+        parser.add_argument(
+            "pattern", type=str, help="The regex pattern to be replaced"
+        )
+        parser.add_argument(
+            "replacement", type=str, help="The string to replace the pattern with"
+        )
+        parser.add_argument(
+            "-m",
+            "--max-count",
+            type=int,
+            default=0,
+            help="The maximum number of replacements",
+        )
+        args = parser.parse_args()
+        return cls(**vars(args))
 
 
 def main():
-    pattern, replacement, count = get_args()
+    cli = Cli.parse()
     for line in sys.stdin:
-        print(re.sub(pattern, replacement, line, count=count), end="")
+        print(re.sub(cli.pattern, cli.replacement, line, count=cli.max_count), end="")
 
 
 if __name__ == "__main__":
