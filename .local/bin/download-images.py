@@ -30,30 +30,30 @@ class Cli:
     no_html: bool
     no_html_images_inline: bool
 
+    @classmethod
+    def parse(cls) -> "Cli":
+        parser = ArgumentParser(description="Download images from URLs")
+        parser.add_argument("directory", type=Path, help="Directory to save the images")
+        parser.add_argument("url_pattern", type=str, help="URL pattern")
+        parser.add_argument(
+            "--no-html", action="store_true", help="Do not generate HTML file"
+        )
+        parser.add_argument(
+            "--no-html-images-inline",
+            action="store_true",
+            help="Do not inline images in HTML file",
+        )
+        args = parser.parse_args()
 
-def get_args_from_cli() -> Cli:
-    parser = ArgumentParser(description="Download images from URLs")
-    parser.add_argument("directory", type=Path, help="Directory to save the images")
-    parser.add_argument("url_pattern", type=str, help="URL pattern")
-    parser.add_argument(
-        "--no-html", action="store_true", help="Do not generate HTML file"
-    )
-    parser.add_argument(
-        "--no-html-images-inline",
-        action="store_true",
-        help="Do not inline images in HTML file",
-    )
-    args = parser.parse_args()
-
-    cli = Cli(**vars(args))
-    directory = cli.directory.expanduser().resolve()
-    directory.mkdir(exist_ok=True)
-    return Cli(
-        directory=directory,
-        url_pattern=cli.url_pattern.rstrip("/"),
-        no_html=cli.no_html,
-        no_html_images_inline=cli.no_html_images_inline,
-    )
+        cli = cls(**vars(args))
+        directory = cli.directory.expanduser().resolve()
+        directory.mkdir(exist_ok=True)
+        return cls(
+            directory=directory,
+            url_pattern=cli.url_pattern.rstrip("/"),
+            no_html=cli.no_html,
+            no_html_images_inline=cli.no_html_images_inline,
+        )
 
 
 def get_url_last_componenet(url: str) -> Result[str, type[ValueError]]:
@@ -227,13 +227,13 @@ async def download_images(cli: Cli):
 
 def main():
     try:
-        args = get_args_from_cli()
-        anyio.run(download_images, args)
-        if not args.no_html:
+        cli = Cli.parse()
+        anyio.run(download_images, cli)
+        if not cli.no_html:
             import images_to_html
 
-            output = images_to_html.main(directory=args.directory)
-            if not args.no_html_images_inline:
+            output = images_to_html.main(directory=cli.directory)
+            if not cli.no_html_images_inline:
                 from subprocess import run
 
                 run(["html-images-inliner", output], check=True)

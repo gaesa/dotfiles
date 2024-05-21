@@ -1,12 +1,13 @@
 #!/usr/bin/env python3
 import sys
 from argparse import ArgumentParser
+from dataclasses import dataclass
 from os import getenv, listdir
 from os.path import isdir, join
 from shutil import move
 from subprocess import run
 from tempfile import NamedTemporaryFile
-from typing import IO
+from typing import IO, final
 
 from my_utils.iters import natsort, partition
 
@@ -53,16 +54,22 @@ def rename_move(
         raise SystemExit(mes)
 
 
-def get_args() -> list[str]:
-    parser = ArgumentParser(description="Process directories.")
-    parser.add_argument(
-        "directories", type=str, nargs="+", help="directories to be processed"
-    )
-    return parser.parse_args().directories
+@final
+@dataclass(frozen=True, kw_only=True)
+class Cli:
+    directories: list[str]
+
+    @classmethod
+    def parse(cls) -> "Cli":
+        parser = ArgumentParser(description="Process directories.")
+        parser.add_argument(
+            "directories", type=str, nargs="+", help="directories to be processed"
+        )
+        return cls(directories=parser.parse_args().directories)
 
 
 def main():
-    dirs = get_args()
+    dirs = Cli.parse().directories
     for path in dirs:
         if isdir(path):
             name_list = sorted_name_list(path, listdir(path))

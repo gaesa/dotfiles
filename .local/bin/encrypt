@@ -11,12 +11,12 @@ class Cli:
     source: str
     target: str
 
-
-def parse_cli() -> Cli:
-    parser = ArgumentParser(description="Encrypt a file or directory using 7z")
-    parser.add_argument("source", help="The file or directory to encrypt")
-    parser.add_argument("target", help="The output encrypted file")
-    return Cli(**vars(parser.parse_args()))
+    @classmethod
+    def parse(cls) -> "Cli":
+        parser = ArgumentParser(description="Encrypt a file or directory using 7z")
+        parser.add_argument("source", help="The file or directory to encrypt")
+        parser.add_argument("target", help="The output encrypted file")
+        return cls(**vars(parser.parse_args()))
 
 
 def encrypt(source: str, target: str) -> None:
@@ -40,7 +40,7 @@ def encrypt(source: str, target: str) -> None:
 
 
 def main():
-    cli = parse_cli()
+    cli = Cli.parse()
     encrypt(cli.source, cli.target)
 
 

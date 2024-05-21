@@ -1,8 +1,10 @@
 #!/usr/bin/env python3
 import asyncio
 from argparse import ArgumentParser
+from dataclasses import dataclass
 from pathlib import Path
 from subprocess import run
+from typing import final
 
 from my_utils.iters import is_empty, natsort
 from my_utils.os import get_mime_type_async
@@ -33,56 +35,66 @@ async def gen_playlist(dir: Path) -> list[str]:
     )
 
 
-def get_args() -> tuple[Path, bool, bool, Path]:
-    parser = ArgumentParser(
-        description="A script to generate and play a playlist using mpv"
-    )
-    parser.add_argument(
-        "directory",
-        type=Path,
-        nargs="?",
-        default=".",
-        help="The directory path where videos are located "
-        "or will be generated. "
-        "Default is the current working directory.",
-    )
-    parser.add_argument(
-        "-f",
-        "--force",
-        action="store_true",
-        help="Force regeneration of the playlist file even if it already exists",
-    )
-    parser.add_argument(
-        "-s",
-        "--skip-play",
-        action="store_true",
-        help="skip the play of the playlist",
-    )
-    parser.add_argument(
-        "-o",
-        "--output",
-        type=str,
-        nargs="?",
-        default=None,
-        help="The playlist file path. Default is 'directory/playlist'",
-    )
-    args = parser.parse_args()
-    args.output = (
-        Path(args.directory, "playlist") if args.output is None else args.output
-    )
-    return args.directory, args.force, args.skip_play, args.output
+@final
+@dataclass(frozen=True, kw_only=True)
+class Cli:
+    directory: Path
+    force: bool
+    skip_play: bool
+    output: Path
+
+    @classmethod
+    def parse(cls) -> "Cli":
+        parser = ArgumentParser(
+            description="A script to generate and play a playlist using mpv"
+        )
+        parser.add_argument(
+            "directory",
+            type=Path,
+            nargs="?",
+            default=".",
+            help="The directory path where videos are located "
+            "or will be generated. "
+            "Default is the current working directory.",
+        )
+        parser.add_argument(
+            "-f",
+            "--force",
+            action="store_true",
+            help="Force regeneration of the playlist file even if it already exists",
+        )
+        parser.add_argument(
+            "-s",
+            "--skip-play",
+            action="store_true",
+            help="skip the play of the playlist",
+        )
+        parser.add_argument(
+            "-o",
+            "--output",
+            type=str,
+            nargs="?",
+            default=None,
+            help="The playlist file path. Default is 'directory/playlist'",
+        )
+        args = parser.parse_args()
+        args.output = (
+            Path(args.directory, "playlist") if args.output is None else args.output
+        )
+        return cls(**vars(args))
 
 
 def main():
-    dir, force_regen, skip_play, playlist_path = get_args()
+    cli = Cli.parse()
+    dir, force_regen, playlist_path = cli.directory, cli.force, cli.output
 
-    if playlist_path.is_file() and (not force_regen) and (not skip_play):
+    if playlist_path.is_file() and (not force_regen) and (not cli.skip_play):
         run(["/usr/bin/mpv", f"--playlist={playlist_path}"])
     else:
         playlist: list[str] = asyncio.run(gen_playlist(dir))
         gen_playlist_file(playlist_path, playlist)
 
-        if (not skip_play) and playlist_path.is_file():
+        if (not cli.skip_play) and playlist_path.is_file():
             run(["/usr/bin/mpv", f"--playlist={playlist_path}"])
         else:
             print("No media to play")

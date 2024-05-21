@@ -14,14 +14,14 @@ from my_utils.stream import Stream
 class Cli:
     directory: Path
 
-
-def parse_cli() -> Cli:
-    parser = ArgumentParser(description="Create an HTML file with images.")
-    parser.add_argument(
-        "directory", type=Path, help="The directory containing the images."
-    )
-    args = parser.parse_args()
-    return Cli(directory=args.directory)
+    @classmethod
+    def parse(cls) -> "Cli":
+        parser = ArgumentParser(description="Create an HTML file with images.")
+        parser.add_argument(
+            "directory", type=Path, help="The directory containing the images."
+        )
+        args = parser.parse_args()
+        return cls(directory=args.directory)
 
 
 def get_template() -> Template:
@@ -61,7 +61,7 @@ def main(directory: Path | None = None) -> Path:
     directory = (
         directory.resolve()
         if directory is not None
-        else parse_cli().directory.resolve()
+        else Cli.parse().directory.resolve()
     )
     output = Path(directory, f"{directory.name}.html")
     create_html(directory, output)

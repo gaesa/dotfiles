@@ -11,20 +11,20 @@ from typing import final
 
 @final
 @dataclass(frozen=True, kw_only=True)
-class Arguments:
+class Cli:
     links: list[str]
     dir: str | None
     github: bool
 
-
-def parse_args() -> Arguments:
-    parser = ArgumentParser(description="Download files from given links")
-    parser.add_argument("links", nargs="+", help="Links to the files")
-    parser.add_argument("--dir", type=str, help="Directory to save the files")
-    parser.add_argument(
-        "--github", action="store_true", help="Specify if the link is from GitHub"
-    )
-    return Arguments(**vars(parser.parse_args()))
+    @classmethod
+    def parse(cls) -> "Cli":
+        parser = ArgumentParser(description="Download files from given links")
+        parser.add_argument("links", nargs="+", help="Links to the files")
+        parser.add_argument("--dir", type=str, help="Directory to save the files")
+        parser.add_argument(
+            "--github", action="store_true", help="Specify if the link is from GitHub"
+        )
+        return cls(**vars(parser.parse_args()))
 
 
 def transform_github_link(link: str) -> str:
@@ -39,10 +39,10 @@ def download_to(links: Iterable[str], directory: str | None) -> None:
 
 
 def main():
-    args = parse_args()
+    cli = Cli.parse()
     download_to(
-        map(transform_github_link, args.links) if args.github else args.links,
-        args.dir,
+        map(transform_github_link, cli.links) if cli.github else cli.links,
+        cli.dir,
     )
 
 

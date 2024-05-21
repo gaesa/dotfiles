@@ -3,43 +3,48 @@ import argparse
 import logging
 import re
 from subprocess import CalledProcessError, run
+from typing import final
+
+from pydantic import BaseModel, Field, NonNegativeInt
 
 
-def parse_args() -> tuple[str, bool, bool, int]:
-    def non_negative_int(value: str) -> int:
-        int_value = int(value)
-        if int_value < 0:
-            raise argparse.ArgumentTypeError(
-                f"'{value}' is an invalid non-negative int value"
-            )
-        else:
-            return int_value
+@final
+class Cli(BaseModel):
+    unit: str = Field(..., min_length=1)
+    user: bool
+    status: bool
+    position: NonNegativeInt
 
-    parser = argparse.ArgumentParser(
-        description="Retrieve a specific log entry based on recency from a specified systemd "
-        "unit"
-    )
-    parser.add_argument("unit", type=str, help="Specify the unit")
-    parser.add_argument(
-        "--user",
-        "-u",
-        action="store_true",
-        help="whether to get logs for the user",
-    )
-    parser.add_argument(
-        "--status",
-        action="store_true",
-        help="whether to include status header",
-    )
-    parser.add_argument(
-        "-p",
-        "--position",
-        type=non_negative_int,
-        default=0,
-        help="specify the position of the log entry to retrieve from the most recent",
-    )
-    args = parser.parse_args()
-    return args.unit, args.user, args.status, args.position
+    class Config:
+        frozen = True
+
+    @classmethod
+    def parse(cls) -> "Cli":
+        parser = argparse.ArgumentParser(
+            description="Retrieve a specific log entry based on recency from a specified systemd "
+            "unit"
+        )
+        parser.add_argument("unit", type=str, help="Specify the unit")
+        parser.add_argument(
+            "--user",
+            "-u",
+            action="store_true",
+            help="whether to get logs for the user",
+        )
+        parser.add_argument(
+            "--status",
+            action="store_true",
+            help="whether to include status header",
+        )
+        parser.add_argument(
+            "-p",
+            "--position",
+            type=int,
+            default=0,
+            help="specify the position of the log entry to retrieve from the most recent",
+        )
+        args = parser.parse_args()
+        return cls(**vars(args))
 
 
 def get_raw_logs(unit: str, user: bool) -> str:
@@ -125,8 +130,8 @@ def log(unit: str, user: bool, status: bool, position: int = 0) -> str:
 
 
 def main():
-    unit, user, status, position = parse_args()
-    print(log(unit, user, status, position))
+    cli = Cli.parse()
+    print(log(cli.unit, cli.user, cli.status, cli.position))
 
 
 if __name__ == "__main__":

@@ -1,24 +1,35 @@
 #!/usr/bin/env python3
 from argparse import ArgumentParser
 from concurrent.futures import ProcessPoolExecutor
+from dataclasses import dataclass
 from hashlib import sha256
 from pathlib import Path
+from typing import final
 
 from my_utils.iters import for_each
 from my_utils.stream import Stream
 
 
-def parse_args() -> tuple[list[str], bool]:
-    parser = ArgumentParser(description="check if all arguments are same")
-    parser.add_argument("args", type=str, nargs="+", help="the arguments to compare")
-    parser.add_argument(
-        "-f",
-        "--file",
-        action="store_true",
-        help="treat arguments as file paths and compare using checksum",
-    )
-    args = parser.parse_args()
-    return args.args, args.file
+@final
+@dataclass(frozen=True, kw_only=True)
+class Cli:
+    is_file: bool
+    args: list[str]
+
+    @classmethod
+    def parse(cls) -> "Cli":
+        parser = ArgumentParser(description="check if all arguments are same")
+        parser.add_argument(
+            "args", type=str, nargs="+", help="the arguments to compare"
+        )
+        parser.add_argument(
+            "-f",
+            "--file",
+            action="store_true",
+            help="treat arguments as file paths and compare using checksum",
+        )
+        args = parser.parse_args()
+        return cls(args=args.args, is_file=args.file)
 
 
 def get_checksum(file: str | Path) -> str:
@@ -34,8 +45,8 @@ def get_checksums(files: list[str] | list[Path]) -> tuple[str, ...]:
 
 
 def main():
-    args, is_file = parse_args()
-    results = get_checksums(args) if is_file else args
+    cli = Cli.parse()
+    results = get_checksums(cli.args) if cli.is_file else cli.args
     print(
         f"The arguments are {'identical' if Stream(results).all_equal() else 'different'}."
     )
