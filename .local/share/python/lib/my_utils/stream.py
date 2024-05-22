@@ -12,7 +12,8 @@ from typing import Any, Literal, Protocol, final, overload
 from my_utils import iters
 
 
-class Comparable(Protocol):
+@final
+class __Comparable(Protocol):
     def __lt__(self, __other) -> bool: ...
     def __eq__(self, __other: object) -> bool: ...
 
@@ -23,6 +24,7 @@ class NoSuchElementException(Exception):
     pass
 
 
+@final
 class _MissingDefault:
     """Used to generate a global single unique variable with specific type."""
 
@@ -484,15 +486,15 @@ class Stream[T](metaclass=_StrictClassMethodOfStream):
 
     @overload
     def sorted[
-        C: Comparable
+        C: __Comparable
     ](self: Stream[C], key: None = None, reverse: bool = False) -> Stream[T]: ...
     @overload
     def sorted[
-        C: Comparable
+        C: __Comparable
     ](self, key: Callable[[T], C], reverse: bool = False) -> Stream[T]: ...
 
     def sorted[
-        C: Comparable
+        C: __Comparable
     ](self, key: Callable[[T], C] | None = None, reverse: bool = False,) -> Stream[T]:
         return Stream(
             sorted(
@@ -568,22 +570,22 @@ class Stream[T](metaclass=_StrictClassMethodOfStream):
         return sum(self.__iterable, start)  # pyright: ignore [reportReturnType]
 
     @overload
-    def min[C: Comparable](self: Stream[C], key: None = None) -> T: ...
+    def min[C: __Comparable](self: Stream[C], key: None = None) -> T: ...
     @overload
-    def min[C: Comparable](self, key: Callable[[T], C]) -> T: ...
+    def min[C: __Comparable](self, key: Callable[[T], C]) -> T: ...
 
-    def min[C: Comparable](self, key: Callable[[T], C] | None = None) -> T:
+    def min[C: __Comparable](self, key: Callable[[T], C] | None = None) -> T:
         return min(
             self.__iterable,
             key=key,  # pyright: ignore [reportCallIssue,reportArgumentType]
         )
 
     @overload
-    def max[C: Comparable](self: Stream[C], key: None = None) -> T: ...
+    def max[C: __Comparable](self: Stream[C], key: None = None) -> T: ...
     @overload
-    def max[C: Comparable](self, key: Callable[[T], C]) -> T: ...
+    def max[C: __Comparable](self, key: Callable[[T], C]) -> T: ...
 
-    def max[C: Comparable](self, key: Callable[[T], C] | None = None) -> T:
+    def max[C: __Comparable](self, key: Callable[[T], C] | None = None) -> T:
         return max(
             self.__iterable,
             key=key,  # pyright: ignore [reportCallIssue,reportArgumentType]
