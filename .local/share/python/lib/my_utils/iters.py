@@ -212,23 +212,6 @@ def diff[T](a: Iterable[T], b: Iterable[T]) -> tuple[set[T], set[T], set[T]]:
     return a_minus_b, b_minus_a, intersection
 
 
-def fallback(*args: Callable[[], Any]) -> Any:
-    """
-    Returns the first non-empty or non-None element in an iterable,
-    the laziness is implemented by function
-    """
-
-    from my_utils.stream import NoSuchElementException, Stream
-
-    def is_not_empty_or_none(arg: Any):
-        return (not is_empty(arg)) if isinstance(arg, Iterable) else arg is not None
-
-    try:
-        return Stream(args).map(lambda arg: arg()).find(is_not_empty_or_none)
-    except NoSuchElementException:
-        return None
-
-
 def cond(*args: tuple[Callable[[], bool], Callable[[], Any]]) -> Any:
     for condition, action in args:
         if condition():
