@@ -1,11 +1,15 @@
 #!/usr/bin/env python3
 import argparse
 import logging
+import os
 import re
 from subprocess import CalledProcessError, run
 from typing import final
 
 from pydantic import BaseModel, Field, NonNegativeInt
+
+logging.basicConfig(level=os.environ.get("LOG_LEVEL_PROGRAM", "WARNING").upper())
+logger = logging.getLogger(__name__)
 
 
 @final
@@ -100,7 +104,7 @@ def get_raw_status(unit: str, user: bool) -> str:
         return p.stdout.rstrip()
     else:  # no such unit
         e = p.stderr.rstrip()
-        logging.error(e)
+        logger.error(e)
         raise CalledProcessError(p.returncode, cmd, p.stdout.rstrip(), e)
 
 
