@@ -10,6 +10,9 @@
 //! panic = "abort"
 //! strip = true
 //! codegen-units = 1
+//!
+//! [net]
+//! offline = true
 //! ```
 #![allow(clippy::needless_return)]
 
