@@ -66,6 +66,7 @@ def install_common():
         "neovim",
         "python-pynvim",
         "python-pyxdg",
+        "python-pydantic",
         "bat",
         "duf",
         "dust",
