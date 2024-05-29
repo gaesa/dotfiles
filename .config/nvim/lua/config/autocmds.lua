@@ -81,7 +81,8 @@ local function setup_primary_selection()
     end
 
     if vim.fn.getenv("WAYLAND_DISPLAY") ~= vim.NIL then
-        local timer, state = vim.loop.new_timer(), false
+        ---@diagnostic disable-next-line: undefined-field
+        local timer, state = vim.uv.new_timer(), false
         autocmd({ "ModeChanged" }, {
             callback = function()
                 local mode = string.sub(vim.api.nvim_get_mode().mode, 1, 1)
