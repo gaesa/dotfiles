@@ -90,7 +90,7 @@ class _StrictClassMethodOfStream(type):
     @overload
     def generate[T](cls, operation: Callable[[], T], stop_value: T) -> Stream[T]: ...
 
-    def generate[
+    def generate[  # pyright: ignore [reportInconsistentOverload]
         T
     ](
         cls,
@@ -131,7 +131,9 @@ class Stream[T](metaclass=_StrictClassMethodOfStream):
     @overload
     def __next__[U](self, default: U) -> T | U: ...
 
-    def __next__[U](self, default: U = _MissingDefault) -> T | U:
+    def __next__[  # pyright: ignore [reportInconsistentOverload]
+        U
+    ](self, default: U = _MissingDefault) -> T | U:
         return (
             next(self.__iterable, default)
             if default is not _MissingDefault
@@ -187,7 +189,7 @@ class Stream[T](metaclass=_StrictClassMethodOfStream):
         U
     ](self, operation: Callable[[U, T], U], init: U) -> U: ...
 
-    def reduce[
+    def reduce[  # pyright: ignore [reportInconsistentOverload]
         U
     ](
         self,
