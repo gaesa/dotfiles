@@ -149,9 +149,8 @@ class Stream[T](metaclass=_StrictClassMethodOfStream):
     def accumulate(self) -> Stream[T]:
         return Stream(itertools.accumulate(self.__iterable))
 
-    # Wait python 3.12 release on Arch
-    # def batched(self, n: int) -> Stream[T]:
-    #     return Stream(itertools.batched(self.__iterable, n))
+    def batched(self, n: int) -> Stream[tuple[T, ...]]:
+        return Stream(itertools.batched(self.__iterable, n))
 
     def map[U](self, operation: Callable[[T], U]) -> Stream[U]:
         return Stream(map(operation, self.__iterable))
