@@ -65,6 +65,11 @@ vim.opt.history = 1000
 -- Default: 'backup' is off, 'writebackup' is on, 'swapfile' is on
 vim.opt.undofile = true
 
+-- 0.10 migration: https://github.com/junegunn/fzf/issues/3818
+-- stylua: ignore
+vim.iter(vim.api.nvim_get_autocmds({ event = "SwapExists", group = "nvim_swapfile" }))
+    :each(function(aucmd) vim.api.nvim_del_autocmd(aucmd.id) end)
+
 -- Spell check
 vim.opt.spelllang = "en,cjk"
 
