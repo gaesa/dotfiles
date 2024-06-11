@@ -29,7 +29,7 @@
     s = status
     st = stash
     d = difftool
-    ctc = shortlog -s
+    ctc = !git-count-commits
     ctl = !git-count-lines
     cm = commit
     rst = restore
