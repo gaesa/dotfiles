@@ -1,0 +1,125 @@
+#!/usr/bin/env python3
+import re
+from dataclasses import dataclass
+from pathlib import Path
+from subprocess import run
+from typing import Literal, final, get_args
+
+ScaleAlgorithm = Literal["lanczos", "spline36", "bicubic"]
+
+
+@final
+@dataclass(frozen=True, kw_only=True)
+class Cli:
+    file: Path
+    start: str
+    end: str
+    algorithm: ScaleAlgorithm
+
+    @classmethod
+    def parse(cls) -> "Cli":
+        from argparse import ArgumentParser, ArgumentTypeError
+
+        def validate_time_format(time_str: str) -> str:
+            patterns = [
+                r"(?P<hours>\d+):(?P<minutes>\d+):(?P<seconds>\d+\.\d+)",
+                r"(?P<minutes>\d+):(?P<seconds>\d+\.\d+)",
+                r"(?P<seconds>\d+)",
+                r"(?P<seconds>\d+\.\d+)",
+            ]
+
+            for pattern in patterns:
+                if re.match(pattern, time_str) is not None:
+                    return time_str
+            else:
+                raise ArgumentTypeError(f"Invalid time format: {time_str}")
+
+        parser = ArgumentParser(description="Create a GIF from a video file.")
+        parser.add_argument("file", type=Path, help="The path to the video file.")
+        parser.add_argument(
+            "start",
+            type=str,
+            help="The start time (00:00:00.000, 00:00.000, or 00.000).",
+        )
+        parser.add_argument(
+            "end", type=str, help="The end time (00:00:00.000, 00:00.000, or 00.000)."
+        )
+        parser.add_argument(
+            "--algorithm",
+            type=str,
+            choices=get_args(ScaleAlgorithm),
+            default="lanczos",
+            help="The scaling algorithm to use (default: lanczos).",
+        )
+
+        args = parser.parse_args()
+        return cls(
+            file=args.file,
+            start=validate_time_format(args.start),
+            end=validate_time_format(args.end),
+            algorithm=args.algorithm,
+        )
+
+
+def has_subtitles(input: Path) -> bool:
+    result = run(
+        [
+            "ffmpeg",
+            "-i",
+            input,
+            "-map",
+            "0:s:0",
+            "-frames:s",
+            "1",
+            "-f",
+            "null",
+            "-",
+            "-v",
+            "0",
+            "-hide_banner",
+        ],
+    )
+    return result.returncode == 0
+
+
+def create_gif_from_video(
+    input: Path, output: Path, start: str, end: str, algorithm: ScaleAlgorithm
+):
+    import shlex
+
+    filter_str = (
+        f"subtitles={shlex.quote(str(input))},fps=10,scale=-1:480:flags={algorithm}"
+        if has_subtitles(input)
+        else f"fps=10,scale=-1:480:flags={algorithm}"
+    )
+
+    run(
+        [
+            "ffmpeg",
+            "-i",
+            str(input),
+            "-ss",
+            start,
+            "-to",
+            end,
+            "-pix_fmt",
+            "rgb8",
+            "-vf",
+            filter_str,
+            "-loop",
+            "0",
+            str(output),
+        ],
+        check=True,
+    )
+
+
+def main():
+    cli = Cli.parse()
+    create_gif_from_video(
+        cli.file, cli.file.with_suffix(".gif"), cli.start, cli.end, cli.algorithm
+    )
+
+
+if __name__ == "__main__":
+    main()
