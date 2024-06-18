@@ -32,7 +32,7 @@ class _MissingDefault:
 
 
 @final
-class _StrictClassMethodOfStream(type):
+class __StrictClassMethodOfStream(type):
     """
     A workaround to make class-only methods.
 
@@ -119,7 +119,7 @@ class _StrictClassMethodOfStream(type):
 
 
 @final
-class Stream[T](metaclass=_StrictClassMethodOfStream):
+class Stream[T](metaclass=__StrictClassMethodOfStream):
     def __init__(self, iterable: Iterable[T] = ()) -> None:
         self.__iterable = iter(iterable)
 
