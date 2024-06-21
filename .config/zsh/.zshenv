@@ -54,7 +54,6 @@ typeset -A my_env=(
     'PYTHONSTARTUP' "$XDG_CONFIG_HOME/python/startup.py"
     'PYTHONPYCACHEPREFIX' "$XDG_CACHE_HOME/python"
     'PYTHONUSERBASE' "$XDG_DATA_HOME/python"
-    'PYTHON_KEYRING_BACKEND' 'keyring.backends.null.Keyring'
     'PYENV_ROOT' "$XDG_DATA_HOME/pyenv"
     # }}}
 
