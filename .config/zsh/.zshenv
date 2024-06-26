@@ -43,6 +43,7 @@ typeset -A my_env=(
     # Note: The `SYSTEMD_LESS` cannot override the options
     # passed to 'less' if the `LESS` is set by the `lesskey` file.
     'MANPAGER' 'nvim +Man!'
+    'TAB_CHAR_WIDTH' 4
     # }}}
 
     # Start ssh-agent with systemd user {{{
