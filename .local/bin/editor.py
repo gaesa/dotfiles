@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+#!/usr/bin/python
 from os.path import splitext
 from subprocess import DEVNULL, Popen, run
 from sys import argv

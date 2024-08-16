@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+#!/usr/bin/python
 from collections.abc import Iterable
 from functools import reduce
 from os import getenv
