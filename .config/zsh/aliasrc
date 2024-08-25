@@ -81,5 +81,5 @@ alias zstm="z $HOME/.var/app/com.valvesoftware.Steam/.local/share/Steam"
 
 alias startsway="env __GL_GSYNC_ALLOWED=0 __GL_VRR_ALLOWED=0 WLR_DRM_NO_ATOMIC=1 XDG_CURRENT_DESKTOP=sway WLR_NO_HARDWARE_CURSORS=1 MOZ_ENABLE_WAYLAND=1 sway --unsupported-gpu"
 
-alias rcow="fortune -c | cowthink -f $(find /usr/share/cows -type f | shuf -n 1)"
-alias rpony="fortune -c | ponythink -f $(find /usr/share/ponysay/ponies -type f | shuf -n 1)"
+alias rcow="fortune -c | cowthink -f $(fd -t f . /usr/share/cowsay | shuf -n 1)"
+alias rpony="fortune -c | ponythink -f $(fd -t f . /usr/share/ponysay/ponies | shuf -n 1)"
