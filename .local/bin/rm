@@ -12,10 +12,10 @@ from subprocess import run
 from typing import final
 
 try:
-    from my_utils.iters import for_each
+    from my_utils.iters import drop_first, for_each
 except ModuleNotFoundError:
     sys.path.append(str(Path("~/.local/share/python/lib").expanduser()))
-    from my_utils.iters import for_each
+    from my_utils.iters import drop_first, for_each
 
 from my_utils.os import slice_path
 
@@ -108,7 +108,7 @@ def main():
         if (which("trash") is not None) and (not in_black_list):
             trash(cli.files)
         else:
-            run([find_rm_exe(), *sys.argv[1:]], check=True)
+            run([find_rm_exe(), *drop_first(sys.argv)], check=True)
 
 
 if __name__ == "__main__":
