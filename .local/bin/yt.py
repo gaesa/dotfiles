@@ -187,7 +187,7 @@ def main():
         cli = Cli.parse()
         search_and_play(cli.keyword, cli.limit, cli.profile, cli.format, cli.duration)
     except KeyboardInterrupt:
-        print()
+        pass
 
 
 if __name__ == "__main__":
