@@ -17,10 +17,14 @@ local options = {
     -- Thumbnail path (leave empty for auto)
     thumbnail = "",
 
-    -- Maximum thumbnail size in pixels (scaled down to fit)
+    -- Maximum thumbnail generation size in pixels (scaled down to fit)
     -- Values are scaled when hidpi is enabled
     max_height = 200,
     max_width = 200,
+
+    -- Scale factor for thumbnail display size (requires mpv 0.38+)
+    -- Note that this is lower quality than increasing max_height and max_width
+    scale_factor = 1,
 
     -- Apply tone-mapping, no to disable
     tone_mapping = "auto",
@@ -47,31 +51,32 @@ local options = {
     direct_io = false,
 
     -- Custom path to the mpv executable
-    mpv_path = "mpv",
+    mpv_path = "mpv"
 }
 
-mp.utils = require("mp.utils")
-mp.options = require("mp.options")
+mp.utils = require "mp.utils"
+mp.options = require "mp.options"
 mp.options.read_options(options, "thumbfast")
 
 local properties = {}
 local pre_0_30_0 = mp.command_native_async == nil
 local pre_0_33_0 = true
+local support_media_control = mp.get_property_native("media-controls") ~= nil
 
 function subprocess(args, async, callback)
     callback = callback or function() end
 
     if not pre_0_30_0 then
         if async then
-            return mp.command_native_async({ name = "subprocess", playback_only = true, args = args }, callback)
+            return mp.command_native_async({name = "subprocess", playback_only = true, args = args}, callback)
         else
-            return mp.command_native({ name = "subprocess", playback_only = false, capture_stdout = true, args = args })
+            return mp.command_native({name = "subprocess", playback_only = false, capture_stdout = true, args = args})
         end
     else
         if async then
-            return mp.utils.subprocess_detached({ args = args }, callback)
+            return mp.utils.subprocess_detached({args = args}, callback)
         else
-            return mp.utils.subprocess({ args = args })
+            return mp.utils.subprocess({args = args})
         end
     end
 end
@@ -102,13 +107,13 @@ if options.direct_io then
         -- cache flags used in run() to avoid bor() call
         winapi._createfile_pipe_flags = winapi.bit.bor(winapi.FILE_FLAG_WRITE_THROUGH, winapi.FILE_FLAG_NO_BUFFERING)
 
-        ffi.cdef([[
+        ffi.cdef[[
             void* __stdcall CreateFileW(const wchar_t *lpFileName, unsigned long dwDesiredAccess, unsigned long dwShareMode, void *lpSecurityAttributes, unsigned long dwCreationDisposition, unsigned long dwFlagsAndAttributes, void *hTemplateFile);
             bool __stdcall WriteFile(void *hFile, const void *lpBuffer, unsigned long nNumberOfBytesToWrite, unsigned long *lpNumberOfBytesWritten, void *lpOverlapped);
             bool __stdcall CloseHandle(void *hObject);
             bool __stdcall SetNamedPipeHandleState(void *hNamedPipe, unsigned long *lpMode, unsigned long *lpMaxCollectionCount, unsigned long *lpCollectDataTimeout);
             int __stdcall MultiByteToWideChar(unsigned int CodePage, unsigned long dwFlags, const char *lpMultiByteStr, int cbMultiByte, wchar_t *lpWideCharStr, int cchWideChar);
-        ]])
+        ]]
 
         winapi.MultiByteToWideChar = function(MultiByteStr)
             if MultiByteStr then
@@ -122,6 +127,7 @@ if options.direct_io then
             end
             return ""
         end
+
     else
         options.direct_io = false
     end
@@ -151,19 +157,11 @@ local script_name
 
 local show_thumbnail = false
 
-local filters_reset = { ["lavfi-crop"] = true, ["crop"] = true }
-local filters_runtime = { ["hflip"] = true, ["vflip"] = true }
-local filters_all = { ["hflip"] = true, ["vflip"] = true, ["lavfi-crop"] = true, ["crop"] = true }
+local filters_reset = {["lavfi-crop"]=true, ["crop"]=true}
+local filters_runtime = {["hflip"]=true, ["vflip"]=true}
+local filters_all = {["hflip"]=true, ["vflip"]=true, ["lavfi-crop"]=true, ["crop"]=true}
 
-local tone_mappings = {
-    ["none"] = true,
-    ["clip"] = true,
-    ["linear"] = true,
-    ["gamma"] = true,
-    ["reinhard"] = true,
-    ["hable"] = true,
-    ["mobius"] = true,
-}
+local tone_mappings = {["none"]=true, ["clip"]=true, ["linear"]=true, ["gamma"]=true, ["reinhard"]=true, ["hable"]=true, ["mobius"]=true}
 local last_tone_mapping
 
 local last_vf_reset = ""
@@ -180,7 +178,7 @@ local last_has_vid = 0
 local has_vid = 0
 
 local file_timer
-local file_check_period = 1 / 60
+local file_check_period = 1/60
 
 local allow_fast_seek = true
 
@@ -198,14 +196,14 @@ local function get_os()
     if jit and jit.os and jit.arch then
         raw_os_name = jit.os
     else
-        if package.config:sub(1, 1) == "\\" then
+        if package.config:sub(1,1) == "\\" then
             -- Windows
             local env_OS = os.getenv("OS")
             if env_OS then
                 raw_os_name = env_OS
             end
         else
-            raw_os_name = subprocess({ "uname", "-s" }).stdout
+            raw_os_name = subprocess({"uname", "-s"}).stdout
         end
     end
 
@@ -213,17 +211,17 @@ local function get_os()
 
     local os_patterns = {
         ["windows"] = "windows",
-        ["linux"] = "linux",
+        ["linux"]   = "linux",
 
-        ["osx"] = "darwin",
-        ["mac"] = "darwin",
-        ["darwin"] = "darwin",
+        ["osx"]     = "darwin",
+        ["mac"]     = "darwin",
+        ["darwin"]  = "darwin",
 
-        ["^mingw"] = "windows",
+        ["^mingw"]  = "windows",
         ["^cygwin"] = "windows",
 
-        ["bsd$"] = "darwin",
-        ["sunos"] = "darwin",
+        ["bsd$"]    = "darwin",
+        ["sunos"]   = "darwin"
     }
 
     -- Default to linux
@@ -243,6 +241,7 @@ local os_name = mp.get_property("platform") or get_os()
 
 local path_separator = os_name == "windows" and "\\" or "/"
 
+
 local function fallback(...)
     local args = { ... }
 
@@ -261,6 +260,7 @@ local function fallback(...)
         end
     end
 end
+
 
 local function isdir(file)
     local info = mp.utils.file_info(file)
@@ -344,11 +344,19 @@ if options.direct_io then
     end
 end
 
+options.scale_factor = math.floor(options.scale_factor)
+
 local mpv_path = options.mpv_path
+local frontend_path
+
+if mpv_path == "mpv" and os_name == "windows" then
+    frontend_path = mp.get_property_native("user-data/frontend/process-path")
+    mpv_path = frontend_path or mpv_path
+end
 
 if mpv_path == "mpv" and os_name == "darwin" and unique then
     -- TODO: look into ~~osxbundle/
-    mpv_path = string.gsub(subprocess({ "ps", "-o", "comm=", "-p", tostring(unique) }).stdout, "[\n\r]", "")
+    mpv_path = string.gsub(subprocess({"ps", "-o", "comm=", "-p", tostring(unique)}).stdout, "[\n\r]", "")
     if mpv_path ~= "mpv" then
         mpv_path = string.gsub(mpv_path, "/mpv%-bundle$", "/mpv")
         local mpv_bin = mp.utils.file_info("/usr/local/mpv")
@@ -357,13 +365,9 @@ if mpv_path == "mpv" and os_name == "darwin" and unique then
         else
             local mpv_app = mp.utils.file_info("/Applications/mpv.app/Contents/MacOS/mpv")
             if mpv_app and mpv_app.is_file then
-                mp.msg.warn(
-                    "symlink mpv to fix Dock icons: `sudo ln -s /Applications/mpv.app/Contents/MacOS/mpv /usr/local/mpv`"
-                )
+                mp.msg.warn("symlink mpv to fix Dock icons: `sudo ln -s /Applications/mpv.app/Contents/MacOS/mpv /usr/local/mpv`")
             else
-                mp.msg.warn(
-                    "drag to your Applications folder and symlink mpv to fix Dock icons: `sudo ln -s /Applications/mpv.app/Contents/MacOS/mpv /usr/local/mpv`"
-                )
+                mp.msg.warn("drag to your Applications folder and symlink mpv to fix Dock icons: `sudo ln -s /Applications/mpv.app/Contents/MacOS/mpv /usr/local/mpv`")
             end
         end
     end
@@ -390,13 +394,11 @@ local function vf_string(filters, full)
     local vf_table = properties["vf"]
 
     if (properties["video-crop"] or "") ~= "" then
-        vf = "lavfi-crop="
-            .. string.gsub(properties["video-crop"], "(%d*)x?(%d*)%+(%d+)%+(%d+)", "w=%1:h=%2:x=%3:y=%4")
-            .. ","
+        vf = "lavfi-crop="..string.gsub(properties["video-crop"], "(%d*)x?(%d*)%+(%d+)%+(%d+)", "w=%1:h=%2:x=%3:y=%4")..","
         local width = properties["video-out-params"] and properties["video-out-params"]["dw"]
         local height = properties["video-out-params"] and properties["video-out-params"]["dh"]
         if width and height then
-            vf = string.gsub(vf, "w=:h=:", "w=" .. width .. ":h=" .. height .. ":")
+            vf = string.gsub(vf, "w=:h=:", "w="..width..":h="..height..":")
         end
     end
 
@@ -428,22 +430,12 @@ local function vf_string(filters, full)
                 tone_mapping = "hable"
             end
             last_tone_mapping = tone_mapping
-            vf = vf .. "zscale=transfer=linear,format=gbrpf32le,tonemap=" .. tone_mapping .. ",zscale=transfer=bt709,"
+            vf = vf .. "zscale=transfer=linear,format=gbrpf32le,tonemap="..tone_mapping..",zscale=transfer=bt709,"
         end
     end
 
     if full then
-        vf = vf
-            .. "scale=w="
-            .. effective_w
-            .. ":h="
-            .. effective_h
-            .. par
-            .. ",pad=w="
-            .. effective_w
-            .. ":h="
-            .. effective_h
-            .. ":x=-1:y=-1,format=bgra"
+        vf = vf.."scale=w="..effective_w..":h="..effective_h..par..",pad=w="..effective_w..":h="..effective_h..":x=-1:y=-1,format=bgra"
     end
 
     return vf
@@ -452,9 +444,7 @@ end
 local function calc_dimensions()
     local width = properties["video-out-params"] and properties["video-out-params"]["dw"]
     local height = properties["video-out-params"] and properties["video-out-params"]["dh"]
-    if not width or not height then
-        return
-    end
+    if not width or not height then return end
 
     local scale = properties["display-hidpi-scale"] or 1
 
@@ -481,36 +471,25 @@ local function info(w, h)
     local image = properties["current-tracks/video"] and properties["current-tracks/video"]["image"]
     local albumart = image and properties["current-tracks/video"]["albumart"]
 
-    disabled = (w or 0) == 0
-        or (h or 0) == 0
-        or has_vid == 0
-        or (properties["demuxer-via-network"] and not options.network)
-        or (albumart and not options.audio)
-        or (image and not albumart)
-        or force_disabled
+    disabled = (w or 0) == 0 or (h or 0) == 0 or
+        has_vid == 0 or
+        (properties["demuxer-via-network"] and not options.network) or
+        (albumart and not options.audio) or
+        (image and not albumart) or
+        force_disabled
 
     if info_timer then
         info_timer:kill()
         info_timer = nil
     elseif has_vid == 0 or (rotate == nil and not disabled) then
-        info_timer = mp.add_timeout(0.05, function()
-            info(w, h)
-        end)
+        info_timer = mp.add_timeout(0.05, function() info(w, h) end)
     end
 
-    local json, err = mp.utils.format_json({
-        width = w,
-        height = h,
-        disabled = disabled,
-        available = true,
-        socket = options.socket,
-        thumbnail = options.thumbnail,
-        overlay_id = options.overlay_id,
-    })
+    local json, err = mp.utils.format_json({width=w * options.scale_factor, height=h * options.scale_factor, scale_factor=options.scale_factor, disabled=disabled, available=true, socket=options.socket, thumbnail=options.thumbnail, overlay_id=options.overlay_id})
     if pre_0_30_0 then
-        mp.command_native({ "script-message", "thumbfast-info", json })
+        mp.command_native({"script-message", "thumbfast-info", json})
     else
-        mp.command_native_async({ "script-message", "thumbfast-info", json }, function() end)
+        mp.command_native_async({"script-message", "thumbfast-info", json}, function() end)
     end
 end
 
@@ -521,20 +500,16 @@ local function remove_thumbnail_files()
         file_bytes = 0
     end
     os.remove(options.thumbnail)
-    os.remove(options.thumbnail .. ".bgra")
+    os.remove(options.thumbnail..".bgra")
 end
 
 local activity_timer
 
 local function spawn(time)
-    if disabled then
-        return
-    end
+    if disabled then return end
 
     local path = properties["path"]
-    if path == nil then
-        return
-    end
+    if path == nil then return end
 
     if options.quit_after_inactivity > 0 then
         if show_thumbnail or activity_timer:is_enabled() then
@@ -555,45 +530,24 @@ local function spawn(time)
     has_vid = vid or 0
 
     local args = {
-        mpv_path,
-        "--no-config",
-        "--msg-level=all=no",
-        "--idle",
-        "--pause",
-        "--keep-open=always",
-        "--really-quiet",
-        "--no-terminal",
-        "--load-scripts=no",
-        "--osc=no",
-        "--ytdl=no",
-        "--load-stats-overlay=no",
-        "--load-osd-console=no",
-        "--load-auto-profiles=no",
-        "--edition=" .. (properties["edition"] or "auto"),
-        "--vid=" .. (vid or "auto"),
-        "--no-sub",
-        "--no-audio",
-        "--start=" .. time,
-        allow_fast_seek and "--hr-seek=no" or "--hr-seek=yes",
-        "--ytdl-format=worst",
-        "--demuxer-readahead-secs=0",
-        "--demuxer-max-bytes=128KiB",
-        "--vd-lavc-skiploopfilter=all",
-        "--vd-lavc-software-fallback=1",
-        "--vd-lavc-fast",
-        "--vd-lavc-threads=2",
-        "--hwdec=" .. (options.hwdec and "auto" or "no"),
-        "--vf=" .. vf_string(filters_all, true),
+        mpv_path, "--no-config", "--msg-level=all=no", "--idle", "--pause", "--keep-open=always", "--really-quiet", "--no-terminal",
+        "--load-scripts=no", "--osc=no", "--ytdl=no", "--load-stats-overlay=no", "--load-osd-console=no", "--load-auto-profiles=no",
+        "--edition="..(properties["edition"] or "auto"), "--vid="..(vid or "auto"), "--no-sub", "--no-audio",
+        "--start="..time, allow_fast_seek and "--hr-seek=no" or "--hr-seek=yes",
+        "--ytdl-format=worst", "--demuxer-readahead-secs=0", "--demuxer-max-bytes=128KiB",
+        "--vd-lavc-skiploopfilter=all", "--vd-lavc-software-fallback=1", "--vd-lavc-fast", "--vd-lavc-threads=2", "--hwdec="..(options.hwdec and "auto" or "no"),
+        "--vf="..vf_string(filters_all, true),
         "--sws-scaler=fast-bilinear",
-        "--video-rotate=" .. last_rotate,
-        "--ovc=rawvideo",
-        "--of=image2",
-        "--ofopts=update=1",
-        "--o=" .. options.thumbnail,
+        "--video-rotate="..last_rotate,
+        "--ovc=rawvideo", "--of=image2", "--ofopts=update=1", "--o="..options.thumbnail
     }
 
     if not pre_0_30_0 then
         table.insert(args, "--sws-allow-zimg=no")
+    end
+
+    if support_media_control then
+        table.insert(args, "--media-controls=no")
     end
 
     if os_name == "darwin" and properties["macos-app-activation-policy"] then
@@ -601,9 +555,9 @@ local function spawn(time)
     end
 
     if os_name == "windows" or pre_0_33_0 then
-        table.insert(args, "--input-ipc-server=" .. options.socket)
+        table.insert(args, "--input-ipc-server="..options.socket)
     elseif not script_written then
-        local client_script_path = options.socket .. ".run"
+        local client_script_path = options.socket..".run"
         local script = io.open(client_script_path, "w+")
         if script == nil then
             mp.msg.error("client script write failed")
@@ -612,12 +566,12 @@ local function spawn(time)
             script_written = true
             script:write(string.format(client_script, options.socket))
             script:close()
-            subprocess({ "chmod", "+x", client_script_path }, true)
-            table.insert(args, "--scripts=" .. client_script_path)
+            subprocess({"chmod", "+x", client_script_path}, true)
+            table.insert(args, "--scripts="..client_script_path)
         end
     else
-        local client_script_path = options.socket .. ".run"
-        table.insert(args, "--scripts=" .. client_script_path)
+        local client_script_path = options.socket..".run"
+        table.insert(args, "--scripts="..client_script_path)
     end
 
     table.insert(args, "--")
@@ -626,114 +580,56 @@ local function spawn(time)
     spawned = true
     spawn_waiting = true
 
-    subprocess(args, true, function(success, result)
-        if spawn_waiting and (success == false or (result.status ~= 0 and result.status ~= -2)) then
-            spawned = false
-            spawn_waiting = false
-            options.tone_mapping = "no"
-            mp.msg.error("mpv subprocess create failed")
-            if not spawn_working then -- notify users of required configuration
-                if options.mpv_path == "mpv" then
-                    if properties["current-vo"] == "libmpv" then
-                        if options.mpv_path == mpv_path then -- attempt to locate ImPlay
-                            mpv_path = "ImPlay"
-                            spawn(time)
-                        else -- ImPlay not in path
-                            if os_name ~= "darwin" then
-                                force_disabled = true
-                                info(real_w or effective_w, real_h or effective_h)
+    subprocess(args, true,
+        function(success, result)
+            if spawn_waiting and (success == false or (result.status ~= 0 and result.status ~= -2)) then
+                spawned = false
+                spawn_waiting = false
+                options.tone_mapping = "no"
+                mp.msg.error("mpv subprocess create failed")
+                if not spawn_working then -- notify users of required configuration
+                    if options.mpv_path == "mpv" then
+                        if properties["current-vo"] == "libmpv" then
+                            if options.mpv_path == mpv_path then -- attempt to locate ImPlay
+                                mpv_path = "ImPlay"
+                                spawn(time)
+                            else -- ImPlay not in path
+                                if os_name ~= "darwin" then
+                                    force_disabled = true
+                                    info(real_w or effective_w, real_h or effective_h)
+                                end
+                                mp.commandv("show-text", "thumbfast: ERROR! cannot create mpv subprocess", 5000)
+                                mp.commandv("script-message-to", "implay", "show-message", "thumbfast initial setup", "Set mpv_path=PATH_TO_ImPlay in thumbfast config:\n" .. string.gsub(mp.command_native({"expand-path", "~~/script-opts/thumbfast.conf"}), "[/\\]", path_separator).."\nand restart ImPlay")
                             end
+                        else
                             mp.commandv("show-text", "thumbfast: ERROR! cannot create mpv subprocess", 5000)
-                            mp.commandv(
-                                "script-message-to",
-                                "implay",
-                                "show-message",
-                                "thumbfast initial setup",
-                                "Set mpv_path=PATH_TO_ImPlay in thumbfast config:\n"
-                                    .. string.gsub(
-                                        mp.command_native({ "expand-path", "~~/script-opts/thumbfast.conf" }),
-                                        "[/\\]",
-                                        path_separator
-                                    )
-                                    .. "\nand restart ImPlay"
-                            )
+                            if os_name == "windows" and frontend_path == nil then
+                                mp.commandv("script-message-to", "mpvnet", "show-text", "thumbfast: ERROR! install standalone mpv, see README", 5000, 20)
+                                mp.commandv("script-message", "mpv.net", "show-text", "thumbfast: ERROR! install standalone mpv, see README", 5000, 20)
+                            end
                         end
                     else
                         mp.commandv("show-text", "thumbfast: ERROR! cannot create mpv subprocess", 5000)
-                        if os_name == "windows" then
-                            mp.commandv(
-                                "script-message-to",
-                                "mpvnet",
-                                "show-text",
-                                "thumbfast: ERROR! install standalone mpv, see README",
-                                5000,
-                                20
-                            )
-                            mp.commandv(
-                                "script-message",
-                                "mpv.net",
-                                "show-text",
-                                "thumbfast: ERROR! install standalone mpv, see README",
-                                5000,
-                                20
-                            )
-                        end
+                        -- found ImPlay but not defined in config
+                        mp.commandv("script-message-to", "implay", "show-message", "thumbfast", "Set mpv_path=PATH_TO_ImPlay in thumbfast config:\n" .. string.gsub(mp.command_native({"expand-path", "~~/script-opts/thumbfast.conf"}), "[/\\]", path_separator).."\nand restart ImPlay")
                     end
-                else
-                    mp.commandv("show-text", "thumbfast: ERROR! cannot create mpv subprocess", 5000)
-                    -- found ImPlay but not defined in config
-                    mp.commandv(
-                        "script-message-to",
-                        "implay",
-                        "show-message",
-                        "thumbfast",
-                        "Set mpv_path=PATH_TO_ImPlay in thumbfast config:\n"
-                            .. string.gsub(
-                                mp.command_native({ "expand-path", "~~/script-opts/thumbfast.conf" }),
-                                "[/\\]",
-                                path_separator
-                            )
-                            .. "\nand restart ImPlay"
-                    )
                 end
+            elseif success == true and (result.status == 0 or result.status == -2) then
+                if not spawn_working and properties["current-vo"] == "libmpv" and options.mpv_path ~= mpv_path then
+                    mp.commandv("script-message-to", "implay", "show-message", "thumbfast initial setup", "Set mpv_path=ImPlay in thumbfast config:\n" .. string.gsub(mp.command_native({"expand-path", "~~/script-opts/thumbfast.conf"}), "[/\\]", path_separator).."\nand restart ImPlay")
+                end
+                spawn_working = true
+                spawn_waiting = false
             end
-        elseif success == true and (result.status == 0 or result.status == -2) then
-            if not spawn_working and properties["current-vo"] == "libmpv" and options.mpv_path ~= mpv_path then
-                mp.commandv(
-                    "script-message-to",
-                    "implay",
-                    "show-message",
-                    "thumbfast initial setup",
-                    "Set mpv_path=ImPlay in thumbfast config:\n"
-                        .. string.gsub(
-                            mp.command_native({ "expand-path", "~~/script-opts/thumbfast.conf" }),
-                            "[/\\]",
-                            path_separator
-                        )
-                        .. "\nand restart ImPlay"
-                )
-            end
-            spawn_working = true
-            spawn_waiting = false
         end
-    end)
+    )
 end
 
 local function run(command)
-    if not spawned then
-        return
-    end
+    if not spawned then return end
 
     if options.direct_io then
-        local hPipe = winapi.C.CreateFileW(
-            winapi.socket_wc,
-            winapi.GENERIC_WRITE,
-            0,
-            nil,
-            winapi.OPEN_EXISTING,
-            winapi._createfile_pipe_flags,
-            nil
-        )
+        local hPipe = winapi.C.CreateFileW(winapi.socket_wc, winapi.GENERIC_WRITE, 0, nil, winapi.OPEN_EXISTING, winapi._createfile_pipe_flags, nil)
         if hPipe ~= winapi.INVALID_HANDLE_VALUE then
             local buf = command .. "\n"
             winapi.C.SetNamedPipeHandleState(hPipe, winapi.PIPE_NOWAIT, nil, nil)
@@ -744,7 +640,7 @@ local function run(command)
         return
     end
 
-    local command_n = command .. "\n"
+    local command_n = command.."\n"
 
     if os_name == "windows" then
         if file and file_bytes + #command_n >= 4096 then
@@ -753,10 +649,10 @@ local function run(command)
             file_bytes = 0
         end
         if not file then
-            file = io.open("\\\\.\\pipe\\" .. options.socket, "r+b")
+            file = io.open("\\\\.\\pipe\\"..options.socket, "r+b")
         end
     elseif pre_0_33_0 then
-        subprocess({ "/usr/bin/env", "sh", "-c", "echo '" .. command .. "' | socat - " .. options.socket })
+        subprocess({"/usr/bin/env", "sh", "-c", "echo '" .. command .. "' | socat - " .. options.socket})
         return
     elseif not file then
         file = io.open(options.socket, "r+")
@@ -769,39 +665,16 @@ local function run(command)
 end
 
 local function draw(w, h, script)
-    if not w or not show_thumbnail then
-        return
-    end
+    if not w or not show_thumbnail then return end
     if x ~= nil then
+        local scale_w, scale_h = options.scale_factor ~= 1 and (w * options.scale_factor) or nil, options.scale_factor ~= 1 and (h * options.scale_factor) or nil
         if pre_0_30_0 then
-            mp.command_native({
-                "overlay-add",
-                options.overlay_id,
-                x,
-                y,
-                options.thumbnail .. ".bgra",
-                0,
-                "bgra",
-                w,
-                h,
-                (4 * w),
-            })
+            mp.command_native({"overlay-add", options.overlay_id, x, y, options.thumbnail..".bgra", 0, "bgra", w, h, (4*w), scale_w, scale_h})
         else
-            mp.command_native_async(
-                { "overlay-add", options.overlay_id, x, y, options.thumbnail .. ".bgra", 0, "bgra", w, h, (4 * w) },
-                function() end
-            )
+            mp.command_native_async({"overlay-add", options.overlay_id, x, y, options.thumbnail..".bgra", 0, "bgra", w, h, (4*w), scale_w, scale_h}, function() end)
         end
     elseif script then
-        local json, err = mp.utils.format_json({
-            width = w,
-            height = h,
-            x = x,
-            y = y,
-            socket = options.socket,
-            thumbnail = options.thumbnail,
-            overlay_id = options.overlay_id,
-        })
+        local json, err = mp.utils.format_json({width=w, height=h, scale_factor=options.scale_factor, x=x, y=y, socket=options.socket, thumbnail=options.thumbnail, overlay_id=options.overlay_id})
         mp.commandv("script-message-to", script, "thumbfast-render", json)
     end
 end
@@ -826,11 +699,7 @@ local function real_res(req_w, req_h, filesize)
             if count % a == 0 then
                 local b = count / a
                 if long_side - b < threshold then
-                    if req_h < req_w then
-                        return b, a
-                    else
-                        return a, b
-                    end
+                    if req_h < req_w then return b, a else return a, b end
                 end
             end
         end
@@ -852,7 +721,7 @@ local function seek(fast)
     end
 end
 
-local seek_period = 3 / 60
+local seek_period = 3/60
 local seek_period_counter = 0
 local seek_timer
 seek_timer = mp.add_periodic_timer(seek_period, function()
@@ -865,9 +734,7 @@ seek_timer = mp.add_periodic_timer(seek_period, function()
                 seek_timer:kill()
                 seek()
             end
-        else
-            seek_period_counter = seek_period_counter + 1
-        end
+        else seek_period_counter = seek_period_counter + 1 end
     end
 end)
 seek_timer:kill()
@@ -887,16 +754,14 @@ local function check_new_thumb()
     -- validity but before actually moving the file, so move to a temporary
     -- location before validity check to make sure everything stays consistant
     -- and valid thumbnails don't get overwritten by invalid ones
-    local tmp = options.thumbnail .. ".tmp"
+    local tmp = options.thumbnail..".tmp"
     move_file(options.thumbnail, tmp)
     local finfo = mp.utils.file_info(tmp)
-    if not finfo then
-        return false
-    end
+    if not finfo then return false end
     spawn_waiting = false
     local w, h = real_res(effective_w, effective_h, finfo.size)
     if w then -- only accept valid thumbnails
-        move_file(tmp, options.thumbnail .. ".bgra")
+        move_file(tmp, options.thumbnail..".bgra")
 
         real_w, real_h = w, h
         if real_w and (real_w ~= last_real_w or real_h ~= last_real_h) then
@@ -932,13 +797,11 @@ local function clear()
     show_thumbnail = false
     last_x = nil
     last_y = nil
-    if script_name then
-        return
-    end
+    if script_name then return end
     if pre_0_30_0 then
-        mp.command_native({ "overlay-remove", options.overlay_id })
+        mp.command_native({"overlay-remove", options.overlay_id})
     else
-        mp.command_native_async({ "overlay-remove", options.overlay_id }, function() end)
+        mp.command_native_async({"overlay-remove", options.overlay_id}, function() end)
     end
 end
 
@@ -958,14 +821,10 @@ activity_timer = mp.add_timeout(options.quit_after_inactivity, quit)
 activity_timer:kill()
 
 local function thumb(time, r_x, r_y, script)
-    if disabled then
-        return
-    end
+    if disabled then return end
 
     time = tonumber(time)
-    if time == nil then
-        return
-    end
+    if time == nil then return end
 
     if r_x == "" or r_y == "" then
         x, y = nil, nil
@@ -987,23 +846,15 @@ local function thumb(time, r_x, r_y, script)
         activity_timer:resume()
     end
 
-    if time == last_seek_time then
-        return
-    end
+    if time == last_seek_time then return end
     last_seek_time = time
-    if not spawned then
-        spawn(time)
-    end
+    if not spawned then spawn(time) end
     request_seek()
-    if not file_timer:is_enabled() then
-        file_timer:resume()
-    end
+    if not file_timer:is_enabled() then file_timer:resume() end
 end
 
 local function watch_changes()
-    if not dirty or not properties["video-out-params"] then
-        return
-    end
+    if not dirty or not properties["video-out-params"] then return end
     dirty = false
 
     local old_w = effective_w
@@ -1014,12 +865,11 @@ local function watch_changes()
     local vf_reset = vf_string(filters_reset)
     local rotate = properties["video-rotate"] or 0
 
-    local resized = old_w ~= effective_w
-        or old_h ~= effective_h
-        or last_vf_reset ~= vf_reset
-        or (last_rotate % 180) ~= (rotate % 180)
-        or par ~= last_par
-        or last_crop ~= properties["video-crop"]
+    local resized = old_w ~= effective_w or
+        old_h ~= effective_h or
+        last_vf_reset ~= vf_reset or
+        (last_rotate % 180) ~= (rotate % 180) or
+        par ~= last_par or last_crop ~= properties["video-crop"]
 
     if resized then
         last_rotate = rotate
@@ -1039,11 +889,11 @@ local function watch_changes()
             file_timer:resume()
         else
             if rotate ~= last_rotate then
-                run("set video-rotate " .. rotate)
+                run("set video-rotate "..rotate)
             end
             local vf_runtime = vf_string(filters_runtime)
             if vf_runtime ~= last_vf_runtime then
-                run("vf set " .. vf_string(filters_all, true))
+                run("vf set "..vf_string(filters_all, true))
                 last_vf_runtime = vf_runtime
             end
         end
@@ -1087,9 +937,7 @@ end
 
 local function sync_changes(prop, val)
     update_property(prop, val)
-    if val == nil then
-        return
-    end
+    if val == nil then return end
 
     if type(val) == "boolean" then
         if prop == "vid" then
@@ -1106,11 +954,9 @@ local function sync_changes(prop, val)
         has_vid = 1
     end
 
-    if not spawned then
-        return
-    end
+    if not spawned then return end
 
-    run("set " .. prop .. " " .. val)
+    run("set "..prop.." "..val)
     dirty = true
 end
 
@@ -1135,7 +981,7 @@ local function shutdown()
     remove_thumbnail_files()
     if os_name ~= "windows" then
         os.remove(options.socket)
-        os.remove(options.socket .. ".run")
+        os.remove(options.socket..".run")
     end
 end
 
