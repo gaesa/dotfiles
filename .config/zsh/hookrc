@@ -50,7 +50,7 @@ _git_pre_exec() {
 
     # There is no consistent, convenient and reliable way
     # to convert strings to lists in bash or zsh
-    local cmd=${1%% *} # $1 here would be treated as a complete command string
+    local cmd="${1%% *}" # $1 here would be treated as a complete command string
     local remainder="${1#* }"
     local option="${remainder%% *}"
 
