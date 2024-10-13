@@ -42,5 +42,6 @@
   },
   "isort.args": ["--profile", "black"],
   "isort.path": ["/usr/bin/isort"],
-  "black-formatter.path": ["/usr/bin/black"]
+  "black-formatter.path": ["/usr/bin/black"],
+  "update.mode": "none",
 }
