@@ -17,7 +17,7 @@ def get_mime_type(
     file: str | Path, exts_for_file_cmd: set[str] = {".bak", ".txt"}
 ) -> tuple[str, str]:
     # `xdg-mime query filetype` are better than
-    # `file -Lb --mime_type` & `mimetypes.guess_type()`
+    # `file -Lb --mime-type` & `mimetypes.guess_type()`
     # although both of them are not perfect
     # problematic extensions:
     # `.md` (with CJK character), `.ts`,
