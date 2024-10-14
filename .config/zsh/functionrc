@@ -31,6 +31,26 @@ function lfz() {
         return 0
     fi
 }
+
+function yazz() {
+    local -r tmp="$(mktemp -t yazi-cwd.XXXXXXXXXX)"
+    command yazi --cwd-file="${tmp}" "$@"
+    if [[ -f "${tmp}" ]]; then
+        local -r dir="$(cat "${tmp}")"
+        /usr/bin/rm "${tmp}"
+        if [[ -d "${dir}" ]]; then
+            if [[ "${dir}" != "$(pwd)" ]]; then
+                z "${dir}"
+            else
+                return 0
+            fi
+        else
+            return 0
+        fi
+    else
+        return 0
+    fi
+}
 bindkey -s '^[m' '^ulfz\n'
 
 # from "$(pyenv init -)", excluding the slow `rehash`

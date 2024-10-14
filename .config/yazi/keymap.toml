@@ -1,0 +1,20 @@
+[manager]
+prepend_keymap = [
+    { on = ["<C-Enter>"], run = "open --interactive", desc = "Open the selected files interactively" },
+    { on = ["<C-o>"], run = "open --interactive", desc = "Open the selected files interactively" },
+    { on = ["<S-o>"], run = "noop" },
+    { on = ["d", "d"], run = "remove --force", desc = "Trash selected files" }, # this also disable `"d"`
+    { on = ["D", "D"], run = "remove --permanently", desc = "Permanently delete selected files" },
+    { on = ["e"], run = ["escape --visual", '''shell --block --confirm '${EDITOR:-vi} "$@"' '''], desc = "Edit selected files anyway"}
+]
+
+[input]
+prepend_keymap = [
+    { on = ["<C-c>"], run = "close", desc = "Cancel input" },
+    { on = ["<C-g>"], run = "close", desc = "Cancel input" },
+]
+
+[confirm]
+prepend_keymap = [
+    { on = ["<C-g>"], run = "close", desc = "Cancel the confirm" },
+]

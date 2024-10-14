@@ -93,7 +93,8 @@ map <c-r> :reload-config; reload
 map g top
 map <space> :toggle
 map <esc> :unselect; clear
-map DD trash
+map d
+map dd trash
 map Dm $mat2 "$f"
 map <delete> trash
 map E extract

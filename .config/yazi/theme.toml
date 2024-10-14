@@ -1,0 +1,6 @@
+[manager]
+preview_hovered = { reversed = true } # since the default style use `underline` which is ugly
+border_symbol = " "
+
+[which]
+mask            = { reversed = false, bold = true }

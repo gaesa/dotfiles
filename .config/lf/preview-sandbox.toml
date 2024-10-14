@@ -5,7 +5,7 @@ rw = ["~/.cache/kitty-thumbnails", "~/.cache/python"]
 symlinks = [["/usr/bin", "/bin"], ["/usr/lib64", "/lib64"]]
 
 [files]
-program = "./preview"
+program = "kitty-preview"
 log = "$TMPDIR/lf.log"
 
 [options]

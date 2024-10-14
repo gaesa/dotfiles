@@ -40,6 +40,7 @@ def clean_batch():
     stversions_path = join(HOME, "nt/.stversions")
     telegram_desktop_path = join(HOME, "dl/Telegram Desktop")
     paru_cache = join(HOME, ".cache/paru/clone")
+    yazi_cache = join(HOME, ".cache/yazi")
 
     path_time = {
         recent_documents_path: "1weeks",
@@ -49,6 +50,7 @@ def clean_batch():
         okular_docdate_path: "1weeks",
         stversions_path: "1weeks",
         telegram_desktop_path: "1months",
+        yazi_cache: "1months",
     }
 
     clean(path_time)

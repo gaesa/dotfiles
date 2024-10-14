@@ -1,0 +1,9 @@
+[plugin]
+deps = [
+    { use = "gaesa/audio", rev = "95a1b0c" }, # because audio cover preview is not officially supported
+    { use = "gaesa/bat", rev = "9d37b0c" }, # because UTF16 is not supported by builtin `code`
+    { use = "gaesa/video-ffmpeg", rev = "96d7724" } # because `ffmpegthumbnailer` cannot avoid upscaling
+]
+
+[flavor]
+deps = []
