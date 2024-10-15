@@ -1182,9 +1182,10 @@
 
 ;; ssh-agent
 (with-eval-after-load 'magit
-  (push (format "SSH_AUTH_SOCK=%s/ssh-agent.socket"
-                (getenv "XDG_RUNTIME_DIR"))
-        magit-git-environment))
+  (progn
+    (add-to-list 'magit-git-environment (format "SSH_AUTH_SOCK=%s/ssh-agent.socket"
+                                                (getenv "XDG_RUNTIME_DIR")))
+    (add-to-list 'magit-git-environment "TZ=UTC")))
 
 ;; Magit/yadm
 (defun find-git-root (dir)

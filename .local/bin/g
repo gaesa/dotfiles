@@ -4,6 +4,7 @@ Fix the annoying `✘ PIPE`
 See also: https://public-inbox.org/git/87v9b8d6zx.fsf@evledraar.gmail.com/T/
 """
 
+import os
 import sys
 from collections.abc import Callable
 from subprocess import run
@@ -20,14 +21,17 @@ def suppress_err_status_when(
 
 def main():
     argv = sys.argv
-    p = run(["git", *argv[1:]])
+    env = os.environ.copy()
+    env["TZ"] = "UTC"
+    p = run(["git", *argv[1:]], env=env)
     code_range = {141, -13}
     subcmd = {"l", "log", "ls", "la", "lsa"}
     suppress_err_status_when(
         p.returncode,
         argv,
-        predicate=lambda code, argv: code == 0
-        or (code in code_range and argv[1] in subcmd),
+        predicate=lambda code, argv: (
+            code == 0 or (code in code_range and argv[1] in subcmd)
+        ),
     )
 
 
