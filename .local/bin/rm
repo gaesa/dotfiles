@@ -90,6 +90,7 @@ def is_in_black_list(parent_process_name: str) -> bool:
         "makepkg",
         "git-mergetool",
         "pacdiff",
+        "heaptrack",
     }:
         return True
     else:
