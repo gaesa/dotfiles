@@ -249,7 +249,9 @@ local function setup_auto_formatting()
             end
 
             if state then
-                trim_trailing_whitespace()
+                if vim.bo.filetype ~= "markdown" then
+                    trim_trailing_whitespace()
+                end
                 formatter()
             else
                 return
