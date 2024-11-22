@@ -1,6 +1,8 @@
 [Unit]
 Description=Emacs text editor
 Documentation=info:emacs man:emacs(1) https://gnu.org/software/emacs/
+After=graphical.target
+Requires=graphical.target
 
 [Service]
 Type=notify
