@@ -222,6 +222,12 @@ nnoremap <leader>nc :action ClearAllNotifications<CR>
 " Focus
 nnoremap <C-c> :action HideActiveWindow<CR>
 
+" Expand
+xnoremap <Tab> :action CollapseSelection<CR>
+
+" Browse
+nnoremap gx :action GotoDeclaration<CR>
+
 " Reload
 command! Rl action IdeaVim.ReloadVimRc.reload
 
