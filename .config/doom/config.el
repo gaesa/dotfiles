@@ -20,8 +20,8 @@
 ;;
 ;; See 'C-h v doom-font' for documentation and more examples of what they
 ;; accept. For example:
-(setq doom-font (font-spec :family "monospace" :size 20 :height 1)
-      doom-variable-pitch-font (font-spec :family "sans-serif" :size 20 :height 1))
+(setq doom-font (font-spec :family "monospace" :size 25 :height 1.25)
+      doom-variable-pitch-font (font-spec :family "sans-serif" :size 25 :height 1.25))
 (set-face-attribute 'italic nil    ;affects M-x function descriptions & org-mode
                     :slant 'italic
                     :underline nil
