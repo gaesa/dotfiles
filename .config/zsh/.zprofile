@@ -81,7 +81,7 @@ typeset -A my_env=(
     'GDK_BACKEND' 'wayland,x11'
     'QT_QPA_PLATFORM' 'wayland;xcb'
     'MOZ_ENABLE_WAYLAND' 1
-    'QT_WAYLAND_FORCE_DPI' 120
+    # 'QT_WAYLAND_FORCE_DPI' 120
     # }}}
 
     # Input method {{{
