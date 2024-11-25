@@ -122,10 +122,5 @@ if [[ -z "$WAYLAND_DISPLAY" ]] && [[ "$(tty)" = "/dev/tty1" ]]; then
     # https://github.com/MusicPlayerDaemon/MPD/issues/263
     # https://github.com/ncmpcpp/ncmpcpp/issues/76
     [[ ! -L "$XDG_CACHE_HOME/runtime" ]] && ln -srf "$XDG_RUNTIME_DIR" "$XDG_CACHE_HOME/runtime"
-
-    # See also:
-    # https://wiki.archlinux.org/index.php?title=KDE&diff=prev&oldid=802720
-    # https://invent.kde.org/plasma/plasma-workspace/-/merge_requests/128/diffs
-    exec /usr/lib/plasma-dbus-run-session-if-needed /usr/bin/startplasma-wayland &>"$XDG_CACHE_HOME/startup.log"
 fi
 # }}}
