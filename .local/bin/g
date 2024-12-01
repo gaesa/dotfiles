@@ -21,8 +21,11 @@ def suppress_err_status_when(
 
 def main():
     argv = sys.argv
-    env = os.environ.copy()
-    env["TZ"] = "UTC"
+    if len(argv) > 1 and argv[1] not in {"d", "diff", "difftool"}:
+        env = os.environ.copy()
+        env["TZ"] = "UTC"
+    else:
+        env = os.environ
     p = run(["git", *argv[1:]], env=env)
     code_range = {141, -13}
     subcmd = {"l", "log", "ls", "la", "lsa"}
