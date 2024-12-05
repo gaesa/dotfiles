@@ -657,24 +657,26 @@
   (defvar company-ignore-prefix (make-set '(?? ?_ ? ) :test 'eq))
 
   (define-advice company--good-prefix-p (:override (prefix min-length) support-ingore-prefix)
-    (and (stringp (company--prefix-str prefix)) ;excludes 'stop
-         (not (string= prefix ""))
-         (let ((len (length prefix)))
-           (cond ((or (< len min-length)
-                      (element-of-set? (aref prefix 0) company-ignore-prefix))
-                  nil)
-                 (company--manual-prefix
-                  (or (not company-abort-manual-when-too-short)
-                      ;; Must not be less than minimum or initial length.
-                      (>= len (min company-minimum-prefix-length
-                                   (length company--manual-prefix)))))
-                 (t (>= len company-minimum-prefix-length))))))
+    (let ((prefix-str (company--prefix-str prefix)))
+      (and (stringp prefix-str) ;excludes 'stop
+           (not (string= prefix-str ""))
+           (let ((len (length prefix-str)))
+             (cond ((or (< len min-length)
+                        (element-of-set? (aref prefix-str 0) company-ignore-prefix))
+                    nil)
+                   (company--manual-prefix
+                    (or (not company-abort-manual-when-too-short)
+                        ;; Must not be less than minimum or initial length.
+                        (>= len (min company-minimum-prefix-length
+                                     (length company--manual-prefix)))))
+                   (t (>= len company-minimum-prefix-length)))))))
 
   (defun blank-char-p (char)
     (let ((blank-chars (make-set '(?\s ?\t ?\r ?\n) :test 'eq)))
       (element-of-set? char blank-chars)))
 
   (define-advice company-indent-or-complete-common (:override (arg) fix-indent)
+    (interactive "P")
     (cond ((use-region-p)
            (indent-region (region-beginning) (region-end)))
           ((memq indent-line-function
