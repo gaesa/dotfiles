@@ -27,8 +27,36 @@ local lsp = require("lsp-zero").preset({
     },
 })
 
+local lspconfig = require("lspconfig")
 -- (Optional) Configure lua language server for neovim
-require("lspconfig").lua_ls.setup(lsp.nvim_lua_ls())
+lspconfig.lua_ls.setup(lsp.nvim_lua_ls())
+
+require("mason-lspconfig").setup_handlers({
+    ["rust_analyzer"] = function()
+        lspconfig.rust_analyzer.setup({
+            settings = {
+                ["rust-analyzer"] = {
+                    checkOnSave = {
+                        command = "clippy",
+                    },
+                    rustfmt = {
+                        extraArgs = { "+nightly" },
+                    },
+                },
+            },
+            on_attach = function(_, bufnr)
+                vim.lsp.inlay_hint.enable(true, { bufnr = bufnr })
+                vim.api.nvim_clear_autocmds({ buffer = bufnr })
+                vim.api.nvim_create_autocmd("BufWritePre", {
+                    buffer = bufnr,
+                    callback = function()
+                        vim.lsp.buf.format({ bufnr = bufnr })
+                    end,
+                })
+            end,
+        })
+    end,
+})
 
 lsp.ensure_installed({
     "lua_ls",
