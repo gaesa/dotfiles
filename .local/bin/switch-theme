@@ -1,5 +1,5 @@
 #!/usr/bin/zsh
-# Set theme for fzf, kitty and neovim
+# Set theme for fzf, and neovim
 
 load_theme() {
     load_fzf_theme() {
@@ -20,29 +20,14 @@ load_theme() {
         unset -f load_fzf_tty_theme
     }
 
-    load_kitty_theme() {
-        local target_theme="${HOME}"/.config/kitty/"$1"-theme.conf
-        local current_theme="${HOME}"/.config/kitty/current-theme.conf
-        if cmp -s "${target_theme}" "${current_theme}"; then
-            unset -f load_kitty_theme
-        else
-            cp "${target_theme}" "${current_theme}"
-            # The process 'kitty +kitten ssh' shouldn't be sent USRSIG1
-            pkill -USR1 -x kitty
-            unset -f load_kitty_theme
-        fi
-    }
-
     if [[ "${TERM}" != "linux" ]]; then
         load_fzf_theme "$1"
-        load_kitty_theme "$1"
-        '/usr/bin/python' "${HOME}/.local/bin/switch-nvim-theme" "$1" &!
         unset -f load_fzf_tty_theme
     else
         load_fzf_tty_theme
-        '/usr/bin/python' "${HOME}/.local/bin/switch-nvim-theme" "$1" &!
-        unset -f load_fzf_theme load_kitty_theme
+        unset -f load_fzf_theme
     fi
+    '/usr/bin/python' "${HOME}/.local/bin/switch-nvim-theme" "$1" &!
 }
 
 manually_switch() {
