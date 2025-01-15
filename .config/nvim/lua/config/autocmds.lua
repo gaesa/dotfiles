@@ -231,22 +231,17 @@ local function setup_auto_formatting()
 
     autocmd({ "BufWritePre" }, {
         callback = function()
-            local function trim_trailing_whitespace_when(cond)
-                if cond then
-                    vim.cmd([[silent! %s/\s\+$//e]])
-                else
+            local function trim_trailing_whitespace()
+                local config = vim.b.editorconfig
+                if config ~= nil and config["trim_trailing_whitespace"] == "false" then
                     return
+                else
+                    vim.cmd([[silent! %s/\s\+$//e]])
                 end
             end
 
             if state then
-                local config, bool = vim.b.editorconfig, false
-                if config ~= nil then
-                    bool = config["trim_trailing_whitespace"] ~= "false"
-                else
-                    bool = true
-                end
-                trim_trailing_whitespace_when(bool)
+                trim_trailing_whitespace()
             else
                 return
             end
