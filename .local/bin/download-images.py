@@ -157,7 +157,7 @@ async def try_get_response(
             unchecked_response = await client_get(
                 client=client, url=url, timeout=10, headers={"User-Agent": config.ua}
             )
-            if unchecked_response.is_ok:
+            if unchecked_response.is_ok():
                 response = unchecked_response.unwrap()
                 check_result = check_response_status(response)
                 if check_result.is_ok():
