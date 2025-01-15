@@ -22,13 +22,12 @@ load_theme() {
 
     if [[ "${TERM}" != "linux" ]]; then
         load_fzf_theme "$1"
-        '/usr/bin/python' "${HOME}/.local/bin/switch-nvim-theme" "$1" &!
         unset -f load_fzf_tty_theme
     else
         load_fzf_tty_theme
-        '/usr/bin/python' "${HOME}/.local/bin/switch-nvim-theme" "$1" &!
         unset -f load_fzf_theme
     fi
+    '/usr/bin/python' "${HOME}/.local/bin/switch-nvim-theme" "$1" &!
 }
 
 manually_switch() {
