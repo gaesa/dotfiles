@@ -1238,7 +1238,13 @@ This implementation requires users to set `core.worktree` and make sure that `co
                                 (element-of-set? (directory-file-name cwd)
                                                  (make-set res))))))))
         (push (format "GIT_DIR=%s" git-dir) env)))
-    env))
+    env)
+
+  (with-eval-after-load 'projectile
+    (define-advice projectile-invalidate-cache (:around (orig-fun prompt) skip-when-at-home)
+      (when (not (seq-some (lambda (item) (s-starts-with? "GIT_DIR=" item))
+                           (magit-process-environment)))
+        (funcall orig-fun prompt)))))
 
 ;; Project
 (setq projectile-project-search-path '(("~/dm/pj" . 1)))
