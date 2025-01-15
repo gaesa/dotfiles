@@ -1,5 +1,5 @@
 #!/usr/bin/zsh
-# Set theme for fzf, and neovim
+# Set theme for fzf and neovim
 
 load_theme() {
     load_fzf_theme() {

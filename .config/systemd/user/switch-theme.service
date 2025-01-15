@@ -1,5 +1,5 @@
 [Unit]
-Description=Switch theme for kitty, neovim
+Description=Switch theme for neovim
 OnFailure=status_mail@%n.service
 
 [Service]

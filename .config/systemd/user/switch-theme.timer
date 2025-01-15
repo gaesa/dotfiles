@@ -1,5 +1,5 @@
 [Unit]
-Description=Switch theme for kitty, neovim
+Description=Switch theme for neovim
 After=graphical.target
 
 [Timer]
