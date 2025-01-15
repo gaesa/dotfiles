@@ -240,8 +240,17 @@ local function setup_auto_formatting()
                 end
             end
 
+            local function formatter()
+                if vim.fn.exists(":NullFormat") ~= 0 then
+                    vim.cmd.NullFormat()
+                else
+                    return
+                end
+            end
+
             if state then
                 trim_trailing_whitespace()
+                formatter()
             else
                 return
             end
