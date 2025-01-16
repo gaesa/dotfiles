@@ -1,0 +1,67 @@
+#!/usr/bin/env python3
+import sys
+import time
+from collections.abc import Callable, Iterable
+from concurrent.futures import ThreadPoolExecutor
+from subprocess import Popen
+from typing import Type
+
+from result import Err, Ok, Result
+
+
+class MaxRetriesExceededError(Exception):
+    pass
+
+
+def monitor_process(
+    process: list[str],
+    successful_duration: float = 5.0,
+    poll_interval: float = 1.0,
+    max_retry_times: int = 3,
+) -> Result[None, Type[MaxRetriesExceededError]]:
+    process_handle = Popen(process, start_new_session=True)
+    retry_times = 0
+    start_instant = time.monotonic()
+    while True:
+        polled = process_handle.poll()
+        if polled is None:
+            elapsed = time.monotonic() - start_instant
+            if elapsed > successful_duration:
+                return Ok(None)
+            else:
+                time.sleep(poll_interval)
+        else:
+            if polled == 0:
+                return Ok(None)
+            else:
+                if retry_times == max_retry_times:
+                    return Err(MaxRetriesExceededError)
+                else:
+                    process_handle = Popen(process, start_new_session=True)
+                    start_instant = time.monotonic()
+                    retry_times += 1
+
+
+def start_applications(processes: Iterable[list[str]]):
+    processes_list = list(processes)
+    with ThreadPoolExecutor() as executor:
+        futures = executor.map(monitor_process, processes_list)
+
+    for i, future in enumerate(futures):
+        if future.is_err():
+            print(f"Process {processes_list[i]} failed", file=sys.stderr)
+
+
+def sleep_before(duration: int, f: Callable[[], None]):
+    time.sleep(duration)
+    f()
+
+
+def main():
+    APPLICATIONS = ["koi", "goldendict", "keepassxc", "flameshot", "thunderbird"]
+
+    sleep_before(5, lambda: start_applications(map(lambda item: [item], APPLICATIONS)))
+
+
+if __name__ == "__main__":
+    main()

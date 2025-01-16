@@ -1,0 +1,15 @@
+[Unit]
+Description=Desktop Autostart
+OnFailure=status_mail@%n.service
+After=graphical.target xdg-desktop-autostart.target
+Requires=graphical.target xdg-desktop-autostart.target
+
+[Service]
+Type=oneshot
+Environment=PYTHONPATH=%h/.local/share/python/lib
+Environment=PYTHONPYCACHEPREFIX=%C/python
+KillMode=process
+ExecStart=%h/.local/bin/startup
+
+[Install]
+WantedBy=default.target
