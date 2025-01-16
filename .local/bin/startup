@@ -8,6 +8,8 @@ from typing import Type
 
 from result import Err, Ok, Result
 
+import clean_home
+
 
 class MaxRetriesExceededError(Exception):
     pass
@@ -73,6 +75,8 @@ def main():
         # catch possible exceptions
         _ = future.result()
         _ = future_net.result()
+
+    clean_home.main()
 
 
 if __name__ == "__main__":
