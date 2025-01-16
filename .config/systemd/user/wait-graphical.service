@@ -1,0 +1,13 @@
+[Unit]
+Description=Check if the graphical environment is ready
+OnFailure=status_mail@%n.service
+
+[Service]
+Type=oneshot
+Environment=PYTHONPATH=%h/.local/share/python/lib
+Environment=PYTHONPYCACHEPREFIX=%C/python
+ExecStart=%h/.local/bin/wait-graphical
+RemainAfterExit=true
+
+[Install]
+WantedBy=graphical.target

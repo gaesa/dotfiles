@@ -1,0 +1,7 @@
+[Unit]
+Description=Wait for the graphical environment to be ready
+Requires=wait-graphical.service
+After=wait-graphical.service
+
+[Install]
+WantedBy=default.target
