@@ -1,0 +1,10 @@
+#!/usr/bin/env python3
+from my_utils.network import wait_online
+
+
+def main():
+    wait_online()
+
+
+if __name__ == "__main__":
+    main()

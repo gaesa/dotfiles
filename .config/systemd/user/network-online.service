@@ -1,0 +1,13 @@
+[Unit]
+Description=Wait network to be online
+OnFailure=status_mail@%n.service
+
+[Service]
+Type=oneshot
+Environment=PYTHONPATH=%h/.local/share/python/lib
+Environment=PYTHONPYCACHEPREFIX=%C/python
+ExecStart=%h/.local/bin/wait-network-online
+RemainAfterExit=yes
+
+[Install]
+WantedBy=default.target
