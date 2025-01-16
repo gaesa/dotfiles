@@ -1,0 +1,7 @@
+[Unit]
+Description=Network is Online
+Requires=network-online.service
+After=network-online.service
+
+[Install]
+WantedBy=default.target
