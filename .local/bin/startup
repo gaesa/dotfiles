@@ -1,14 +1,17 @@
 #!/usr/bin/env python3
+import json
 import logging
 import os
 import time
 from collections.abc import Callable, Iterable
 from concurrent.futures import ThreadPoolExecutor
 from subprocess import Popen
-from typing import Type
+from typing import Any, Type
 
 import clean_home
-from result import Err, Ok, Result
+from platformdirs import user_config_path
+from pydantic import BaseModel, ValidationError
+from result import Err, Ok, Result, as_result
 
 logging.basicConfig(level=os.environ.get("LOG_LEVEL_PROGRAM", "WARNING").upper())
 logger = logging.getLogger(__name__)
@@ -53,37 +56,53 @@ def monitor_process(
                     )
 
 
-def start_applications(executor: ThreadPoolExecutor, processes: Iterable[list[str]]):
-    processes_list = list(processes)
-    futures = executor.map(monitor_process, processes_list)
+def start_applications(
+    offline: list[list[str]], online: list[list[str]], wait_duration: float = 2.5
+):
+    def start(executor: ThreadPoolExecutor, processes: Iterable[list[str]]):
+        processes_list = list(processes)
+        futures = executor.map(monitor_process, processes_list)
 
-    for i, future in enumerate(futures):
-        if future.is_err():
-            logger.error("Process %s failed", str(processes_list[i]))
+        for i, future in enumerate(futures):
+            if future.is_err():
+                logger.error("Process %s failed", str(processes_list[i]))
 
+    def run_after_online(f: Callable[[], None]):
+        from my_utils.network import wait_online
 
-def run_after_online(f: Callable[[], None]):
-    from my_utils.network import wait_online
+        wait_online()
+        f()
 
-    wait_online()
-    f()
+    time.sleep(wait_duration)
 
-
-def main():
-    APPLICATIONS = [["koi"], ["goldendict"], ["keepassxc"], ["flameshot"]]
-    APPLICATIONS_NET = [["thunderbird"]]
-    WAIT_DURATION = 2.5
-
-    time.sleep(WAIT_DURATION)
     with ThreadPoolExecutor() as executor:
-        future = executor.submit(start_applications, executor, APPLICATIONS)
-        future_net = executor.submit(
-            run_after_online, lambda: start_applications(executor, APPLICATIONS_NET)
-        )
+        future = executor.submit(start, executor, offline)
+        future_net = executor.submit(run_after_online, lambda: start(executor, online))
 
         # catch possible exceptions
         _ = future.result()
         _ = future_net.result()
+
+
+class Applications(BaseModel):
+    offline: list[list[str]]
+    online: list[list[str]]
+
+
+@as_result(ValidationError)
+def validate(data: Any) -> Applications:
+    return Applications.model_validate(data)
+
+
+def main():
+    config_path = user_config_path().joinpath("startup/config.json")
+    if config_path.is_file():
+        config = validate(json.loads(config_path.read_text()))
+        match config:
+            case Ok(cfg):
+                start_applications(cfg.offline, cfg.online)
+            case Err(e):
+                logger.error(e)
 
     clean_home.main()
 
