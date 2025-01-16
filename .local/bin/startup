@@ -42,25 +42,37 @@ def monitor_process(
                     retry_times += 1
 
 
-def start_applications(processes: Iterable[list[str]]):
+def start_applications(executor: ThreadPoolExecutor, processes: Iterable[list[str]]):
     processes_list = list(processes)
-    with ThreadPoolExecutor() as executor:
-        futures = executor.map(monitor_process, processes_list)
+    futures = executor.map(monitor_process, processes_list)
 
     for i, future in enumerate(futures):
         if future.is_err():
             print(f"Process {processes_list[i]} failed", file=sys.stderr)
 
 
-def sleep_before(duration: int, f: Callable[[], None]):
-    time.sleep(duration)
+def run_after_online(f: Callable[[], None]):
+    from my_utils.network import wait_online
+
+    wait_online()
     f()
 
 
 def main():
-    APPLICATIONS = ["koi", "goldendict", "keepassxc", "flameshot", "thunderbird"]
+    APPLICATIONS = [["koi"], ["goldendict"], ["keepassxc"], ["flameshot"]]
+    APPLICATIONS_NET = [["thunderbird"]]
+    WAIT_DURATION = 5.0
 
-    sleep_before(5, lambda: start_applications(map(lambda item: [item], APPLICATIONS)))
+    time.sleep(WAIT_DURATION)
+    with ThreadPoolExecutor() as executor:
+        future = executor.submit(start_applications, executor, APPLICATIONS)
+        future_net = executor.submit(
+            run_after_online, lambda: start_applications(executor, APPLICATIONS_NET)
+        )
+
+        # catch possible exceptions
+        _ = future.result()
+        _ = future_net.result()
 
 
 if __name__ == "__main__":
