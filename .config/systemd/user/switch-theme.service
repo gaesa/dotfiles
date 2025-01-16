@@ -1,6 +1,8 @@
 [Unit]
 Description=Switch theme for neovim
 OnFailure=status_mail@%n.service
+After=graphical.target
+Requires=graphical.target
 
 [Service]
 Type=forking
