@@ -57,7 +57,7 @@ def monitor_process(
 
 
 def start_applications(
-    offline: list[list[str]], online: list[list[str]], wait_duration: float = 2.5
+    offline: list[list[str]], online: list[list[str]], wait_duration: float = 2.0
 ):
     def start(executor: ThreadPoolExecutor, processes: Iterable[list[str]]):
         processes_list = list(processes)
