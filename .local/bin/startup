@@ -47,7 +47,7 @@ def monitor_process(
                     process_handle = Popen(process, start_new_session=True)
                     start_instant = time.monotonic()
                     retry_times += 1
-                    logger.info(
+                    logger.warning(
                         "[%d/%d] Retry running process %s",
                         retry_times,
                         max_retry_times,
