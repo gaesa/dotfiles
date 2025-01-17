@@ -57,7 +57,7 @@ def monitor_process(
 
 
 def start_applications(
-    offline: list[list[str]], online: list[list[str]], wait_duration: float = 2.0
+    offline: list[list[str]], online: list[list[str]], *, wait_duration: float
 ):
     def start(executor: ThreadPoolExecutor, processes: Iterable[list[str]]):
         processes_list = list(processes)
@@ -100,7 +100,7 @@ def main():
         config = validate(json.loads(config_path.read_text()))
         match config:
             case Ok(cfg):
-                start_applications(cfg.offline, cfg.online)
+                start_applications(cfg.offline, cfg.online, wait_duration=2.0)
             case Err(e):
                 logger.error(e)
 
