@@ -8,6 +8,7 @@ Requires=graphical.target xdg-desktop-autostart.target
 Type=oneshot
 Environment=PYTHONPATH=%h/.local/share/python/lib
 Environment=PYTHONPYCACHEPREFIX=%C/python
+Environment=PATH=/usr/local/bin:/usr/bin:%h/.local/bin
 KillMode=process
 ExecStart=%h/.local/bin/startup
 

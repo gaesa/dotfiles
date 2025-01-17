@@ -1,4 +1,5 @@
 {
   "offline": [["koi"], ["goldendict"], ["keepassxc"], ["flameshot"]],
-  "online": [["thunderbird"]]
+  "online": [["thunderbird"]],
+  "post_hooks": [["clean_home.py"]]
 }

@@ -8,7 +8,6 @@ from concurrent.futures import ThreadPoolExecutor
 from subprocess import Popen
 from typing import Any, Self
 
-import clean_home
 from platformdirs import user_config_path
 from pydantic import BaseModel, ValidationError
 from result import Err, Ok, Result, as_result
@@ -102,6 +101,14 @@ class BaseModelR(BaseModel):
 class Applications(BaseModelR):
     offline: list[list[str]]
     online: list[list[str]]
+    post_hooks: list[list[str]]
+
+
+def run_post_hooks(post_hooks: list[list[str]]):
+    from subprocess import run
+
+    for hook in post_hooks:
+        run(hook, check=True)
 
 
 def main():
@@ -111,10 +118,9 @@ def main():
         match config:
             case Ok(cfg):
                 start_applications(cfg.offline, cfg.online, wait_duration=2.0)
+                run_post_hooks(cfg.post_hooks)
             case Err(e):
                 logger.error(e)
-
-    clean_home.main()
 
 
 if __name__ == "__main__":
