@@ -6,7 +6,7 @@ import time
 from collections.abc import Callable
 from concurrent.futures import ThreadPoolExecutor
 from subprocess import Popen
-from typing import Any, Self, Type
+from typing import Any, Self
 
 import clean_home
 from platformdirs import user_config_path
@@ -26,7 +26,7 @@ def monitor_process(
     successful_duration: float = 5.0,
     poll_interval: float = 1.0,
     max_retry_times: int = 3,
-) -> Result[None, Type[MaxRetriesExceededError]]:
+) -> Result[None, MaxRetriesExceededError]:
     process_handle = Popen(process, start_new_session=True)
     retry_times = 0
     start_instant = time.monotonic()
@@ -43,7 +43,7 @@ def monitor_process(
                 return Ok(None)
             else:
                 if retry_times == max_retry_times:
-                    return Err(MaxRetriesExceededError)
+                    return Err(MaxRetriesExceededError(process))
                 else:
                     process_handle = Popen(process, start_new_session=True)
                     start_instant = time.monotonic()
