@@ -6,7 +6,7 @@ import time
 from collections.abc import Callable, Iterable
 from concurrent.futures import ThreadPoolExecutor
 from subprocess import Popen
-from typing import Any, Type
+from typing import Any, Self, Type
 
 import clean_home
 from platformdirs import user_config_path
@@ -84,20 +84,31 @@ def start_applications(
         _ = future_net.result()
 
 
-class Applications(BaseModel):
+class BaseModelR(BaseModel):
+    @classmethod
+    @as_result(ValidationError)
+    def model_validate_r(
+        cls,
+        obj: Any,
+        *,
+        strict: bool | None = None,
+        from_attributes: bool | None = None,
+        context: Any | None = None,
+    ) -> Self:
+        return cls.model_validate(
+            obj, strict=strict, from_attributes=from_attributes, context=context
+        )
+
+
+class Applications(BaseModelR):
     offline: list[list[str]]
     online: list[list[str]]
-
-
-@as_result(ValidationError)
-def validate(data: Any) -> Applications:
-    return Applications.model_validate(data)
 
 
 def main():
     config_path = user_config_path().joinpath("startup/config.json")
     if config_path.is_file():
-        config = validate(json.loads(config_path.read_text()))
+        config = Applications.model_validate_r(json.loads(config_path.read_text()))
         match config:
             case Ok(cfg):
                 start_applications(cfg.offline, cfg.online, wait_duration=2.0)
