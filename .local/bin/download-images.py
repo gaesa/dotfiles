@@ -4,7 +4,6 @@ from collections.abc import Iterator
 from dataclasses import dataclass
 from pathlib import Path
 from typing import ClassVar, final
-from argparse import ArgumentParser
 
 import anyio
 import httpx
@@ -32,6 +31,8 @@ class Cli:
 
     @classmethod
     def parse(cls) -> "Cli":
+        from argparse import ArgumentParser
+
         parser = ArgumentParser(description="Download images from URLs")
         parser.add_argument("directory", type=Path, help="Directory to save the images")
         parser.add_argument("url_pattern", type=str, help="URL pattern")
