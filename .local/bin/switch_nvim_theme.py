@@ -3,16 +3,16 @@ from collections.abc import Iterator
 from pathlib import Path
 from sys import argv
 
+from platformdirs import user_runtime_path
 from pynvim import attach
-from xdg import BaseDirectory
 
 
-def get_nvim_socket_list(XDG_RUNTIME_DIR: Path) -> Iterator[Path]:
-    if XDG_RUNTIME_DIR.is_dir():
+def get_nvim_socket_list(runtime_path: Path) -> Iterator[Path]:
+    if runtime_path.is_dir():
         prefix = "nvim."
         return filter(
             lambda file: file.name.startswith(prefix) and file.is_socket(),
-            Path.iterdir(XDG_RUNTIME_DIR),
+            Path.iterdir(runtime_path),
         )
     else:
         raise SystemExit(0)
@@ -43,8 +43,7 @@ def load_theme(color, socket_list: Iterator[Path]):
 
 
 def main():
-    XDG_RUNTIME_DIR = Path(BaseDirectory.get_runtime_dir())
-    socket_list = get_nvim_socket_list(XDG_RUNTIME_DIR)
+    socket_list = get_nvim_socket_list(user_runtime_path())
 
     if len(argv) < 2:
         load_theme(False, socket_list)  # to reset `mycolor` variable
