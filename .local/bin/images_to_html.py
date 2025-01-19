@@ -53,7 +53,7 @@ def create_html(directory: Path, output: Path):
         .map(Path.resolve)
     )
     html = get_template().render(image_files=image_files)
-    with open(Path(directory, output), "w") as f:
+    with open(directory.joinpath(output), "w") as f:
         f.write(html)
 
 

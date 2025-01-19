@@ -79,7 +79,9 @@ class Cli:
         )
         args = parser.parse_args()
         args.output = (
-            Path(args.directory, "playlist") if args.output is None else args.output
+            Path(args.directory).joinpath("playlist")
+            if args.output is None
+            else args.output
         )
         return cls(**vars(args))
 

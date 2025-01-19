@@ -219,7 +219,7 @@ async def download_images(cli: Cli):
                     download_with_progress,
                     url,
                     client,
-                    Path(cli.directory, file),
+                    cli.directory.joinpath(file),
                     progress_bar,
                     semaphore,
                 )
