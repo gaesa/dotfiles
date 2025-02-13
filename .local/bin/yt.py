@@ -11,8 +11,8 @@ from tempfile import NamedTemporaryFile
 from typing import Literal, TypedDict, final
 
 import yt_dlp
-from pydantic import PositiveInt, BaseModel, field_validator, Field
 from my_utils.stream import Stream
+from pydantic import BaseModel, Field, PositiveInt, field_validator
 
 logging.basicConfig(level=os.environ.get("LOG_LEVEL_PROGRAM", "WARNING").upper())
 logger = logging.getLogger(__name__)
