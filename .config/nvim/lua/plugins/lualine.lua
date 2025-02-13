@@ -35,6 +35,10 @@ local function encoding()
     end
 end
 
+local function is_large_file()
+    return vim.api.nvim_buf_line_count(0) > 10000
+end
+
 return {
     {
         "nvim-lualine/lualine.nvim",
@@ -125,7 +129,13 @@ return {
                 },
                 lualine_y = {
                     {
-                        mixindent,
+                        function()
+                            if is_large_file() then
+                                return ""
+                            else
+                                return mixindent()
+                            end
+                        end,
                         color = "WarningMsg",
                     },
                     "progress",
