@@ -13,7 +13,7 @@ from tqdm import tqdm
 
 
 @final
-@dataclass(frozen=True, kw_only=True)
+@dataclass(frozen=True, kw_only=True, slots=True)
 class Config:
     ua: str
 
@@ -22,7 +22,7 @@ config = Config(ua=Faker().firefox())
 
 
 @final
-@dataclass(frozen=True, kw_only=True)
+@dataclass(frozen=True, kw_only=True, slots=True)
 class Cli:
     directory: Path
     url_pattern: str

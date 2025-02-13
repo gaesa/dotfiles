@@ -23,7 +23,7 @@ def du(tracked_files: list[str], all: bool, apparent_size: bool):
 
 
 @final
-@dataclass(frozen=True, kw_only=True)
+@dataclass(frozen=True, kw_only=True, slots=True)
 class Cli:
     path: str
     all: bool

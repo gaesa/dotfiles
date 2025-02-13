@@ -18,7 +18,7 @@ def send_mail(to: str, subject: str, body: str, from_: str | None = None):
 
 
 @final
-@dataclass(frozen=True, kw_only=True)
+@dataclass(frozen=True, kw_only=True, slots=True)
 class Cli:
     from_: str
     to: str

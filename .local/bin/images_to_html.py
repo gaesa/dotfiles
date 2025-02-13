@@ -10,7 +10,7 @@ from my_utils.stream import Stream
 
 
 @final
-@dataclass(frozen=True, kw_only=True)
+@dataclass(frozen=True, kw_only=True, slots=True)
 class Cli:
     directory: Path
 

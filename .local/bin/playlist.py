@@ -36,7 +36,7 @@ async def gen_playlist(dir: Path) -> list[str]:
 
 
 @final
-@dataclass(frozen=True, kw_only=True)
+@dataclass(frozen=True, kw_only=True, slots=True)
 class Cli:
     directory: Path
     force: bool

@@ -10,7 +10,7 @@ from my_utils.iters import for_each
 
 
 @final
-@dataclass(frozen=True, kw_only=True)
+@dataclass(frozen=True, kw_only=True, slots=True)
 class Cli:
     paths: list[Path]
     preserve_root: bool

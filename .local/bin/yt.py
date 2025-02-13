@@ -19,7 +19,7 @@ logger = logging.getLogger(__name__)
 
 
 @final
-@dataclass(frozen=True, kw_only=True)
+@dataclass(frozen=True, kw_only=True, slots=True)
 class Video:
     title: str
     url: str

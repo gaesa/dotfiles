@@ -9,7 +9,7 @@ ScaleAlgorithm = Literal["lanczos", "spline36", "bicubic"]
 
 
 @final
-@dataclass(frozen=True, kw_only=True)
+@dataclass(frozen=True, kw_only=True, slots=True)
 class Cli:
     file: Path
     start: str
