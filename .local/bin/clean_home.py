@@ -1,10 +1,15 @@
 #!/usr/bin/env python3
+import logging
+import os
 from pathlib import Path
 from subprocess import run
 
 from my_utils.iters import for_each
 from my_utils.os import get_permission, slice_path
 from xdg import BaseDirectory
+
+logging.basicConfig(level=os.environ.get("LOG_LEVEL_PROGRAM", "WARNING").upper())
+logger = logging.getLogger(__name__)
 
 
 class Config:
@@ -24,6 +29,7 @@ def set_permission(file: Path, pre: int, post: int):
 
 
 def trash(file: str | Path):
+    logger.info("Removing %s", file)
     run(["trash", file], check=True)
 
 
