@@ -3,7 +3,7 @@
 //! [dependencies]
 //! clap = { version = "4.5.4", features = ["derive"] }
 //! dirs = "5.0.1"
-//! rust-utils = { version = "0.2.3", git = "ssh://git@ssh.github.com:443/gaesa/rust-utils.git" }
+//! rust-utils = { version = "0.3.1", git = "ssh://git@ssh.github.com:443/gaesa/rust-utils.git" }
 //!
 //! [profile.release]
 //! lto = true
