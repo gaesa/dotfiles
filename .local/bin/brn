@@ -7,7 +7,7 @@ from os.path import isdir, join
 from shutil import move
 from subprocess import run
 from tempfile import NamedTemporaryFile
-from typing import IO, final
+from typing import IO, Self, final
 
 from my_utils.iters import natsort, partition
 
@@ -60,7 +60,7 @@ class Cli:
     directories: list[str]
 
     @classmethod
-    def parse(cls) -> "Cli":
+    def parse(cls) -> Self:
         parser = ArgumentParser(description="Process directories.")
         parser.add_argument(
             "directories", type=str, nargs="+", help="directories to be processed"

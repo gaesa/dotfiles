@@ -1,7 +1,7 @@
 #!/usr/bin/python
 from dataclasses import dataclass
 from subprocess import run
-from typing import final
+from typing import Self, final
 
 
 def get_commit_count() -> int:
@@ -23,7 +23,7 @@ class Cli:
     author: bool
 
     @classmethod
-    def parse(cls) -> "Cli":
+    def parse(cls) -> Self:
         from argparse import ArgumentParser
 
         parser = ArgumentParser(description="Get commit count from git repository")

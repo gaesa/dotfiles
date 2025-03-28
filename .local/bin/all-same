@@ -4,7 +4,7 @@ from concurrent.futures import ProcessPoolExecutor
 from dataclasses import dataclass
 from hashlib import sha256
 from pathlib import Path
-from typing import final
+from typing import Self, final
 
 from my_utils.iters import for_each
 from my_utils.stream import Stream
@@ -17,7 +17,7 @@ class Cli:
     args: list[str]
 
     @classmethod
-    def parse(cls) -> "Cli":
+    def parse(cls) -> Self:
         parser = ArgumentParser(description="check if all arguments are same")
         parser.add_argument(
             "args", type=str, nargs="+", help="the arguments to compare"

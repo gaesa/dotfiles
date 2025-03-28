@@ -2,7 +2,7 @@
 from argparse import ArgumentParser
 from dataclasses import dataclass
 from os import environ
-from typing import final
+from typing import Self, final
 
 
 @final
@@ -11,7 +11,7 @@ class Cli:
     env: str
 
     @classmethod
-    def parse(cls) -> "Cli":
+    def parse(cls) -> Self:
         parser = ArgumentParser(description="Read environement variable")
         parser.add_argument("env", type=str, help="The environment variable name")
         args = parser.parse_args()

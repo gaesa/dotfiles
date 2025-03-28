@@ -4,7 +4,7 @@ from dataclasses import dataclass
 from pathlib import Path
 from shutil import rmtree
 from sys import stderr
-from typing import final
+from typing import Self, final
 
 from my_utils.iters import for_each
 
@@ -16,7 +16,7 @@ class Cli:
     preserve_root: bool
 
     @classmethod
-    def parse(cls) -> "Cli":
+    def parse(cls) -> Self:
         parser = argparse.ArgumentParser(
             description="Remove recursively empty directories."
         )

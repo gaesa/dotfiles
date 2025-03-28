@@ -1,7 +1,7 @@
 #!/usr/bin/python
 from argparse import Action, ArgumentParser
 from dataclasses import dataclass
-from typing import final
+from typing import Self, final
 
 from my_utils.git import get_tracked_dirs
 from my_utils.stream import Stream
@@ -14,7 +14,7 @@ class Cli:
     tree_ish: list[str]
 
     @classmethod
-    def parse(cls) -> "Cli":
+    def parse(cls) -> Self:
         class AppendWithoutDefault(Action):
             def __init__(self, *args, **kwargs):
                 super(AppendWithoutDefault, self).__init__(*args, **kwargs)

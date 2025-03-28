@@ -9,7 +9,7 @@ from os import environ, getppid
 from pathlib import Path
 from shutil import which
 from subprocess import run
-from typing import final
+from typing import Self, final
 
 try:
     from my_utils.iters import drop_first, for_each
@@ -28,7 +28,7 @@ class Cli:
     print_help: Callable[[], None]
 
     @classmethod
-    def parse(cls) -> "Cli":
+    def parse(cls) -> Self:
         parser = ArgumentParser(description="Safer 'rm' via 'trash', with a warning")
         parser.add_argument("files", nargs="*", type=Path, default=[])
         help_info = "for compatibility, using this option exits the program early"
