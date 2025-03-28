@@ -3,7 +3,7 @@ from argparse import ArgumentParser
 from dataclasses import dataclass
 from os.path import dirname, join
 from shutil import move
-from typing import final
+from typing import Self, final
 
 
 @final
@@ -13,7 +13,7 @@ class Cli:
     new_name: str
 
     @classmethod
-    def parse(cls) -> "Cli":
+    def parse(cls) -> Self:
         parser = ArgumentParser(
             description="Rename a file or directory under a directory."
         )

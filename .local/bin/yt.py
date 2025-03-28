@@ -8,7 +8,7 @@ from contextlib import contextmanager
 from dataclasses import dataclass
 from subprocess import run
 from tempfile import NamedTemporaryFile
-from typing import Literal, TypedDict, final
+from typing import Literal, Self, TypedDict, final
 
 import yt_dlp
 from my_utils.stream import Stream
@@ -133,7 +133,7 @@ class Cli(BaseModel):
         frozen = True
 
     @classmethod
-    def parse(cls) -> "Cli":
+    def parse(cls) -> Self:
         parser = ArgumentParser(description="Play random videos from YouTube.")
         parser.add_argument(
             "keyword",

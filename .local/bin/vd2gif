@@ -3,7 +3,7 @@ import re
 from dataclasses import dataclass
 from pathlib import Path
 from subprocess import run
-from typing import Literal, final, get_args
+from typing import Literal, Self, final, get_args
 
 ScaleAlgorithm = Literal["lanczos", "spline36", "bicubic"]
 
@@ -17,7 +17,7 @@ class Cli:
     algorithm: ScaleAlgorithm
 
     @classmethod
-    def parse(cls) -> "Cli":
+    def parse(cls) -> Self:
         from argparse import ArgumentParser, ArgumentTypeError
 
         def validate_time_format(time_str: str) -> str:

@@ -3,7 +3,7 @@ import re
 from collections.abc import Iterator
 from dataclasses import dataclass
 from pathlib import Path
-from typing import ClassVar, final
+from typing import ClassVar, Self, final
 
 import anyio
 import httpx
@@ -30,7 +30,7 @@ class Cli:
     no_html_images_inline: bool
 
     @classmethod
-    def parse(cls) -> "Cli":
+    def parse(cls) -> Self:
         from argparse import ArgumentParser
 
         parser = ArgumentParser(description="Download images from URLs")

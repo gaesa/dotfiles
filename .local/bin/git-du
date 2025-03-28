@@ -2,7 +2,7 @@
 from argparse import ArgumentParser
 from dataclasses import dataclass
 from subprocess import run
-from typing import final
+from typing import Self, final
 
 from my_utils.git import get_git_dir, get_tracked_files
 from my_utils.iters import is_empty
@@ -30,7 +30,7 @@ class Cli:
     apparent_size: bool
 
     @classmethod
-    def parse(cls) -> "Cli":
+    def parse(cls) -> Self:
         parser = ArgumentParser(description="Disk usage of tracked files")
         parser.add_argument(
             "-a",

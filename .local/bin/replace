@@ -2,7 +2,7 @@
 import re
 import sys
 from argparse import ArgumentParser
-from typing import final
+from typing import Self, final
 
 from pydantic import BaseModel, Field, PositiveInt
 
@@ -17,7 +17,7 @@ class Cli(BaseModel):
         frozen = True
 
     @classmethod
-    def parse(cls) -> "Cli":
+    def parse(cls) -> Self:
         parser = ArgumentParser(description="A CLI program to replace regex patterns")
         parser.add_argument(
             "pattern", type=str, help="The regex pattern to be replaced"

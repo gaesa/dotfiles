@@ -3,7 +3,7 @@ from dataclasses import dataclass
 from email.mime.text import MIMEText
 from getpass import getuser
 from smtplib import SMTP
-from typing import final
+from typing import Self, final
 
 
 def send_mail(to: str, subject: str, body: str, from_: str | None = None):
@@ -26,7 +26,7 @@ class Cli:
     body: str
 
     @classmethod
-    def parse(cls) -> "Cli":
+    def parse(cls) -> Self:
         from argparse import ArgumentParser
 
         parser = ArgumentParser(description="Send an email.")
@@ -46,7 +46,7 @@ class Cli:
             "--body", dest="body", type=str, required=True, help="Email body"
         )
         args = parser.parse_args()
-        return Cli(**vars(args))
+        return cls(**vars(args))
 
 
 def main():

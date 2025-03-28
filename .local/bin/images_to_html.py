@@ -2,7 +2,7 @@
 from argparse import ArgumentParser
 from dataclasses import dataclass
 from pathlib import Path
-from typing import final
+from typing import Self, final
 
 from jinja2 import Environment, Template
 from my_utils.iters import natsort
@@ -15,7 +15,7 @@ class Cli:
     directory: Path
 
     @classmethod
-    def parse(cls) -> "Cli":
+    def parse(cls) -> Self:
         parser = ArgumentParser(description="Create an HTML file with images.")
         parser.add_argument(
             "directory", type=Path, help="The directory containing the images."

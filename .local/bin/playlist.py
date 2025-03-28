@@ -4,7 +4,7 @@ from argparse import ArgumentParser
 from dataclasses import dataclass
 from pathlib import Path
 from subprocess import run
-from typing import final
+from typing import Self, final
 
 from my_utils.iters import is_empty, natsort
 from my_utils.os import get_mime_type_async
@@ -44,7 +44,7 @@ class Cli:
     output: Path
 
     @classmethod
-    def parse(cls) -> "Cli":
+    def parse(cls) -> Self:
         parser = ArgumentParser(
             description="A script to generate and play a playlist using mpv"
         )

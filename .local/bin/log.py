@@ -4,7 +4,7 @@ import logging
 import os
 import re
 from subprocess import CalledProcessError, run
-from typing import final
+from typing import Self, final
 
 from pydantic import BaseModel, Field, NonNegativeInt
 
@@ -23,7 +23,7 @@ class Cli(BaseModel):
         frozen = True
 
     @classmethod
-    def parse(cls) -> "Cli":
+    def parse(cls) -> Self:
         parser = argparse.ArgumentParser(
             description="Retrieve a specific log entry based on recency from a specified systemd "
             "unit"

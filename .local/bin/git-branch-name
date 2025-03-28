@@ -2,7 +2,7 @@
 from argparse import ArgumentParser
 from dataclasses import dataclass
 from subprocess import run
-from typing import final
+from typing import Self, final
 
 
 def get_name(tree_ish: str = "HEAD") -> str:
@@ -19,7 +19,7 @@ class Cli:
     tree_ish: str
 
     @classmethod
-    def parse(cls) -> "Cli":
+    def parse(cls) -> Self:
         parser = ArgumentParser(description="Get branch name")
         parser.add_argument(
             "tree_ish",

@@ -2,7 +2,7 @@
 from argparse import ArgumentParser
 from dataclasses import dataclass
 from subprocess import run
-from typing import final
+from typing import Self, final
 
 
 @final
@@ -12,7 +12,7 @@ class Cli:
     target: str
 
     @classmethod
-    def parse(cls) -> "Cli":
+    def parse(cls) -> Self:
         parser = ArgumentParser(description="Encrypt a file or directory using 7z")
         parser.add_argument("source", help="The file or directory to encrypt")
         parser.add_argument("target", help="The output encrypted file")
