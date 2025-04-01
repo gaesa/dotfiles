@@ -154,10 +154,19 @@ require("mason-null-ls").setup({
                     if vim.bo.filetype == "markdown" or (config ~= nil and config["indent_size"] ~= nil) then
                         return {}
                     else
-                        return {
-                            "--tab-width",
-                            vim.api.nvim_buf_get_option(params.bufnr, "shiftwidth"),
-                        }
+                        local project_root =
+                            lspconfig.util.find_git_ancestor(vim.api.nvim_buf_get_name(vim.api.nvim_get_current_buf()))
+                        if
+                            type(project_root) == "string"
+                            and vim.loop.fs_stat(vim.fs.joinpath(project_root, ".prettierrc")) ~= nil
+                        then
+                            return {}
+                        else
+                            return {
+                                "--tab-width",
+                                vim.api.nvim_buf_get_option(params.bufnr, "shiftwidth"),
+                            }
+                        end
                     end
                 end,
             }))
