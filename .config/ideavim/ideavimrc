@@ -130,6 +130,7 @@ inoremap <A-d> <Esc>ldei
 inoremap <C-k> <Esc>lDa
 
 " Clipboard
+nnoremap Y y$
 nnoremap <leader>y "+
 xnoremap <leader>y "+
 xnoremap <leader>p "_dP
