@@ -1,0 +1,78 @@
+#!/usr/bin/env python3
+import re
+import subprocess
+import sys
+from dataclasses import dataclass
+from typing import Self, final
+
+
+def domain_to_ips(domain: str) -> list[str]:
+    """Resolve domain to a set of IPv4 addresses."""
+    try:
+        p = subprocess.run(
+            ["dig", "+short", domain], capture_output=True, text=True, check=True
+        )
+        ips: list[str] = re.findall(r"\b(?:\d{1,3}\.){3}\d{1,3}\b", p.stdout)
+        return sorted(set(ips))
+    except subprocess.CalledProcessError as e:
+        print(f"Error resolving domain {domain}: {e}", file=sys.stderr)
+        return []
+
+
+def ip_to_country(ip: str) -> str:
+    """Lookup country for a given IP using geoiplookup."""
+    try:
+        raw = subprocess.run(
+            ["geoiplookup", ip], capture_output=True, text=True, check=True
+        ).stdout
+        comma = raw.rfind(",")
+        if comma == -1:
+            return "Unknown"
+        else:
+            space = raw.rfind(" ", 0, comma)
+            result = raw[space + 1 : comma]
+            return result if len(result) != 0 else "Unknown"
+    except subprocess.CalledProcessError as e:
+        print(f"Error in geoiplookup for {ip}: {e}", file=sys.stderr)
+        return "Unknown"
+
+
+def domain_to_countries(domain: str) -> dict[str, str]:
+    """Main function: maps domain to IPs and their countries."""
+    ips = domain_to_ips(domain)
+    if len(ips) == 0:
+        print(f"No IPs found for {domain}.", file=sys.stderr)
+        return {}
+    else:
+        return dict(zip(ips, map(ip_to_country, ips)))
+
+
+@final
+@dataclass(frozen=True, kw_only=True, slots=True)
+class Cli:
+    domains: list[str]
+
+    @classmethod
+    def parse(cls) -> Self:
+        from argparse import ArgumentParser
+
+        parser = ArgumentParser(
+            description="Resolve domain(s) to IPs and lookup their country"
+        )
+        parser.add_argument(
+            "domains", nargs="+", help="One or more domain names to resolve"
+        )
+        args = parser.parse_args()
+        return cls(domains=args.domains)
+
+
+def main():
+    cli = Cli.parse()
+    for domain in cli.domains:
+        print(f"Domain: {domain}")
+        for ip, country in domain_to_countries(domain).items():
+            print(f"  {ip} -> {country}")
+
+
+if __name__ == "__main__":
+    main()
