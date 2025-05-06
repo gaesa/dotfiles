@@ -74,9 +74,9 @@ class __StrictClassMethodOfStream(type):
     @overload
     def repeat[T](cls, obj: T, times: int) -> Stream[T]: ...
 
-    def repeat[
-        T
-    ](cls, obj: T, times: int | type[_MissingDefault] = _MissingDefault) -> Stream[T]:
+    def repeat[T](
+        cls, obj: T, times: int | type[_MissingDefault] = _MissingDefault
+    ) -> Stream[T]:
         """
         Same as `Stream.generate(lambda: object).limit(times)` when times is not `None`,
         when times is `None`, it works same as `Stream.generate(lambda: object)`.
@@ -90,9 +90,7 @@ class __StrictClassMethodOfStream(type):
     @overload
     def generate[T](cls, operation: Callable[[], T], stop_value: T) -> Stream[T]: ...
 
-    def generate[  # pyright: ignore [reportInconsistentOverload]
-        T
-    ](
+    def generate[T](  # pyright: ignore [reportInconsistentOverload]
         cls,
         operation: Callable[[], T],
         stop_value: T | _MissingDefault = _MissingDefault,
@@ -131,9 +129,9 @@ class Stream[T](metaclass=__StrictClassMethodOfStream):
     @overload
     def __next__[U](self, default: U) -> T | U: ...
 
-    def __next__[  # pyright: ignore [reportInconsistentOverload]
-        U
-    ](self, default: U = _MissingDefault) -> T | U:
+    def __next__[U](  # pyright: ignore [reportInconsistentOverload]
+        self, default: U = _MissingDefault
+    ) -> T | U:
         return (
             next(self.__iterable, default)
             if default is not _MissingDefault
@@ -179,18 +177,16 @@ class Stream[T](metaclass=__StrictClassMethodOfStream):
 
     # The following two overloads can't be inferred properly by pyright
     @overload
-    def reduce[  # pyright: ignore [reportOverlappingOverload]
-        U
-    ](self, operation: Callable[[U, T], U]) -> U: ...
+    def reduce[U](  # pyright: ignore [reportOverlappingOverload]
+        self, operation: Callable[[U, T], U]
+    ) -> U: ...
 
     @overload
-    def reduce[  # pyright: ignore [reportOverlappingOverload]
-        U
-    ](self, operation: Callable[[U, T], U], init: U) -> U: ...
+    def reduce[U](  # pyright: ignore [reportOverlappingOverload]
+        self, operation: Callable[[U, T], U], init: U
+    ) -> U: ...
 
-    def reduce[  # pyright: ignore [reportInconsistentOverload]
-        U
-    ](
+    def reduce[U](  # pyright: ignore [reportInconsistentOverload]
         self,
         operation: Callable[[U, T], U],
         init: U | _MissingDefault = _MissingDefault,
@@ -205,11 +201,9 @@ class Stream[T](metaclass=__StrictClassMethodOfStream):
     def group_by(self, key: None = None) -> Stream[tuple[T, Stream[T]]]: ...
     @overload
     def group_by[U](self, key: Callable[[T], U]) -> Stream[tuple[U, Stream[T]]]: ...
-    def group_by[
-        U
-    ](self, key: Callable[[T], U] | None = None) -> (
-        Stream[tuple[U, Stream[T]]] | Stream[tuple[T, Stream[T]]]
-    ):
+    def group_by[U](
+        self, key: Callable[[T], U] | None = None
+    ) -> Stream[tuple[U, Stream[T]]] | Stream[tuple[T, Stream[T]]]:
         return Stream(
             map(
                 lambda pair: (pair[0], Stream(pair[1])),
@@ -304,9 +298,9 @@ class Stream[T](metaclass=__StrictClassMethodOfStream):
     # @overload  # a fallback to suppresss type errors for custom iterable
     # def flatten(self) -> Stream[Any]: ...
 
-    def flatten[  # pyright: ignore [reportInconsistentOverload]
-        U
-    ](self: Stream[Iterable[U]],) -> Stream[U]:
+    def flatten[U](  # pyright: ignore [reportInconsistentOverload]
+        self: Stream[Iterable[U]],
+    ) -> Stream[U]:
         return Stream(itertools.chain.from_iterable(self.__iterable))
 
     def flatmap[U](self, operation: Callable[[T], Iterable[U]]) -> Stream[U]:
@@ -486,17 +480,19 @@ class Stream[T](metaclass=__StrictClassMethodOfStream):
         return Stream(generator(operation, self.__iterable))
 
     @overload
-    def sorted[
-        C: __Comparable
-    ](self: Stream[C], key: None = None, reverse: bool = False) -> Stream[T]: ...
+    def sorted[C: __Comparable](
+        self: Stream[C], key: None = None, reverse: bool = False
+    ) -> Stream[T]: ...
     @overload
-    def sorted[
-        C: __Comparable
-    ](self, key: Callable[[T], C], reverse: bool = False) -> Stream[T]: ...
+    def sorted[C: __Comparable](
+        self, key: Callable[[T], C], reverse: bool = False
+    ) -> Stream[T]: ...
 
-    def sorted[
-        C: __Comparable
-    ](self, key: Callable[[T], C] | None = None, reverse: bool = False,) -> Stream[T]:
+    def sorted[C: __Comparable](
+        self,
+        key: Callable[[T], C] | None = None,
+        reverse: bool = False,
+    ) -> Stream[T]:
         return Stream(
             sorted(
                 self.__iterable,
@@ -506,15 +502,15 @@ class Stream[T](metaclass=__StrictClassMethodOfStream):
         )
 
     @overload
-    def unique_everseen[
-        H: Hashable
-    ](self: Stream[H], key: None = None) -> Stream[T]: ...
+    def unique_everseen[H: Hashable](
+        self: Stream[H], key: None = None
+    ) -> Stream[T]: ...
     @overload
     def unique_everseen[H: Hashable](self, key: Callable[[T], H]) -> Stream[T]: ...
 
-    def unique_everseen[
-        H: Hashable
-    ](self, key: Callable[[T], H] | None = None) -> Stream[T]:
+    def unique_everseen[H: Hashable](
+        self, key: Callable[[T], H] | None = None
+    ) -> Stream[T]:
         def generator(
             iterable: Iterable[T], key: Callable[[T], H] | None = None
         ) -> Iterator[T]:
