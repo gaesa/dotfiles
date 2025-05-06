@@ -153,12 +153,11 @@ class Stream[T](metaclass=__StrictClassMethodOfStream):
     def map[U](self, operation: Callable[[T], U]) -> Stream[U]:
         return Stream(map(operation, self.__iterable))
 
-    def starmap[
-        U
-    ](self, operation: Callable[[T, ...], U]) -> Stream[  # pyright: ignore
-        U
-    ]:  # Iterable[tuple[T, ...]] -> Stream[U]
-        return Stream(
+    def starmap[U](
+        self,
+        operation: Callable[[T, ...], U],  # pyright: ignore [reportInvalidTypeForm]
+    ) -> Stream[U]:
+        return Stream(  # pyright: ignore  # Iterable[tuple[T, ...]] -> Stream[U]
             itertools.starmap(
                 operation, self.__iterable  # pyright: ignore [reportArgumentType]
             )
@@ -194,7 +193,9 @@ class Stream[T](metaclass=__StrictClassMethodOfStream):
         return reduce(
             operation,  # pyright: ignore [reportCallIssue,reportArgumentType]
             self.__iterable,
-            *((init,) if init is not _MissingDefault else ()),
+            *(
+                (init,) if init is not _MissingDefault else ()
+            ),  # pyright: ignore [reportArgumentType]
         )
 
     @overload
@@ -218,7 +219,7 @@ class Stream[T](metaclass=__StrictClassMethodOfStream):
 
     @overload
     def partition(
-        self, predicate: Callable[[T], bool], lazy: Literal[False] = False
+        self, predicate: Callable[[T], bool], lazy: Literal[False]
     ) -> tuple[list[T], list[T]]: ...
 
     def partition(
