@@ -570,24 +570,70 @@ class Stream[T](metaclass=__StrictClassMethodOfStream):
     @overload
     def min[C: __Comparable](self: Stream[C], key: None = None) -> T: ...
     @overload
+    def min[C: __Comparable](
+        self: Stream[C], key: None = None, default: T = ...
+    ) -> T: ...
+    @overload
+    def min[C: __Comparable, U](
+        self: Stream[C], key: None = None, default: U = ...
+    ) -> T | U: ...
+    @overload
     def min[C: __Comparable](self, key: Callable[[T], C]) -> T: ...
+    @overload
+    def min[C: __Comparable](self, key: Callable[[T], C], default: T) -> T: ...
+    @overload
+    def min[C: __Comparable, U](self, key: Callable[[T], C], default: U) -> T | U: ...
 
-    def min[C: __Comparable](self, key: Callable[[T], C] | None = None) -> T:
-        return min(
-            self.__iterable,
-            key=key,  # pyright: ignore [reportCallIssue,reportArgumentType]
-        )
+    def min[C: __Comparable, U](
+        self,
+        key: Callable[[T], C] | None = None,
+        default: U | type[_MissingDefault] = _MissingDefault,
+    ) -> T | U:
+        if default is _MissingDefault:
+            return min(
+                self.__iterable,
+                key=key,  # pyright: ignore [reportCallIssue,reportArgumentType]
+            )
+        else:
+            return min(
+                self.__iterable,
+                key=key,  # pyright: ignore [reportCallIssue,reportArgumentType]
+                default=default,
+            )
 
     @overload
     def max[C: __Comparable](self: Stream[C], key: None = None) -> T: ...
     @overload
+    def max[C: __Comparable](
+        self: Stream[C], key: None = None, default: T = ...
+    ) -> T: ...
+    @overload
+    def max[C: __Comparable, U](
+        self: Stream[C], key: None = None, default: U = ...
+    ) -> T | U: ...
+    @overload
     def max[C: __Comparable](self, key: Callable[[T], C]) -> T: ...
+    @overload
+    def max[C: __Comparable](self, key: Callable[[T], C], default: T) -> T: ...
+    @overload
+    def max[C: __Comparable, U](self, key: Callable[[T], C], default: U) -> T | U: ...
 
-    def max[C: __Comparable](self, key: Callable[[T], C] | None = None) -> T:
-        return max(
-            self.__iterable,
-            key=key,  # pyright: ignore [reportCallIssue,reportArgumentType]
-        )
+    def max[C: __Comparable, U](
+        self,
+        key: Callable[[T], C] | None = None,
+        default: U | type[_MissingDefault] = _MissingDefault,
+    ) -> T | U:
+        if default is _MissingDefault:
+            return max(
+                self.__iterable,
+                key=key,  # pyright: ignore [reportCallIssue,reportArgumentType]
+            )
+        else:
+            return max(
+                self.__iterable,
+                key=key,  # pyright: ignore [reportCallIssue,reportArgumentType]
+                default=default,
+            )
 
     def any_match(self, predicate: Callable[[T], bool]) -> bool:
         """
