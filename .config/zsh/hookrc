@@ -42,6 +42,7 @@ _git_pre_exec() {
         g true
         git true
         gs true
+        gitu true
     )
     typeset -A options=(
         cl true
