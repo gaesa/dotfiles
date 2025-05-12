@@ -7,12 +7,14 @@ _set_git_env() {
         if [[ -v GIT_DIR ]]; then
             if [[ "${GIT_DIR}" != "${XDG_DATA_HOME}/yadm/repo.git" ]]; then
                 export GIT_DIR="${XDG_DATA_HOME}/yadm/repo.git"
+                export TZ="UTC"
                 unset -f set_dir
             else
                 unset -f set_dir
             fi
         else
             export GIT_DIR="${XDG_DATA_HOME}/yadm/repo.git"
+            export TZ="UTC"
             unset -f set_dir
         fi
     }
@@ -24,7 +26,7 @@ _clr_git_env() {
     clr_dir() {
         if [[ -v GIT_DIR ]]; then
             if [[ "${GIT_DIR}" == "${XDG_DATA_HOME}/yadm/repo.git" ]]; then
-                unset GIT_DIR
+                unset GIT_DIR TZ
                 unset -f clr_dir
             else
                 unset -f clr_dir
