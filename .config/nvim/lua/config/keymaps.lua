@@ -237,7 +237,8 @@ local function search(string, gen_pattern, callback)
                 callback()
             end, { buffer = true, silent = true })
 
-            local timer, previous_search = vim.loop.new_timer(), vim.fn.getreg("/")
+            ---@diagnostic disable-next-line: undefined-field
+            local timer, previous_search = vim.uv.new_timer(), vim.fn.getreg("/")
             timer:start(
                 0,
                 500,

@@ -66,9 +66,17 @@ vim.opt.history = 1000
 -- vim.opt.undofile = true
 
 -- 0.10 migration: https://github.com/junegunn/fzf/issues/3818
--- stylua: ignore
-vim.iter(vim.api.nvim_get_autocmds({ event = "SwapExists", group = "nvim_swapfile" }))
-    :each(function(aucmd) vim.api.nvim_del_autocmd(aucmd.id) end)
+local utils = require("utils")
+vim.iter(vim.api.nvim_get_autocmds({
+    event = "SwapExists",
+    group = utils.iif(utils.version.nvim() < utils.version.new(0, 11, 0), function()
+        return "nvim_swapfile"
+    end, function()
+        return "nvim.swapfile"
+    end),
+})):each(function(aucmd)
+    vim.api.nvim_del_autocmd(aucmd.id)
+end)
 
 -- Spell check
 vim.opt.spelllang = "en,cjk"
