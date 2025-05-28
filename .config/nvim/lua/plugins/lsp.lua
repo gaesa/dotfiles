@@ -11,8 +11,7 @@ return {
             {
                 "williamboman/mason.nvim",
                 build = function()
-                    ---@diagnostic disable-next-line: param-type-mismatch
-                    pcall(vim.cmd, "MasonUpdate")
+                    pcall(vim.cmd, "MasonUpdate") ---@diagnostic disable-line: param-type-mismatch
                 end,
                 cmd = {
                     "MasonInstall",

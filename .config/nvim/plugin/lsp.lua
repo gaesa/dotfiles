@@ -158,13 +158,14 @@ require("mason-null-ls").setup({
                             lspconfig.util.find_git_ancestor(vim.api.nvim_buf_get_name(vim.api.nvim_get_current_buf()))
                         if
                             type(project_root) == "string"
-                            and vim.loop.fs_stat(vim.fs.joinpath(project_root, ".prettierrc")) ~= nil
+                            ---@diagnostic disable-next-line: undefined-field
+                            and vim.uv.fs_stat(vim.fs.joinpath(project_root, ".prettierrc")) ~= nil
                         then
                             return {}
                         else
                             return {
                                 "--tab-width",
-                                vim.api.nvim_buf_get_option(params.bufnr, "shiftwidth"),
+                                vim.api.nvim_get_option_value("shiftwidth", { buf = params.bufnr }),
                             }
                         end
                     end

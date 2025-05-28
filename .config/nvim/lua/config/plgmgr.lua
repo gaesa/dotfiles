@@ -1,6 +1,7 @@
 -- Bootstrap
-local lazypath = vim.fs.joinpath(vim.fn.stdpath("data"), "lazy", "lazy.nvim")
-if not vim.loop.fs_stat(lazypath) then
+local vim_data_dir = vim.fn.stdpath("data") ---@cast vim_data_dir string
+local lazypath = vim.fs.joinpath(vim_data_dir, "lazy", "lazy.nvim")
+if vim.uv.fs_stat(lazypath) == nil then ---@diagnostic disable-line: undefined-field
     vim.fn.system({
         "git",
         "clone",

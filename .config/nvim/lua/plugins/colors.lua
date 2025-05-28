@@ -51,7 +51,7 @@ return {
                 vim.opt.background = color
                 local theme = "everforest"
                 local colorpath = vim.fn.stdpath("data") .. "/lazy/" .. theme
-                if vim.loop.fs_stat(colorpath) then
+                if vim.uv.fs_stat(colorpath) then ---@diagnostic disable-line: undefined-field
                     set_theme(theme)
                 else
                     set_fallback_theme()

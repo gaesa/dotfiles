@@ -14,6 +14,7 @@ return {
             -- https://github.com/lukas-reineke/indent-blankline.nvim/pull/685
             vim.api.nvim_create_autocmd("ColorScheme", {
                 callback = function()
+                    ---@diagnostic disable-next-line: param-type-mismatch
                     vim.api.nvim_set_hl(0, "IblIndent", vim.api.nvim_get_hl(0, { name = "Whitespace" }))
                     require("ibl.highlights").setup()
                 end,
