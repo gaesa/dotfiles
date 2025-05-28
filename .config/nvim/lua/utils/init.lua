@@ -76,5 +76,6 @@ utils.string = require("utils.string")
 utils.win = require("utils.win")
 utils.funs = require("utils.funs")
 utils.version = require("utils.version")
+utils.options = require("utils.options")
 
 return utils
