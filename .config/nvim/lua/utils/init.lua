@@ -1,6 +1,12 @@
 local utils = {}
 
+---@param text any
+---@param level integer|nil
+---@param once boolean|nil
 function P(text, level, once)
+    if once == nil then
+        once = false
+    end
     if once then
         vim.notify_once(vim.inspect(text), level)
     else
@@ -8,6 +14,11 @@ function P(text, level, once)
     end
 end
 
+---@generic T1, T2
+---@param predicate boolean
+---@param consequent fun(): T1
+---@param alternative fun(): T2
+---@return T1 | T2
 function utils.iif(predicate, consequent, alternative)
     if predicate then
         return consequent()
@@ -26,6 +37,10 @@ function utils.cond(...)
     end
 end
 
+---@param start integer
+---@param stop integer
+---@param step integer|nil
+---@return fun(): integer|nil
 function utils.range(start, stop, step)
     step = utils.iif(
         step == nil, --
