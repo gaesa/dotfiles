@@ -1,5 +1,7 @@
 local M = {}
 
+---@generic T
+---@param fn fun(): T|nil
 function M.with_cursor_unchanged(fn)
     local winid = 0
     local cursor_position = vim.api.nvim_win_get_cursor(winid)
