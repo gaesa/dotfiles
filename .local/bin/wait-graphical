@@ -1,28 +1,84 @@
 #!/usr/bin/env python3
-from subprocess import run
+import subprocess
+from collections.abc import Callable
 from time import sleep
 
-from my_utils.stream import Stream
+
+def parse_kv_lines(raw: bytes) -> dict[bytes, bytes]:
+    """
+    Parses a newline-terminated bytes block of key-value lines into a dictionary.
+
+    # Assumes:
+    - Input ends with a newline (`\\n`)
+    - Each non-empty line is in the form `KEY=VALUE`
+    - Lines are separated by `\\n` with no empty lines
+    - No leading or trailing empty lines
+    """
+
+    kv_sep, line_sep = ord("="), ord("\n")
+    p = 0
+
+    def make_find_sep(sep: int) -> Callable[[], int]:
+        def inner() -> int:
+            nonlocal p
+            while raw[p] != sep:
+                p += 1
+            return p
+
+        return inner
+
+    find_equal_sign = make_find_sep(kv_sep)
+    find_line_end = make_find_sep(line_sep)
+
+    d: dict[bytes, bytes] = {}
+    while p < len(raw):
+        key_start = p
+        equal_sign = find_equal_sign()
+        key = raw[key_start:equal_sign]
+
+        value_start = equal_sign + 1
+        line_end = find_line_end()
+        value = raw[value_start:line_end]
+
+        d[key] = value
+        p = line_end + 1
+
+    return d
+
+
+def let_in[T, U](val: T, fn: Callable[[T], U]) -> U:
+    return fn(val)
 
 
 def is_env_prepared() -> bool:
-    def get_env() -> str:
-        p = run(
+    def get_raw_env() -> bytes:
+        p = subprocess.run(
             ["systemctl", "--user", "--no-pager", "show-environment"],
             capture_output=True,
-            text=True,
             check=True,
         )
         return p.stdout
 
-    return Stream(get_env().splitlines()).any_match(
-        lambda s: s.startswith("DISPLAY") or s.startswith("WAYLAND_DISPLAY")
+    envs = parse_kv_lines(get_raw_env())
+
+    return b"WAYLAND_DISPLAY" in envs and let_in(
+        envs.get(b"XDG_CURRENT_DESKTOP"),
+        lambda desktop: desktop is not None
+        and (envs[b"KDE_FULL_SESSION"] == b"true" if desktop == b"KDE" else True),
     )
+
+
+def is_service_prepared() -> bool:
+    def is_service_running(service: str) -> bool:
+        p = subprocess.run(["systemctl", "--user", "--quiet", "is-active", service])
+        return p.returncode == 0
+
+    return is_service_running("xdg-desktop-portal.service")
 
 
 def main():
     while True:
-        if is_env_prepared():
+        if is_env_prepared() and is_service_prepared():
             return
         else:
             sleep(1)
