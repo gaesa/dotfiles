@@ -130,9 +130,15 @@ echo -ne '\e[6 q' # Use beam shape cursor on startup.
 preexec() { echo -ne '\e[6 q'; } # Use beam shape cursor for each new prompt.
 
 # Edit line in vim with ctrl-e:
-autoload edit-command-line; zle -N edit-command-line
-bindkey '^[e' edit-command-line
-bindkey -M vicmd '^[e' edit-command-line
+autoload edit-command-line
+function my-edit-command-line() {
+    _git_pre_exec
+    edit-command-line
+}
+
+zle -N my-edit-command-line
+bindkey '^[e' my-edit-command-line
+bindkey -M vicmd '^[e' my-edit-command-line
 
 # Default wordchars is bad as it contains `/`, `_`, `-`, `.`
 WORDCHARS='*?[]~=&;!#$%^(){}<>'
