@@ -80,7 +80,7 @@ return {
                 if vim.env.TERM ~= "linux" then
                     ---@diagnostic disable-next-line: undefined-field
                     local color = vim.g.mycolor
-                    if color then
+                    if color ~= nil then
                         load_theme(color)
                     else
                         auto_switch_theme()
