@@ -16,11 +16,11 @@ def get_sudo_user_unit() -> tuple[list[str], list[str], str]:
 
 
 def is_active(user: list[str], unit: str) -> bool:
-    status = run(["systemctl", *user, "--quiet", "is-active", unit]).returncode
-    return status == 0
+    p = run(["systemctl", *user, "--quiet", "is-active", unit])
+    return p.returncode == 0
 
 
-def toggle_unit() -> None:
+def main():
     sudo, user, unit = get_sudo_user_unit()
     run([*sudo, "systemctl", *user, "daemon-reload"], check=True)
     run(
@@ -31,4 +31,4 @@ def toggle_unit() -> None:
 
 
 if __name__ == "__main__":
-    toggle_unit()
+    main()
