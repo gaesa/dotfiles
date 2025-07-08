@@ -55,6 +55,18 @@ return {
                                 -- Use cmd("last") and cmd("history") to check blocked msg
                                 -- See also: https://github.com/folke/noice.nvim/issues/259
                             },
+                            {
+                                event = "msg_show",
+                                kind = "bufwrite",
+                            },
+                            {
+                                event = "msg_show",
+                                kind = "undo",
+                            },
+                            {
+                                event = "msg_show",
+                                find = "^%d+ lines yanked",
+                            },
                         },
                     },
                     opts = { skip = true },
