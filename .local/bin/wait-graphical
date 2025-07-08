@@ -3,6 +3,8 @@ import subprocess
 from collections.abc import Callable
 from time import sleep
 
+from my_utils.fntools import let_in
+
 
 def parse_kv_lines(raw: bytes) -> dict[bytes, bytes]:
     """
@@ -44,10 +46,6 @@ def parse_kv_lines(raw: bytes) -> dict[bytes, bytes]:
         p = line_end + 1
 
     return d
-
-
-def let_in[T, U](val: T, fn: Callable[[T], U]) -> U:
-    return fn(val)
 
 
 def is_env_prepared() -> bool:
