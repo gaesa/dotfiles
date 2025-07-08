@@ -1,12 +1,11 @@
 #!/usr/bin/env python3
 import argparse
+from collections.abc import Callable
 from dataclasses import dataclass
 from pathlib import Path
 from shutil import rmtree
 from sys import stderr
 from typing import Self, final
-
-from my_utils.iters import for_each
 
 
 @final
@@ -14,6 +13,7 @@ from my_utils.iters import for_each
 class Cli:
     paths: list[Path]
     preserve_root: bool
+    quiet: bool
 
     @classmethod
     def parse(cls) -> Self:
@@ -28,6 +28,12 @@ class Cli:
             "--preserve-root",
             action="store_true",
             help="Preserve the root directory.",
+        )
+        parser.add_argument(
+            "-q",
+            "--quiet",
+            action="store_true",
+            help="Suppress warnings and informational output.",
         )
         args = parser.parse_args()
         return cls(**vars(args))
@@ -47,22 +53,59 @@ def rm_dir_or_link(dir: Path):
         rmtree(dir)
 
 
-def main():
-    args = Cli.parse()
-    for path in args.paths:
+def make_remove(preserve_root: bool) -> Callable[[Path], None]:
+    def recursively_rm(path: Path):
+        for p in path.iterdir():
+            rm_dir_or_link(p)
+
+    return rm_dir_or_link if not preserve_root else recursively_rm
+
+
+def make_handle_dir(
+    remove: Callable[[Path], None], quiet: bool
+) -> Callable[[Path], None]:
+    def handle_dir_not_quiet(path: Path):
+        if is_recursively_empty_dir(path):
+            remove(path)
+        else:
+            print(
+                f"Path '{path}' is not an recursively empty directory.",
+                file=stderr,
+            )
+
+    def handle_dir_quiet(path: Path):
+        if is_recursively_empty_dir(path):
+            remove(path)
+
+    return handle_dir_not_quiet if not quiet else handle_dir_quiet
+
+
+def make_handle_path(
+    handle_dir: Callable[[Path], None], quiet: bool
+) -> Callable[[Path], None]:
+    def handle_path_not_quiet(path: Path):
         if path.is_dir():
-            if is_recursively_empty_dir(path):
-                if not args.preserve_root:
-                    rm_dir_or_link(path)
-                else:
-                    for_each(rm_dir_or_link, path.iterdir())
-            else:
-                print(
-                    f"Path '{path}' is not an recursively empty directory.",
-                    file=stderr,
-                )
+            handle_dir(path)
         else:
             print(f"Path '{path}' is not a directory.", file=stderr)
+
+    def handle_path_quiet(path: Path):
+        if path.is_dir():
+            handle_dir(path)
+
+    return handle_path_not_quiet if not quiet else handle_path_quiet
+
+
+def main():
+    cli = Cli.parse()
+
+    remove = make_remove(cli.preserve_root)
+    quiet = cli.quiet
+    handle_dir = make_handle_dir(remove, quiet)
+    handle_path = make_handle_path(handle_dir, quiet)
+
+    for path in cli.paths:
+        handle_path(path)
 
 
 if __name__ == "__main__":
