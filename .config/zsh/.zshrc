@@ -23,6 +23,11 @@ fi
 [[ ! -d "$ZDOTDIR" ]] && mkdir -p "$ZDOTDIR"
 # }}}
 
+# Utils {{{
+[[ -f "$ZDOTDIR/hookrc" ]] && source "$ZDOTDIR/hookrc"
+[[ -f "$ZDOTDIR/functionrc" ]] && source "$ZDOTDIR/functionrc"
+# }}}
+
 # History {{{
 # Remove older command from the history if a duplicate is to be added.
 setopt HIST_FIND_NO_DUPS
@@ -213,7 +218,5 @@ fi
 
 # User files {{{
 [[ -f "$ZDOTDIR/privaterc" ]] && source "$ZDOTDIR/privaterc"
-[[ -f "$ZDOTDIR/hookrc" ]] && source "$ZDOTDIR/hookrc"
 [[ -f "$ZDOTDIR/aliasrc" ]] && source "$ZDOTDIR/aliasrc"
-[[ -f "$ZDOTDIR/functionrc" ]] && source "$ZDOTDIR/functionrc"
 # }}}
