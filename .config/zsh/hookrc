@@ -43,6 +43,8 @@ _git_pre_exec() {
     typeset -A git_cmds=(
         g true
         git true
+    )
+    typeset -A git_tools=(
         gs true
         gitu true
     )
@@ -59,16 +61,22 @@ _git_pre_exec() {
 
     if [[ "${cmd}" == *'='* ]]; then # eliminate environment variables
         _git_pre_exec "$remainder" # update $1
-    elif [[ -n "${cmd}" && -v git_cmds["${cmd}"] && "${git_cmds[$cmd]}" == true ]] || [[ "${cmd}" == 'git-'* ]]; then
-        if [[ "$(pwd)" == "${HOME}" ]]; then
-            if [[ -v option ]]; then
-                if [[ -v options["${option}"] && "${options[$option]}" == true ]]; then
-                    _clr_git_env
+    elif [[ "$(pwd)" == "${HOME}" ]]; then
+        if [[ -n "${cmd}" ]]; then
+            if [[ -v git_cmds["${cmd}"] && "${git_cmds[$cmd]}" == true ]]; then
+                if [[ -v option ]]; then
+                    if [[ -v options["${option}"] && "${options[$option]}" == true ]]; then
+                        _clr_git_env
+                    else
+                        _set_git_env
+                    fi
                 else
                     _set_git_env
                 fi
-            else
+            elif [[ -v git_tools["${cmd}"] && "${git_tools[$cmd]}" == true ]] || [[ "${cmd}" == 'git-'* ]]; then
                 _set_git_env
+            else
+                _clr_git_env
             fi
         else
             _clr_git_env
