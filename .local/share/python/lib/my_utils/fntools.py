@@ -103,3 +103,7 @@ def non_instantiable[Class: type](cls: Class) -> Class:
     cls.__init__ = __init__  # pyright: ignore [reportAttributeAccessIssue]
 
     return cls
+
+
+def let_in[T, U](val: T, fn: Callable[[T], U]) -> U:
+    return fn(val)
