@@ -1,5 +1,4 @@
 #!/usr/bin/python
-from argparse import ArgumentParser
 from dataclasses import dataclass
 from subprocess import run
 from typing import Self, final
@@ -20,6 +19,8 @@ class Cli:
 
     @classmethod
     def parse(cls) -> Self:
+        from argparse import ArgumentParser
+
         parser = ArgumentParser(description="Get branch name")
         parser.add_argument(
             "tree_ish",

@@ -1,5 +1,4 @@
 #!/usr/bin/python
-from argparse import ArgumentParser
 from dataclasses import dataclass
 from subprocess import run
 from typing import Self, final
@@ -31,6 +30,8 @@ class Cli:
 
     @classmethod
     def parse(cls) -> Self:
+        from argparse import ArgumentParser
+
         parser = ArgumentParser(description="Disk usage of tracked files")
         parser.add_argument(
             "-a",

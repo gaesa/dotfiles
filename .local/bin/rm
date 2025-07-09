@@ -1,7 +1,6 @@
 #!/usr/bin/env python3
 import pwd
 import sys
-from argparse import ArgumentParser
 from collections.abc import Callable, Iterator
 from dataclasses import dataclass
 from getpass import getuser
@@ -29,6 +28,8 @@ class Cli:
 
     @classmethod
     def parse(cls) -> Self:
+        from argparse import ArgumentParser
+
         parser = ArgumentParser(description="Safer 'rm' via 'trash', with a warning")
         parser.add_argument("files", nargs="*", type=Path, default=[])
         help_info = "for compatibility, using this option exits the program early"
