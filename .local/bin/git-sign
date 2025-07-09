@@ -1,17 +1,8 @@
 #!/usr/bin/python
-from argparse import ArgumentParser, ArgumentTypeError
 from subprocess import run
 from typing import Self, final
 
 from pydantic import BaseModel, PositiveInt
-
-
-def positive_int(value: str) -> int:
-    int_value = int(value)
-    if int_value < 1:
-        raise ArgumentTypeError(f"{value} must be a positive integer")
-    else:
-        return int_value
 
 
 @final
@@ -23,6 +14,15 @@ class Cli(BaseModel):
 
     @classmethod
     def parse(cls) -> Self:
+        from argparse import ArgumentParser, ArgumentTypeError
+
+        def positive_int(value: str) -> int:
+            int_value = int(value)
+            if int_value < 1:
+                raise ArgumentTypeError(f"{value} must be a positive integer")
+            else:
+                return int_value
+
         parser = ArgumentParser(description="Sign the most recent commits using GPG")
         parser.add_argument(
             "count",

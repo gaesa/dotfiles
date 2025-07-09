@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
 import sys
-from argparse import ArgumentParser
 from dataclasses import dataclass
 from os import getenv, listdir
 from os.path import isdir, join
@@ -61,6 +60,8 @@ class Cli:
 
     @classmethod
     def parse(cls) -> Self:
+        from argparse import ArgumentParser
+
         parser = ArgumentParser(description="Process directories.")
         parser.add_argument(
             "directories", type=str, nargs="+", help="directories to be processed"

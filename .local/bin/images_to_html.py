@@ -1,5 +1,4 @@
 #!/usr/bin/env python3
-from argparse import ArgumentParser
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Self, final
@@ -16,6 +15,8 @@ class Cli:
 
     @classmethod
     def parse(cls) -> Self:
+        from argparse import ArgumentParser
+
         parser = ArgumentParser(description="Create an HTML file with images.")
         parser.add_argument(
             "directory", type=Path, help="The directory containing the images."

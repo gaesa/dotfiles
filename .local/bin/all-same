@@ -1,5 +1,4 @@
 #!/usr/bin/env python3
-from argparse import ArgumentParser
 from concurrent.futures import ProcessPoolExecutor
 from dataclasses import dataclass
 from hashlib import sha256
@@ -18,6 +17,8 @@ class Cli:
 
     @classmethod
     def parse(cls) -> Self:
+        from argparse import ArgumentParser
+
         parser = ArgumentParser(description="check if all arguments are same")
         parser.add_argument(
             "args", type=str, nargs="+", help="the arguments to compare"

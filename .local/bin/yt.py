@@ -2,7 +2,6 @@
 import logging
 import os
 import random
-from argparse import ArgumentParser
 from collections.abc import Iterable, Sequence
 from contextlib import contextmanager
 from dataclasses import dataclass
@@ -134,6 +133,8 @@ class Cli(BaseModel):
 
     @classmethod
     def parse(cls) -> Self:
+        from argparse import ArgumentParser
+
         parser = ArgumentParser(description="Play random videos from YouTube.")
         parser.add_argument(
             "keyword",
