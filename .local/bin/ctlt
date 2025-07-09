@@ -1,33 +1,87 @@
 #!/usr/bin/env python3
-from subprocess import run
-from sys import argv
+from collections.abc import Callable
+from dataclasses import dataclass
+from subprocess import CompletedProcess, run
+from typing import Self, final
 
 
-def get_sudo_user_unit() -> tuple[list[str], list[str], str]:
-    if argv[1] == "--user":
-        sudo = []
-        user = ["--user"]
-        unit = argv[2]
-    else:
-        sudo = ["sudo"]
-        user = []
-        unit = argv[1]
-    return sudo, user, unit
+@final
+@dataclass(frozen=True, kw_only=True, slots=True)
+class Cli:
+    user: bool
+    unit: str
+
+    @classmethod
+    def parse(cls) -> Self:
+        from argparse import ArgumentParser
+
+        parser = ArgumentParser(description="Toggle systemd unit")
+        parser.add_argument(
+            "--user", action="store_true", help="Use user service manager"
+        )
+        parser.add_argument("unit", type=str, help="The systemd unit name")
+
+        args = parser.parse_args()
+        return cls(user=args.user, unit=args.unit)
 
 
-def is_active(user: list[str], unit: str) -> bool:
-    p = run(["systemctl", *user, "--quiet", "is-active", unit])
-    return p.returncode == 0
+@final
+@dataclass(frozen=True, kw_only=True, slots=True)
+class Systemctl:
+    is_active: Callable[[str], bool]
+    daemon_reload: Callable[[], CompletedProcess[bytes]]
+    status: Callable[[str], CompletedProcess[bytes]]
+    toggle: Callable[[str], CompletedProcess[bytes]]
+
+    @classmethod
+    def new(cls, user: bool) -> Self:
+        is_active_cmd, daemon_reload_cmd, status_cmd, toggle_cmd = (
+            (
+                (lambda unit: ["systemctl", "--user", "--quiet", "is-active", unit]),
+                ["systemctl", "--user", "daemon-reload"],
+                (lambda unit: ["systemctl", "--no-pager", "--user", "status", unit]),
+                (
+                    lambda t, unit: [
+                        "systemctl",
+                        "--user",
+                        t,
+                        unit,
+                    ]
+                ),
+            )
+            if user
+            else (
+                (lambda unit: ["systemctl", "--quiet", "is-active", unit]),
+                ["sudo", "systemctl", "daemon-reload"],
+                (lambda unit: ["sudo", "systemctl", "--no-pager", "status", unit]),
+                (lambda t, unit: ["sudo", "systemctl", t, unit]),
+            )
+        )
+
+        is_active = lambda unit: run(is_active_cmd(unit)).returncode == 0
+        daemon_reload = lambda: run(daemon_reload_cmd, check=True)
+        status = lambda unit: run(status_cmd(unit))
+
+        get_t_str = lambda unit: "stop" if is_active(unit) else "start"
+        toggle = lambda unit: run(toggle_cmd(get_t_str(unit), unit), check=True)
+
+        return cls(
+            is_active=is_active,
+            daemon_reload=daemon_reload,
+            status=status,
+            toggle=toggle,
+        )
 
 
 def main():
-    sudo, user, unit = get_sudo_user_unit()
-    run([*sudo, "systemctl", *user, "daemon-reload"], check=True)
-    run(
-        [*sudo, "systemctl", *user, "stop" if is_active(user, unit) else "start", unit],
-        check=True,
-    )
-    run(["systemctl", *user, "status", unit])
+    cli = Cli.parse()
+    systemctl = Systemctl.new(cli.user)
+
+    systemctl.daemon_reload()
+
+    unit = cli.unit
+    systemctl.toggle(unit)
+    systemctl.status(unit)
 
 
 if __name__ == "__main__":
