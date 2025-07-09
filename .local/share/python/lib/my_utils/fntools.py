@@ -107,3 +107,7 @@ def non_instantiable[Class: type](cls: Class) -> Class:
 
 def let_in[T, U](val: T, fn: Callable[[T], U]) -> U:
     return fn(val)
+
+
+def drop(_: Any) -> None:
+    return None
