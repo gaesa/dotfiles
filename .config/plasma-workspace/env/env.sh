@@ -12,3 +12,6 @@ fi
 export PYTHONPATH="$XDG_DATA_HOME/python/lib"
 export PYTHONPYCACHEPREFIX="$XDG_CACHE_HOME/python"
 export PYTHONUSERBASE="$XDG_DATA_HOME/python"
+
+# GUI
+export GTK2_RC_FILES="$XDG_CONFIG_HOME/gtk-2.0/gtkrc"
