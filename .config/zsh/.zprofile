@@ -86,7 +86,6 @@ typeset -A my_env=(
 
     # Input method {{{
     'GTK_IM_MODULE' 'fcitx'
-    'QT_IM_MODULE' 'fcitx'
     'XMODIFIERS' '@im=fcitx'
     'SDL_IM_MODULE' 'fcitx'
     'GLFW_IM_MODULE' 'ibus'
