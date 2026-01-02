@@ -57,7 +57,7 @@ def get_extra_white_list(
     user_config_dir: str | Path, file: str | Path | None = None
 ) -> list[str]:
     file = (
-        Path(user_config_dir, "clean/white-list")
+        Path(user_config_dir).joinpath("clean/white-list")
         if file is None
         else (file if isinstance(file, Path) else Path(file))
     )
